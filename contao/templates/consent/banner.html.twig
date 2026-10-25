@@ -1,0 +1,76 @@
+{% trans_default_domain 'contao_consent' %}
+{#
+    One <dialog> in two forms: a small card that leaves the page usable (first
+    visit) and a centered settings dialog (from the card, a [data-consent-open]
+    element or a link to #cookie-einstellungen). consent.js switches between
+    them. Accepting and rejecting look the same on purpose.
+#}
+<dialog class="consent" id="contao-consent" data-consent-dialog aria-labelledby="contao-consent-headline">
+    <div class="consent__inner">
+        <h2 class="consent__headline" id="contao-consent-headline">{{ banner.headline }}</h2>
+        <div class="consent__text">{{ banner.text|raw }}</div>
+
+        <div class="consent__settings" data-consent-settings hidden>
+            {% for group in banner.groups %}
+                <section class="consent-group">
+                    <label class="consent-group__head">
+                        <span class="consent-group__title">{{ group.title }}</span>
+                        {% if group.essential %}
+                            <span class="consent-group__always">{{ 'always_on'|trans }}</span>
+                            <input type="checkbox" class="consent-switch" value="{{ group.alias }}" data-consent-checkbox checked disabled>
+                        {% else %}
+                            <input type="checkbox" class="consent-switch" value="{{ group.alias }}" data-consent-checkbox>
+                        {% endif %}
+                    </label>
+
+                    {% if group.description %}
+                        <p class="consent-group__description">{{ group.description }}</p>
+                    {% endif %}
+
+                    {% if group.services %}
+                        <details class="consent-group__services">
+                            <summary>{{ 'services'|trans }} ({{ group.services|length }})</summary>
+                            {% for service in group.services %}
+                                <div class="consent-service">
+                                    <h3 class="consent-service__title">{{ service.title }}</h3>
+                                    <dl>
+                                        {% if service.provider %}<dt>{{ 'provider'|trans }}</dt><dd>{{ service.provider }}</dd>{% endif %}
+                                        {% if service.description %}<dt>{{ 'purpose'|trans }}</dt><dd>{{ service.description }}</dd>{% endif %}
+                                        {% if service.cookies %}
+                                            <dt>{{ 'cookies'|trans }}</dt>
+                                            <dd>{% for cookie in service.cookies %}<code>{{ cookie.name }}</code>{% if cookie.duration %} ({{ cookie.duration }}){% endif %}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+                                        {% endif %}
+                                        {% if service.privacy_url %}<dt>{{ 'provider_privacy'|trans }}</dt><dd><a href="{{ service.privacy_url }}" target="_blank" rel="noopener noreferrer">{{ service.privacy_url|replace({'https://': ''}) }}</a></dd>{% endif %}
+                                    </dl>
+                                </div>
+                            {% endfor %}
+                        </details>
+                    {% endif %}
+                </section>
+            {% endfor %}
+        </div>
+
+        <div class="consent__buttons">
+            <button type="button" class="consent__button" data-consent-action="essential">{{ 'essential_only'|trans }}</button>
+            <button type="button" class="consent__button" data-consent-action="all">{{ 'accept_all'|trans }}</button>
+            <button type="button" class="consent__button consent__button--quiet" data-consent-action="settings">{{ 'settings'|trans }}</button>
+            <button type="button" class="consent__button consent__button--quiet" data-consent-action="save" hidden>{{ 'save'|trans }}</button>
+        </div>
+
+        {% if banner.privacy_url or banner.imprint_url %}
+            <p class="consent__links">
+                {% if banner.privacy_url %}<a href="{{ banner.privacy_url }}">{{ 'privacy_policy'|trans }}</a>{% endif %}
+                {% if banner.imprint_url %}<a href="{{ banner.imprint_url }}">{{ 'imprint'|trans }}</a>{% endif %}
+            </p>
+        {% endif %}
+    </div>
+</dialog>
+
+{% for group in banner.groups %}
+    {% for service in group.services|filter(service => service.code) %}
+        <template data-consent-code data-consent-group="{{ group.alias }}" data-consent-service="{{ service.key }}">{{ service.code|raw }}</template>
+    {% endfor %}
+{% endfor %}
+
+<script type="application/json" id="contao-consent-config">{{ script_config|raw }}</script>
+<script src="{{ asset('consent.js', 'contao_consent') }}" defer{% if nonce %} nonce="{{ nonce }}"{% endif %}></script>
