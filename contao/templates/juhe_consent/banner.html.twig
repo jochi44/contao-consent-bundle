@@ -1,0 +1,76 @@
+{% trans_default_domain 'juhe_consent' %}
+{#
+    One <dialog> in two forms: a small card that leaves the page usable (first
+    visit) and a centered settings dialog (from the card, a [data-juhe-consent-open]
+    element or a link to #cookie-einstellungen). consent.js switches between
+    them. Accepting and rejecting look the same on purpose.
+#}
+<dialog class="juhe-consent" id="juhe-consent" data-juhe-consent-dialog aria-labelledby="juhe-consent-headline">
+    <div class="juhe-consent__inner">
+        <h2 class="juhe-consent__headline" id="juhe-consent-headline">{{ banner.headline }}</h2>
+        <div class="juhe-consent__text">{{ banner.text|raw }}</div>
+
+        <div class="juhe-consent__settings" data-juhe-consent-settings hidden>
+            {% for group in banner.groups %}
+                <section class="juhe-consent-group">
+                    <label class="juhe-consent-group__head">
+                        <span class="juhe-consent-group__title">{{ group.title }}</span>
+                        {% if group.essential %}
+                            <span class="juhe-consent-group__always">{{ 'always_on'|trans }}</span>
+                            <input type="checkbox" class="juhe-consent-switch" value="{{ group.alias }}" data-juhe-consent-checkbox checked disabled>
+                        {% else %}
+                            <input type="checkbox" class="juhe-consent-switch" value="{{ group.alias }}" data-juhe-consent-checkbox>
+                        {% endif %}
+                    </label>
+
+                    {% if group.description %}
+                        <p class="juhe-consent-group__description">{{ group.description }}</p>
+                    {% endif %}
+
+                    {% if group.services %}
+                        <details class="juhe-consent-group__services">
+                            <summary>{{ 'services'|trans }} ({{ group.services|length }})</summary>
+                            {% for service in group.services %}
+                                <div class="juhe-consent-service">
+                                    <h3 class="juhe-consent-service__title">{{ service.title }}</h3>
+                                    <dl>
+                                        {% if service.provider %}<dt>{{ 'provider'|trans }}</dt><dd>{{ service.provider }}</dd>{% endif %}
+                                        {% if service.description %}<dt>{{ 'purpose'|trans }}</dt><dd>{{ service.description }}</dd>{% endif %}
+                                        {% if service.cookies %}
+                                            <dt>{{ 'cookies'|trans }}</dt>
+                                            <dd>{% for cookie in service.cookies %}<code>{{ cookie.name }}</code>{% if cookie.duration %} ({{ cookie.duration }}){% endif %}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+                                        {% endif %}
+                                        {% if service.privacy_url %}<dt>{{ 'provider_privacy'|trans }}</dt><dd><a href="{{ service.privacy_url }}" target="_blank" rel="noopener noreferrer">{{ service.privacy_url|replace({'https://': ''}) }}</a></dd>{% endif %}
+                                    </dl>
+                                </div>
+                            {% endfor %}
+                        </details>
+                    {% endif %}
+                </section>
+            {% endfor %}
+        </div>
+
+        <div class="juhe-consent__buttons">
+            <button type="button" class="juhe-consent__button" data-juhe-consent-action="essential">{{ 'essential_only'|trans }}</button>
+            <button type="button" class="juhe-consent__button" data-juhe-consent-action="all">{{ 'accept_all'|trans }}</button>
+            <button type="button" class="juhe-consent__button juhe-consent__button--quiet" data-juhe-consent-action="settings">{{ 'settings'|trans }}</button>
+            <button type="button" class="juhe-consent__button juhe-consent__button--quiet" data-juhe-consent-action="save" hidden>{{ 'save'|trans }}</button>
+        </div>
+
+        {% if banner.privacy_url or banner.imprint_url %}
+            <p class="juhe-consent__links">
+                {% if banner.privacy_url %}<a href="{{ banner.privacy_url }}">{{ 'privacy_policy'|trans }}</a>{% endif %}
+                {% if banner.imprint_url %}<a href="{{ banner.imprint_url }}">{{ 'imprint'|trans }}</a>{% endif %}
+            </p>
+        {% endif %}
+    </div>
+</dialog>
+
+{% for group in banner.groups %}
+    {% for service in group.services|filter(service => service.code) %}
+        <template data-juhe-consent-code data-juhe-consent-group="{{ group.alias }}" data-juhe-consent-service="{{ service.key }}">{{ service.code|raw }}</template>
+    {% endfor %}
+{% endfor %}
+
+<script type="application/json" id="juhe-consent-config">{{ script_config|raw }}</script>
+<script src="{{ asset('juhe-consent.js', 'juhe_consent') }}" defer{% if nonce %} nonce="{{ nonce }}"{% endif %}></script>

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JuheItSolutions\ConsentBundle\Controller\ContentElement;
+namespace JuheItSolutions\JuheConsentBundle\Controller\ContentElement;
 
 use Contao\ContentModel;
 use Contao\CoreBundle\Controller\ContentElement\AbstractContentElementController;
@@ -16,7 +16,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * A button that opens the consent settings again, e.g. on the privacy policy
  * page. Links to "#cookie-einstellungen" do the same.
  */
-#[AsContentElement('consent_settings', category: 'links')]
+#[AsContentElement('juhe_consent_settings', category: 'links')]
 final class ConsentSettingsController extends AbstractContentElementController
 {
     public function __construct(private readonly TranslatorInterface $translator)
@@ -25,7 +25,7 @@ final class ConsentSettingsController extends AbstractContentElementController
 
     protected function getResponse(FragmentTemplate $template, ContentModel $model, Request $request): Response
     {
-        $template->set('label', $model->linkTitle ?: $this->translator->trans('settings_link', [], 'contao_consent'));
+        $template->set('label', $model->linkTitle ?: $this->translator->trans('settings_link', [], 'juhe_consent'));
 
         return $template->getResponse();
     }

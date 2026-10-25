@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JuheItSolutions\ConsentBundle\EventListener;
+namespace JuheItSolutions\JuheConsentBundle\EventListener;
 
 use Contao\CoreBundle\Cache\CacheTagManager;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\PageModel;
 use Doctrine\DBAL\Connection;
-use JuheItSolutions\ConsentBundle\Consent\ConsentConfig;
-use JuheItSolutions\ConsentBundle\Consent\HtmlBlocker;
+use JuheItSolutions\JuheConsentBundle\Consent\ConsentConfig;
+use JuheItSolutions\JuheConsentBundle\Consent\HtmlBlocker;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -76,10 +76,10 @@ final class InjectConsentListener
         }
 
         // Edits to the banner, its groups or services clear the cached pages
-        $this->cacheTagManager->tagWith(['contao.db.tl_consent_banner', 'contao.db.tl_consent_group', 'contao.db.tl_consent_service']);
+        $this->cacheTagManager->tagWith(['contao.db.tl_juhe_consent_banner', 'contao.db.tl_juhe_consent_group', 'contao.db.tl_juhe_consent_service']);
 
         $locale = $request->getLocale();
-        $trans = fn (string $key): string => $this->translator->trans($key, [], 'contao_consent', $locale);
+        $trans = fn (string $key): string => $this->translator->trans($key, [], 'juhe_consent', $locale);
 
         $html = $this->blocker->block($html, $banner, $banner['placeholder'] ?: $trans('placeholder'), $trans('load_once'), $trans('load_always'));
 
@@ -89,10 +89,10 @@ final class InjectConsentListener
             'script_config' => json_encode($this->scriptConfig($banner), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
         ];
 
-        $html = $this->insertBefore($html, '</head>', $this->twig->render('@Contao/consent/head.html.twig', $context));
+        $html = $this->insertBefore($html, '</head>', $this->twig->render('@Contao/juhe_consent/head.html.twig', $context));
 
         // Right after <body>, so keyboard and screen reader users meet it first
-        $html = preg_replace('/<body\b[^>]*>/i', '$0'.addcslashes($this->twig->render('@Contao/consent/banner.html.twig', $context), '\\$'), $html, 1) ?? $html;
+        $html = preg_replace('/<body\b[^>]*>/i', '$0'.addcslashes($this->twig->render('@Contao/juhe_consent/banner.html.twig', $context), '\\$'), $html, 1) ?? $html;
 
         $response->setContent($html);
         $response->headers->remove('Content-Length');
@@ -110,8 +110,8 @@ final class InjectConsentListener
         return [
             'banner' => $banner['id'],
             'version' => $banner['version'],
-            'cookie' => 'contao_consent_'.$banner['id'],
-            'logUrl' => $this->urlGenerator->generate('contao_consent_log'),
+            'cookie' => 'juhe_consent_'.$banner['id'],
+            'logUrl' => $this->urlGenerator->generate('juhe_consent_log'),
             'groups' => array_map(static fn (array $group): array => [
                 'alias' => $group['alias'],
                 'essential' => $group['essential'],
@@ -125,7 +125,7 @@ final class InjectConsentListener
 
     private function bannerId(PageModel $page): int
     {
-        return (int) $this->connection->fetchOne('SELECT consentBanner FROM tl_page WHERE id = ?', [(int) $page->loadDetails()->rootId]);
+        return (int) $this->connection->fetchOne('SELECT juheConsentBanner FROM tl_page WHERE id = ?', [(int) $page->loadDetails()->rootId]);
     }
 
     /**

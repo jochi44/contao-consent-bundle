@@ -6,10 +6,10 @@ use Contao\DataContainer;
 use Contao\DC_Table;
 
 // One banner per site (root page): texts, version and its consent groups
-$GLOBALS['TL_DCA']['tl_consent_banner'] = [
+$GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
     'config' => [
         'dataContainer' => DC_Table::class,
-        'ctable' => ['tl_consent_group'],
+        'ctable' => ['tl_juhe_consent_group'],
         'switchToEdit' => true,
         'enableVersioning' => true,
         'markAsCopy' => 'title',
