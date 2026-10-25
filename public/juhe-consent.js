@@ -1,20 +1,20 @@
 /*
- * Consent banner of juhe-it-solutions/contao-consent-bundle. No dependencies.
+ * Consent banner of juhe-it-solutions/contao-juhe-consent-bundle. No dependencies.
  *
  * The choice is stored in a first-party cookie (JSON: version, groups,
  * services allowed one by one, random ID, time). Blocked content is marked by
- * the server: script[type="text/plain"][data-consent-src], placeholders with
- * the original iframe in a <template>, and template[data-consent-code] with
- * the code of a service. All of it carries data-consent-group/-service.
+ * the server: script[type="text/plain"][data-juhe-consent-src], placeholders with
+ * the original iframe in a <template>, and template[data-juhe-consent-code] with
+ * the code of a service. All of it carries data-juhe-consent-group/-service.
  *
- * API: window.contaoConsent.has('statistik'), .open(), .onChange(callback),
- * and the "contao-consent" event on document after every change.
+ * API: window.juheConsent.has('statistik'), .open(), .onChange(callback),
+ * and the "juhe-consent" event on document after every change.
  */
 (() => {
     'use strict';
 
-    const configElement = document.getElementById('contao-consent-config');
-    const dialog = document.querySelector('[data-consent-dialog]');
+    const configElement = document.getElementById('juhe-consent-config');
+    const dialog = document.querySelector('[data-juhe-consent-dialog]');
 
     if (!configElement || !dialog) {
         return;
@@ -57,7 +57,7 @@
     let state = read();
 
     const allows = (consent, group, service) => essential.includes(group) || (!!consent && (consent.groups.includes(group) || consent.services.includes(service)));
-    const allowed = (element) => allows(state, element.dataset.consentGroup, element.dataset.consentService);
+    const allowed = (element) => allows(state, element.dataset.juheConsentGroup, element.dataset.juheConsentService);
 
     const uuid = () => {
         if (crypto.randomUUID) {
@@ -75,7 +75,7 @@
     // Scripts from a template or a blocked tag only run as new elements, and they need the nonce
     const runnable = (old) => {
         const script = document.createElement('script');
-        const skip = ['type', 'nonce', 'data-consent-src', 'data-consent-type', 'data-consent-group', 'data-consent-service'];
+        const skip = ['type', 'nonce', 'data-juhe-consent-src', 'data-juhe-consent-type', 'data-juhe-consent-group', 'data-juhe-consent-service'];
 
         for (const { name, value } of old.attributes) {
             if (!skip.includes(name)) {
@@ -83,14 +83,14 @@
             }
         }
 
-        const type = old.dataset.consentSrc ? old.dataset.consentType : old.getAttribute('type');
+        const type = old.dataset.juheConsentSrc ? old.dataset.juheConsentType : old.getAttribute('type');
 
         if (type) {
             script.type = type;
         }
 
-        if (old.dataset.consentSrc) {
-            script.src = old.dataset.consentSrc;
+        if (old.dataset.juheConsentSrc) {
+            script.src = old.dataset.juheConsentSrc;
         } else {
             script.textContent = old.textContent;
         }
@@ -123,23 +123,23 @@
     };
 
     const apply = () => {
-        document.querySelectorAll('script[type="text/plain"][data-consent-src]').forEach((old) => {
+        document.querySelectorAll('script[type="text/plain"][data-juhe-consent-src]').forEach((old) => {
             if (allowed(old)) {
-                running.add(old.dataset.consentService);
+                running.add(old.dataset.juheConsentService);
                 old.replaceWith(runnable(old));
             }
         });
 
-        document.querySelectorAll('.consent-placeholder').forEach((placeholder) => {
+        document.querySelectorAll('.juhe-consent-placeholder').forEach((placeholder) => {
             if (allowed(placeholder)) {
-                running.add(placeholder.dataset.consentService);
+                running.add(placeholder.dataset.juheConsentService);
                 reveal(placeholder);
             }
         });
 
-        document.querySelectorAll('template[data-consent-code]').forEach((template) => {
+        document.querySelectorAll('template[data-juhe-consent-code]').forEach((template) => {
             if (allowed(template)) {
-                running.add(template.dataset.consentService);
+                running.add(template.dataset.juheConsentService);
                 document.body.append(content(template));
                 template.remove();
             }
@@ -211,13 +211,13 @@
 
         apply();
         listeners.forEach((callback) => callback(api));
-        document.dispatchEvent(new CustomEvent('contao-consent', { detail: { groups: [...state.groups], services: [...state.services] } }));
+        document.dispatchEvent(new CustomEvent('juhe-consent', { detail: { groups: [...state.groups], services: [...state.services] } }));
     };
 
     // The dialog
-    const settings = dialog.querySelector('[data-consent-settings]');
-    const button = (action) => dialog.querySelector(`[data-consent-action="${action}"]`);
-    const checkboxes = [...dialog.querySelectorAll('[data-consent-checkbox]')];
+    const settings = dialog.querySelector('[data-juhe-consent-settings]');
+    const button = (action) => dialog.querySelector(`[data-juhe-consent-action="${action}"]`);
+    const checkboxes = [...dialog.querySelectorAll('[data-juhe-consent-checkbox]')];
 
     const toggleSettings = (open) => {
         settings.hidden = !open;
@@ -234,7 +234,7 @@
         });
 
         toggleSettings(withSettings);
-        dialog.classList.toggle('consent--settings', withSettings);
+        dialog.classList.toggle('juhe-consent--settings', withSettings);
 
         if (dialog.open) {
             dialog.close();
@@ -260,7 +260,7 @@
     });
 
     dialog.addEventListener('click', (event) => {
-        const action = event.target.closest('[data-consent-action]')?.dataset.consentAction;
+        const action = event.target.closest('[data-juhe-consent-action]')?.dataset.juheConsentAction;
 
         if ('all' === action) {
             save(aliases, state?.services || []);
@@ -277,13 +277,13 @@
     });
 
     document.addEventListener('click', (event) => {
-        const load = event.target.closest('.consent-placeholder [data-consent-load], .consent-placeholder [data-consent-allow]');
+        const load = event.target.closest('.juhe-consent-placeholder [data-juhe-consent-load], .juhe-consent-placeholder [data-juhe-consent-allow]');
 
         if (load) {
-            const placeholder = load.closest('.consent-placeholder');
+            const placeholder = load.closest('.juhe-consent-placeholder');
 
-            if (load.hasAttribute('data-consent-allow')) {
-                save(state?.groups || [], [...(state?.services || []), placeholder.dataset.consentService]);
+            if (load.hasAttribute('data-juhe-consent-allow')) {
+                save(state?.groups || [], [...(state?.services || []), placeholder.dataset.juheConsentService]);
             } else {
                 reveal(placeholder);
             }
@@ -291,7 +291,7 @@
             return;
         }
 
-        const opener = event.target.closest('[data-consent-open], a[href$="#cookie-einstellungen"]');
+        const opener = event.target.closest('[data-juhe-consent-open], a[href$="#cookie-einstellungen"]');
 
         if (opener) {
             event.preventDefault();
@@ -299,7 +299,7 @@
         }
     });
 
-    window.contaoConsent = api;
+    window.juheConsent = api;
 
     apply();
 

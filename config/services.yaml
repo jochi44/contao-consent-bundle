@@ -3,6 +3,6 @@ services:
         autowire: true
         autoconfigure: true
 
-    JuheItSolutions\ConsentBundle\:
+    JuheItSolutions\JuheConsentBundle\:
         resource: ../src/
-        exclude: ../src/{ContaoManager,ContaoConsentBundle.php}
+        exclude: ../src/{ContaoManager,JuheConsentBundle.php}

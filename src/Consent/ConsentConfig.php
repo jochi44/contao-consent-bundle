@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JuheItSolutions\ConsentBundle\Consent;
+namespace JuheItSolutions\JuheConsentBundle\Consent;
 
 use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\CoreBundle\Routing\ContentUrlGenerator;
@@ -37,15 +37,15 @@ final class ConsentConfig
             return $this->loaded[$id];
         }
 
-        $banner = $this->connection->fetchAssociative('SELECT * FROM tl_consent_banner WHERE id = ?', [$id]);
-        $groups = $banner ? $this->connection->fetchAllAssociative('SELECT * FROM tl_consent_group WHERE pid = ? AND published = 1 ORDER BY sorting', [$id]) : [];
+        $banner = $this->connection->fetchAssociative('SELECT * FROM tl_juhe_consent_banner WHERE id = ?', [$id]);
+        $groups = $banner ? $this->connection->fetchAllAssociative('SELECT * FROM tl_juhe_consent_group WHERE pid = ? AND published = 1 ORDER BY sorting', [$id]) : [];
 
         if (!$groups) {
             return $this->loaded[$id] = null;
         }
 
         $services = $this->connection->fetchAllAssociative(
-            'SELECT * FROM tl_consent_service WHERE published = 1 AND pid IN (?) ORDER BY sorting',
+            'SELECT * FROM tl_juhe_consent_service WHERE published = 1 AND pid IN (?) ORDER BY sorting',
             [array_column($groups, 'id')],
             [\Doctrine\DBAL\ArrayParameterType::INTEGER],
         );

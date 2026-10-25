@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JuheItSolutions\ConsentBundle;
+namespace JuheItSolutions\JuheConsentBundle;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
-class ContaoConsentBundle extends AbstractBundle
+class JuheConsentBundle extends AbstractBundle
 {
     public function getPath(): string
     {
@@ -18,7 +18,7 @@ class ContaoConsentBundle extends AbstractBundle
     public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         // The anonymous consent log takes at most this many entries per visitor
-        $builder->prependExtensionConfig('framework', ['rate_limiter' => ['contao_consent_log' => [
+        $builder->prependExtensionConfig('framework', ['rate_limiter' => ['juhe_consent_log' => [
             'policy' => 'sliding_window',
             'limit' => 20,
             'interval' => '10 minutes',

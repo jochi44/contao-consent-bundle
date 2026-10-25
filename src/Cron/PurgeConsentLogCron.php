@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JuheItSolutions\ConsentBundle\Cron;
+namespace JuheItSolutions\JuheConsentBundle\Cron;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCronJob;
 use Doctrine\DBAL\Connection;
@@ -22,6 +22,6 @@ final class PurgeConsentLogCron
 
     public function __invoke(): void
     {
-        $this->connection->executeStatement('DELETE FROM tl_consent_log WHERE tstamp < ?', [time() - self::KEEP_SECONDS]);
+        $this->connection->executeStatement('DELETE FROM tl_juhe_consent_log WHERE tstamp < ?', [time() - self::KEEP_SECONDS]);
     }
 }

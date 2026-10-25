@@ -6,11 +6,11 @@ use Contao\DataContainer;
 use Contao\DC_Table;
 
 // What visitors agree to, e.g. "Statistik" or "Marketing"
-$GLOBALS['TL_DCA']['tl_consent_group'] = [
+$GLOBALS['TL_DCA']['tl_juhe_consent_group'] = [
     'config' => [
         'dataContainer' => DC_Table::class,
-        'ptable' => 'tl_consent_banner',
-        'ctable' => ['tl_consent_service'],
+        'ptable' => 'tl_juhe_consent_banner',
+        'ctable' => ['tl_juhe_consent_service'],
         'switchToEdit' => true,
         'enableVersioning' => true,
         'sql' => ['keys' => ['id' => 'primary', 'pid' => 'index']],
@@ -24,7 +24,7 @@ $GLOBALS['TL_DCA']['tl_consent_group'] = [
     ],
     'fields' => [
         'id' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true]],
-        'pid' => ['foreignKey' => 'tl_consent_banner.title', 'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0], 'relation' => ['type' => 'belongsTo', 'load' => 'lazy']],
+        'pid' => ['foreignKey' => 'tl_juhe_consent_banner.title', 'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0], 'relation' => ['type' => 'belongsTo', 'load' => 'lazy']],
         'sorting' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0]],
         'tstamp' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0]],
         'title' => [

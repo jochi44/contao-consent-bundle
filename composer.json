@@ -1,5 +1,5 @@
 {
-    "name": "juhe-it-solutions/contao-consent-bundle",
+    "name": "juhe-it-solutions/contao-juhe-consent-bundle",
     "description": "Consent banner and settings for Contao 6: consent groups, blocking of scripts and iframes until consent, click-to-load placeholders, anonymous consent log.",
     "type": "contao-bundle",
     "license": "proprietary",
@@ -13,9 +13,9 @@
         "contao/manager-plugin": "^2.0"
     },
     "autoload": {
-        "psr-4": {"JuheItSolutions\\ConsentBundle\\": "src/"}
+        "psr-4": {"JuheItSolutions\\JuheConsentBundle\\": "src/"}
     },
     "extra": {
-        "contao-manager-plugin": "JuheItSolutions\\ConsentBundle\\ContaoManager\\Plugin"
+        "contao-manager-plugin": "JuheItSolutions\\JuheConsentBundle\\ContaoManager\\Plugin"
     }
 }

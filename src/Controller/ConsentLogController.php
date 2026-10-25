@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JuheItSolutions\ConsentBundle\Controller;
+namespace JuheItSolutions\JuheConsentBundle\Controller;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
@@ -16,20 +16,20 @@ use Symfony\Component\Routing\Attribute\Route;
  * ID from the visitor's cookie, the allowed groups and services and the page.
  * No IP address or user agent is stored; the IP is only the rate limit key.
  */
-#[Route('/_consent/log', name: 'contao_consent_log', methods: ['POST'], defaults: ['_scope' => 'frontend', '_token_check' => false])]
+#[Route('/_juhe_consent/log', name: 'juhe_consent_log', methods: ['POST'], defaults: ['_scope' => 'frontend', '_token_check' => false])]
 final class ConsentLogController
 {
     private const MAX_BODY = 4096;
 
     public function __construct(
         private readonly Connection $connection,
-        private readonly RateLimiterFactoryInterface $contaoConsentLogLimiter,
+        private readonly RateLimiterFactoryInterface $juheConsentLogLimiter,
     ) {
     }
 
     public function __invoke(Request $request): Response
     {
-        if (!$this->contaoConsentLogLimiter->create((string) $request->getClientIp())->consume()->isAccepted()) {
+        if (!$this->juheConsentLogLimiter->create((string) $request->getClientIp())->consume()->isAccepted()) {
             return new Response('', Response::HTTP_TOO_MANY_REQUESTS);
         }
 
@@ -51,7 +51,7 @@ final class ConsentLogController
             return new Response('', Response::HTTP_BAD_REQUEST);
         }
 
-        $this->connection->insert('tl_consent_log', $entry + ['tstamp' => time()]);
+        $this->connection->insert('tl_juhe_consent_log', $entry + ['tstamp' => time()]);
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }
@@ -82,16 +82,16 @@ final class ConsentLogController
             return null;
         }
 
-        $version = $this->connection->fetchOne('SELECT version FROM tl_consent_banner WHERE id = ?', [$bannerId]);
+        $version = $this->connection->fetchOne('SELECT version FROM tl_juhe_consent_banner WHERE id = ?', [$bannerId]);
 
         if (false === $version || (int) $version !== $data['version']) {
             return null;
         }
 
-        $known = $this->connection->fetchAllKeyValue('SELECT alias, id FROM tl_consent_group WHERE pid = ? AND published = 1', [$bannerId]);
+        $known = $this->connection->fetchAllKeyValue('SELECT alias, id FROM tl_juhe_consent_group WHERE pid = ? AND published = 1', [$bannerId]);
         $knownServices = $known ? array_map(
             static fn (int|string $id): string => 's'.$id,
-            $this->connection->fetchFirstColumn('SELECT id FROM tl_consent_service WHERE published = 1 AND pid IN (?)', [array_values($known)], [ArrayParameterType::INTEGER]),
+            $this->connection->fetchFirstColumn('SELECT id FROM tl_juhe_consent_service WHERE published = 1 AND pid IN (?)', [array_values($known)], [ArrayParameterType::INTEGER]),
         ) : [];
 
         foreach ([[$groups, array_keys($known)], [$services, $knownServices]] as [$values, $allowed]) {
