@@ -1,7 +1,19 @@
 # JUHE Consent Bundle for Contao
 
-Consent banner for Contao 6 by JUHE IT-solutions. Written from scratch; no
-code or templates from other consent extensions. Proprietary, see LICENSE.
+Consent banner for Contao 5.7 and 6 by JUHE IT-solutions. Written from
+scratch; no code or templates from other consent extensions.
+
+## Requirements and installation
+
+- PHP 8.3 or newer, Contao 5.7 or 6.0.
+- No release is tagged yet. Until then, require the development branch:
+
+```sh
+composer require juhe-it-solutions/contao-juhe-consent-bundle:dev-main
+```
+
+Then update the database (Contao Manager or `contao:migrate`), create a
+banner under "System > Consent" and select it in the root page.
 
 ## What it does
 
@@ -64,3 +76,7 @@ properties on `.juhe-consent, .juhe-consent-placeholder` (`--juhe-consent-backgr
 Button and label texts: `translations/juhe_consent.{de,en,it}.yaml` (in the
 page language). Headline and text come from the banner record, so a site per
 language gets its own banner.
+
+## License
+
+LGPL-3.0-or-later, the license Contao itself uses. See LICENSE.
