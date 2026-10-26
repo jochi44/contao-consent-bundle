@@ -56,6 +56,7 @@ final class ConsentConfig
             'headline' => (string) $banner['headline'],
             'text' => $this->insertTagParser->replaceInline((string) $banner['text']),
             'placeholder' => trim((string) $banner['placeholderText']),
+            'ask' => (bool) $banner['askOnFirstVisit'],
             'privacy_url' => $this->pageUrl((int) $banner['privacyPage']),
             'imprint_url' => $this->pageUrl((int) $banner['imprintPage']),
             'groups' => array_map(fn (array $group): array => [

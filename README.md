@@ -12,7 +12,9 @@ Consent banner for Contao 6 by JUHE IT-solutions. Proprietary, see LICENSE.
   look), "Einstellungen". The settings are a modal dialog with one switch
   per group and the service details. Links to `#cookie-einstellungen`, any
   `[data-juhe-consent-open]` element and the content element "Cookie-Einstellungen"
-  open it again.
+  open it again. A banner can skip the card ("Beim ersten Besuch fragen"
+  off): then only the placeholders and the settings link remain, for sites
+  where another consent solution already asks (e.g. Google's CMP for ads).
 - **Blocking on the server:** iframes and external scripts whose host (or a
   subdomain) is listed at a service of a non-essential group are held back
   in the HTML. Iframes become a placeholder with "Inhalt laden" (this time)
