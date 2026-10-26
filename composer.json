@@ -23,7 +23,8 @@
         "symfony/rate-limiter": "^7.3 || ^8.0"
     },
     "require-dev": {
-        "contao/manager-plugin": "^2.0"
+        "contao/manager-plugin": "^2.0",
+        "phpunit/phpunit": "^11.5 || ^12.0"
     },
     "conflict": {
         "contao/manager-plugin": "<2.0 || >=3.0"
@@ -33,7 +34,18 @@
             "JuheItSolutions\\JuheConsentBundle\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "JuheItSolutions\\JuheConsentBundle\\Tests\\": "tests/"
+        }
+    },
     "extra": {
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        },
         "contao-manager-plugin": "JuheItSolutions\\JuheConsentBundle\\ContaoManager\\Plugin"
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }
