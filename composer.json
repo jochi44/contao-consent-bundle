@@ -1,19 +1,37 @@
 {
     "name": "juhe-it-solutions/contao-juhe-consent-bundle",
-    "description": "Consent banner and settings for Contao 6: consent groups, blocking of scripts and iframes until consent, click-to-load placeholders, anonymous consent log.",
+    "description": "Consent banner and settings for Contao 5.7 and 6: consent groups, blocking of scripts and iframes until consent, click-to-load placeholders, anonymous consent log.",
+    "keywords": [
+        "contao",
+        "consent",
+        "cookie",
+        "gdpr",
+        "privacy"
+    ],
     "type": "contao-bundle",
-    "license": "proprietary",
-    "authors": [{"name": "JUHE IT-solutions", "homepage": "https://www.juhe-it-solutions.at"}],
+    "license": "LGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "JUHE IT-solutions",
+            "homepage": "https://www.juhe-it-solutions.at"
+        }
+    ],
     "require": {
-        "php": "^8.4",
-        "contao/core-bundle": "^6.0",
-        "symfony/rate-limiter": "^7.0 || ^8.0"
+        "php": "^8.3",
+        "contao/core-bundle": "^5.7 || ^6.0",
+        "symfony/polyfill-php84": "^1.31",
+        "symfony/rate-limiter": "^7.3 || ^8.0"
     },
     "require-dev": {
         "contao/manager-plugin": "^2.0"
     },
+    "conflict": {
+        "contao/manager-plugin": "<2.0 || >=3.0"
+    },
     "autoload": {
-        "psr-4": {"JuheItSolutions\\JuheConsentBundle\\": "src/"}
+        "psr-4": {
+            "JuheItSolutions\\JuheConsentBundle\\": "src/"
+        }
     },
     "extra": {
         "contao-manager-plugin": "JuheItSolutions\\JuheConsentBundle\\ContaoManager\\Plugin"
