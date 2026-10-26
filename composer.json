@@ -1,5 +1,5 @@
 {
-    "name": "juhe-it-solutions/contao-juhe-consent-bundle",
+    "name": "juhe-it-solutions/contao-consent-bundle",
     "description": "Consent banner and settings for Contao 5.7 and 6: consent groups, blocking of scripts and iframes until consent, click-to-load placeholders, anonymous consent log.",
     "keywords": [
         "contao",
