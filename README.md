@@ -27,6 +27,9 @@ banner under "System > Consent" and select it in the root page.
   open it again. A banner can skip the card ("Beim ersten Besuch fragen"
   off): then only the placeholders and the settings link remain, for sites
   where another consent solution already asks (e.g. Google's CMP for ads).
+- **Display:** "Karte unten links" (default) or "Leiste am unteren Rand", a
+  full-width bar that shows the groups right away. "Seite bis zur Entscheidung
+  sperren" makes the first-visit banner modal with a scrim.
 - **Blocking on the server:** iframes and external scripts whose host (or a
   subdomain) is listed at a service of a non-essential group are held back
   in the HTML. Iframes become a placeholder with "Inhalt laden" (this time)
@@ -46,6 +49,33 @@ banner under "System > Consent" and select it in the root page.
 - **Cache:** the banner is the same for everybody (the choice is in a
   cookie), so pages stay cacheable. Backend changes clear the cache tags.
 
+## Accessibility
+
+The banner targets WCAG 2.2 AA; `axe-core` reports no violations in any state.
+
+- **No keyboard trap.** The card is a non-modal dialog placed first in the
+  page, so Tab reaches it first and then moves on into the page. Esc closes the
+  settings. On a blocking banner, Esc releases the page: the banner stays
+  visible as a non-modal dialog and the page is usable again.
+- **Focus:** the settings focus the first switch, a blocking banner or the
+  bar its first button. After the choice or Esc, focus returns to the button or
+  link that opened the settings. "Inhalt laden" moves focus to the loaded
+  content. In the settings, the sticky buttons never cover the focused
+  element, and they stop being sticky on short screens (e.g. 400 percent zoom).
+- **Names:** the dialog is named by its headline and described by its text;
+  each switch is a real checkbox named by its group and described by the group
+  description; the placeholder buttons name the service; the "Dienste" toggles
+  name their group; links that open a new window say so; openers carry
+  `aria-haspopup="dialog"`.
+- **Visuals:** text contrast at least 4.5:1, the switch track and knob at
+  least 3:1 in light and dark; targets at least 44 px; visible focus ring
+  (`--juhe-consent-focus`); no motion with `prefers-reduced-motion`; native
+  controls in forced colors mode; no horizontal scrolling at 320 px.
+
+A theme that changes the custom properties or templates keeps these
+properties. Do not put `[data-juhe-consent-open]` on an element that is not a
+button or a link.
+
 ## Storage
 
 One first-party cookie `juhe_consent_<banner id>`, one year, `SameSite=Lax`,
@@ -56,19 +86,40 @@ List it as a necessary service in the banner.
 
 ```js
 window.juheConsent.has('statistik');  // group alias or service key "s<id>"
-window.juheConsent.open();            // settings
+window.juheConsent.open();            // settings; focus returns to the active element afterwards
+window.juheConsent.pending();         // true while the banner waits for a first choice
 window.juheConsent.onChange((consent) => {});
 document.addEventListener('juhe-consent', (event) => event.detail.groups);
+document.addEventListener('juhe-consent:open', (event) => event.detail.settings);
+// Cancelable: preventDefault() keeps focus where it is instead of returning it to the opener
+document.addEventListener('juhe-consent:close', (event) => {});
 ```
 
-## Styling
+## Styling and templates
 
 `public/juhe-consent.css` holds a neutral default. Themes override the custom
 properties on `.juhe-consent, .juhe-consent-placeholder` (`--juhe-consent-background`,
 `--juhe-consent-text`, `--juhe-consent-muted`, `--juhe-consent-line`, `--juhe-consent-surface`,
 `--juhe-consent-accent`, `--juhe-consent-accent-text`, `--juhe-consent-switch-on`,
-`--juhe-consent-radius`, `--juhe-consent-shadow`) or replace the templates
-`juhe_consent/banner.html.twig` and `juhe_consent/head.html.twig`.
+`--juhe-consent-switch-off`, `--juhe-consent-knob`, `--juhe-consent-focus`,
+`--juhe-consent-scrim`, `--juhe-consent-radius`, `--juhe-consent-shadow`).
+
+The templates are Twig with blocks, so a theme extends them and overrides only
+what it needs (a template of the same name in the theme's `templates/` folder):
+
+- `@Contao/juhe_consent/banner.html.twig`: `dialog_attributes`, `headline`,
+  `text`, `settings`, `group`, `service`, `buttons`, `links`, `code`, `config`,
+  `script`. The class names and `data-juhe-consent-*` attributes are what the
+  script relies on; keep them.
+- `@Contao/juhe_consent/head.html.twig`: block `stylesheet`. A theme with its
+  own skin overrides it with an empty block.
+- `@Contao/juhe_consent/placeholder.html.twig`: the placeholder for a blocked
+  iframe, blocks `icon` (empty), `text` and `actions`. Variables: `id`,
+  `group`, `service` (`key`, `title`), `text`, `load_once`, `load_always`, and
+  `original`, the blocked iframe, printed raw inside the `<template>`. Never
+  print `original` anywhere else, and never print other values raw.
+- `@Contao/content_element/juhe_consent_settings.html.twig`: block `button`;
+  a theme sets `button_attributes` (an `attrs()` object) to style the opener.
 
 ## Translations
 
