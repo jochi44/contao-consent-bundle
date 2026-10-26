@@ -5,11 +5,9 @@ Consent banner for Contao 5.7 and 6 by JUHE IT-solutions.
 ## Requirements and installation
 
 - PHP 8.3 or newer, Contao 5.7 or 6.0.
-- No release is tagged yet and the package is not on Packagist. Until then,
-  add the repository and require the development branch:
+- No release is tagged yet. Until then, require the development branch:
 
 ```sh
-composer config repositories.contao-consent-bundle vcs https://github.com/jochi44/contao-consent-bundle
 composer require juhe-it-solutions/contao-consent-bundle:dev-main
 ```
 
