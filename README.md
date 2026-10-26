@@ -58,7 +58,8 @@ The banner targets WCAG 2.2 AA; `axe-core` reports no violations in any state.
   settings. On a blocking banner, Esc releases the page: the banner stays
   visible as a non-modal dialog and the page is usable again.
 - **Focus:** the settings focus the first switch, a blocking banner or the
-  bar its first button. After the choice or Esc, focus returns to the button or
+  bar its first button. The dialog opens at its start: when that control is
+  not in view (a long text on a phone), focus starts at the headline. After the choice or Esc, focus returns to the button or
   link that opened the settings. "Inhalt laden" moves focus to the loaded
   content. In the settings, the sticky buttons never cover the focused
   element, and they stop being sticky on short screens (e.g. 400 percent zoom).

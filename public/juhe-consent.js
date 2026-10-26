@@ -247,6 +247,41 @@
     };
 
     const firstAction = () => [...dialog.querySelectorAll('[data-juhe-consent-action]')].find((element) => !element.hidden);
+    const headline = document.getElementById(dialog.getAttribute('aria-labelledby') || '');
+
+    if (headline && !headline.hasAttribute('tabindex')) {
+        headline.tabIndex = -1;
+    }
+
+    // Fully inside the dialog's visible area and not under the sticky buttons
+    const visible = (element) => {
+        const box = element.getBoundingClientRect();
+        const view = dialog.getBoundingClientRect();
+        const buttons = dialog.querySelector('.juhe-consent__buttons');
+        const bottom = buttons && !buttons.contains(element) && 'sticky' === getComputedStyle(buttons).position ? buttons.getBoundingClientRect().top : view.bottom;
+
+        return box.top >= view.top && box.bottom <= bottom;
+    };
+
+    /*
+     * The dialog opens at its start. If the control that should get focus would
+     * scroll the headline and text away (a long text on a phone), focus starts at
+     * the headline instead, as the APG dialog pattern recommends.
+     */
+    const focusStart = (target) => {
+        dialog.scrollTop = 0;
+        const start = target && visible(target) ? target : headline || target;
+        start?.focus({ preventScroll: true });
+
+        // Firefox scrolls to the control showModal() focused only after this
+        if (start === headline) {
+            requestAnimationFrame(() => {
+                if (document.activeElement === headline) {
+                    dialog.scrollTop = 0;
+                }
+            });
+        }
+    };
 
     const toggleSettings = (open) => {
         settings.hidden = !open;
@@ -283,7 +318,7 @@
 
         if (withSettings || !released) {
             dialog.showModal();
-            (withSettings && !bar ? settings.querySelector('input:not([disabled])') : firstAction())?.focus();
+            focusStart(withSettings && !bar ? settings.querySelector('input:not([disabled])') : firstAction());
         } else {
             dialog.show();
         }
