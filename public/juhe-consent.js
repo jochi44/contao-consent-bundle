@@ -7,8 +7,15 @@
  * the original iframe in a <template>, and template[data-juhe-consent-code] with
  * the code of a service. All of it carries data-juhe-consent-group/-service.
  *
- * API: window.juheConsent.has('statistik'), .open(), .onChange(callback),
- * and the "juhe-consent" event on document after every change.
+ * API: window.juheConsent.has('statistik'), .open(), .pending() (the banner
+ * waits for a first choice), .onChange(callback), and these events on document:
+ * "juhe-consent" after every change, "juhe-consent:open" (detail.settings) and
+ * "juhe-consent:close" (cancelable: preventDefault() keeps focus where it is
+ * instead of returning it to the element that opened the settings).
+ *
+ * Keyboard: Esc always gets out. It closes the settings, and on a banner that
+ * blocks the page it releases the page; the banner then stays as a non-modal
+ * dialog. Focus goes back to the opener, and to the content a placeholder loads.
  */
 (() => {
     'use strict';
@@ -114,11 +121,23 @@
         return fragment;
     };
 
+    // The placeholder whose button was used: its content gets the focus once it is there
+    let focusAfterReveal = null;
+
     const reveal = (placeholder) => {
         const template = placeholder.querySelector('template');
 
-        if (template) {
-            placeholder.replaceWith(content(template));
+        if (!template) {
+            return;
+        }
+
+        const fragment = content(template);
+        const first = fragment.firstElementChild;
+        placeholder.replaceWith(fragment);
+
+        if (placeholder === focusAfterReveal) {
+            focusAfterReveal = null;
+            first?.focus();
         }
     };
 
@@ -178,14 +197,6 @@
         }).catch(() => {});
     };
 
-    const api = {
-        has: (name) => essential.includes(name) || (!!state && (state.groups.includes(name) || state.services.includes(name))),
-        open: () => show(true),
-        onChange: (callback) => {
-            listeners.push(callback);
-        },
-    };
-
     const save = (groups, allowedServices) => {
         const previous = state;
 
@@ -218,14 +229,36 @@
     const settings = dialog.querySelector('[data-juhe-consent-settings]');
     const button = (action) => dialog.querySelector(`[data-juhe-consent-action="${action}"]`);
     const checkboxes = [...dialog.querySelectorAll('[data-juhe-consent-checkbox]')];
+    const bar = 'bar' === config.layout;
+    const pending = () => !state && !!config.ask;
+    const openers = '[data-juhe-consent-open], a[href$="#cookie-einstellungen"]';
+
+    let shown = false;
+    let shownWithSettings = false;
+    let released = !config.blocking;
+    let opener = null;
+
+    const setHidden = (action, hidden) => {
+        const element = button(action);
+
+        if (element) {
+            element.hidden = hidden;
+        }
+    };
+
+    const firstAction = () => [...dialog.querySelectorAll('[data-juhe-consent-action]')].find((element) => !element.hidden);
 
     const toggleSettings = (open) => {
         settings.hidden = !open;
-        button('settings').hidden = open;
-        button('save').hidden = !open;
+        setHidden('settings', open);
+        setHidden('save', !open);
     };
 
-    // The card leaves the page usable; the settings are a modal dialog
+    /*
+     * The card leaves the page usable and sits first in the page, so the Tab key
+     * reaches it first. Modal are the settings, the bar when it is reopened, and a
+     * blocking banner until Esc releases the page.
+     */
     const show = (withSettings) => {
         checkboxes.forEach((checkbox) => {
             if (!checkbox.disabled) {
@@ -233,51 +266,130 @@
             }
         });
 
-        toggleSettings(withSettings);
-        dialog.classList.toggle('juhe-consent--settings', withSettings);
+        // The bar always shows the groups
+        toggleSettings(withSettings || bar);
+        dialog.classList.toggle('juhe-consent--settings', withSettings && !bar);
+        shownWithSettings = withSettings;
 
+        // The close event of this switch arrives later and is ignored
         if (dialog.open) {
+            shown = false;
             dialog.close();
         }
 
-        if (withSettings) {
-            dialog.showModal();
-            settings.querySelector('input:not([disabled])')?.focus();
-        } else {
-            // The card is not modal: first in the page, so the Tab key reaches it first
-            if (document.body.firstElementChild !== dialog) {
-                document.body.prepend(dialog);
-            }
+        if (document.body.firstElementChild !== dialog) {
+            document.body.prepend(dialog);
+        }
 
+        if (withSettings || !released) {
+            dialog.showModal();
+            (withSettings && !bar ? settings.querySelector('input:not([disabled])') : firstAction())?.focus();
+        } else {
             dialog.show();
         }
+
+        shown = true;
+        document.dispatchEvent(new CustomEvent('juhe-consent:open', { detail: { settings: withSettings } }));
     };
 
-    const close = () => {
-        dialog.close();
+    // Opened from a link, a button or the API: focus returns there afterwards
+    const open = (from) => {
+        opener = from && from !== document.body && !dialog.contains(from) ? from : null;
+        show(true);
     };
 
-    // Closed without a choice (Esc in the settings): back to the card, if the banner asks at all
-    dialog.addEventListener('close', () => {
-        if (!state && !dialog.open && config.ask) {
-            show(false);
+    const api = {
+        has: (name) => essential.includes(name) || (!!state && (state.groups.includes(name) || state.services.includes(name))),
+        open: () => open(document.activeElement),
+        pending,
+        onChange: (callback) => {
+            listeners.push(callback);
+        },
+    };
+
+    // After a choice or Esc: focus back to the opener, unless a listener cancels "juhe-consent:close"
+    const closed = () => {
+        const target = opener;
+        shown = false;
+        opener = null;
+
+        if (document.dispatchEvent(new CustomEvent('juhe-consent:close', { cancelable: true })) && target?.isConnected) {
+            target.focus();
         }
+    };
+
+    const choose = (groups, allowedServices) => {
+        save(groups, allowedServices);
+        shown = false;
+        dialog.close();
+        closed();
+    };
+
+    /*
+     * The close event only handles what the script did not do itself, which is
+     * Esc. The script's own closes set "shown" first, because their close event
+     * can arrive much later.
+     */
+    dialog.addEventListener('close', () => {
+        const withSettings = shownWithSettings;
+
+        if (dialog.open || !shown) {
+            return;
+        }
+
+        shown = false;
+
+        /*
+         * Closed without a choice, which only Esc does (the "cancel" event does not
+         * always fire): the settings go back to the banner, and the blocking banner
+         * releases the page and stays as a non-modal dialog.
+         */
+        if (pending()) {
+            if (!withSettings) {
+                released = true;
+            }
+
+            show(false);
+
+            const back = withSettings && !bar ? button('settings') : null;
+            const target = !dialog.matches(':modal') && opener?.isConnected ? opener : back || firstAction();
+            opener = null;
+            target?.focus();
+
+            return;
+        }
+
+        closed();
+    });
+
+    // Keep the focused element above the sticky buttons; WebKit ignores scroll-padding when focusing
+    dialog.addEventListener('focusin', (event) => {
+        requestAnimationFrame(() => {
+            const buttons = event.target.closest('.juhe-consent__buttons') ? null : dialog.querySelector('.juhe-consent__buttons');
+
+            if (!buttons || 'sticky' !== getComputedStyle(buttons).position) {
+                return;
+            }
+
+            const overlap = event.target.getBoundingClientRect().bottom - buttons.getBoundingClientRect().top;
+
+            if (overlap > 0) {
+                dialog.scrollBy(0, overlap + 8);
+            }
+        });
     });
 
     dialog.addEventListener('click', (event) => {
         const action = event.target.closest('[data-juhe-consent-action]')?.dataset.juheConsentAction;
 
         if ('all' === action) {
-            save(aliases, state?.services || []);
-            close();
+            choose(aliases, state?.services || []);
         } else if ('essential' === action) {
-            save([], []);
-            close();
+            choose([], []);
         } else if ('settings' === action) {
             show(true);
         } else if ('save' === action) {
-            save(checkboxes.filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value), state?.services || []);
-            close();
+            choose(checkboxes.filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value), state?.services || []);
         }
     });
 
@@ -286,6 +398,7 @@
 
         if (load) {
             const placeholder = load.closest('.juhe-consent-placeholder');
+            focusAfterReveal = placeholder;
 
             if (load.hasAttribute('data-juhe-consent-allow')) {
                 save(state?.groups || [], [...(state?.services || []), placeholder.dataset.juheConsentService]);
@@ -296,19 +409,21 @@
             return;
         }
 
-        const opener = event.target.closest('[data-juhe-consent-open], a[href$="#cookie-einstellungen"]');
+        const trigger = event.target.closest(openers);
 
-        if (opener) {
+        if (trigger) {
             event.preventDefault();
-            show(true);
+            open(trigger);
         }
     });
+
+    document.querySelectorAll(openers).forEach((element) => element.setAttribute('aria-haspopup', 'dialog'));
 
     window.juheConsent = api;
 
     apply();
 
-    if (!state && config.ask) {
+    if (pending()) {
         show(false);
     }
 })();
