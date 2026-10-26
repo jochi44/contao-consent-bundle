@@ -16,6 +16,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title'] = ['Title', 'Backend only
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['headline'] = ['Headline', 'e.g. "Your privacy".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text'] = ['Text', 'Briefly explains what consent is asked for.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['placeholderText'] = ['Text for blocked content', 'Shown instead of videos, maps etc. until consent is given. ##service## is replaced with the service name. Empty = default text.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['askOnFirstVisit'] = ['Ask on the first visit', 'Shows the card on the first visit. Unticked, no banner appears: blocked content shows only its placeholder, and the settings open from the "Cookie settings" link. Useful when another consent solution (e.g. Google\'s for ads) already asks and only click-to-load content is left here.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Privacy policy', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Imprint', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Increase when groups or services change substantially: all visitors are asked again.'];

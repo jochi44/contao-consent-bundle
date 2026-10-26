@@ -16,6 +16,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title'] = ['Titel', 'Nur im Backe
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['headline'] = ['Überschrift', 'z. B. "Ihre Privatsphäre".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text'] = ['Text', 'Erklärt kurz, wofür um Einwilligung gebeten wird.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['placeholderText'] = ['Text für blockierte Inhalte', 'Steht anstelle von Videos, Karten usw., solange keine Einwilligung besteht. ##service## wird durch den Namen des Dienstes ersetzt. Leer = Standardtext.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['askOnFirstVisit'] = ['Beim ersten Besuch fragen', 'Zeigt die Karte beim ersten Besuch. Ohne Haken erscheint kein Banner: blockierte Inhalte zeigen nur ihren Platzhalter, die Einstellungen öffnen sich über den Link "Cookie-Einstellungen". Sinnvoll, wenn eine andere Einwilligungslösung (z. B. die von Google für Werbung) schon fragt und hier nur Inhalte zum Anklicken übrig sind.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Datenschutzerklärung', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Impressum', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Erhöhen, wenn sich Gruppen oder Dienste wesentlich ändern: alle Besucher werden dann erneut gefragt.'];

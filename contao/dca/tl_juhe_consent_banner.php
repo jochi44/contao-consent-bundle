@@ -20,7 +20,7 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
         'label' => ['fields' => ['title', 'version'], 'format' => '%s <span class="label-info">(Version %s)</span>'],
     ],
     'palettes' => [
-        'default' => '{title_legend},title;{text_legend},headline,text,placeholderText;{link_legend},privacyPage,imprintPage;{version_legend},version',
+        'default' => '{title_legend},title;{text_legend},headline,text,placeholderText,askOnFirstVisit;{link_legend},privacyPage,imprintPage;{version_legend},version',
     ],
     'fields' => [
         'id' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true]],
@@ -45,6 +45,11 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
             'inputType' => 'textarea',
             'eval' => ['maxlength' => 500, 'tl_class' => 'clr'],
             'sql' => ['type' => 'text', 'notnull' => false],
+        ],
+        'askOnFirstVisit' => [
+            'inputType' => 'checkbox',
+            'eval' => ['tl_class' => 'w50 m12 clr'],
+            'sql' => ['type' => 'boolean', 'default' => true],
         ],
         'privacyPage' => [
             'inputType' => 'pageTree',

@@ -252,9 +252,9 @@
         dialog.close();
     };
 
-    // Closed without a choice (Esc in the settings): back to the card
+    // Closed without a choice (Esc in the settings): back to the card, if the banner asks at all
     dialog.addEventListener('close', () => {
-        if (!state && !dialog.open) {
+        if (!state && !dialog.open && config.ask) {
             show(false);
         }
     });
@@ -303,7 +303,7 @@
 
     apply();
 
-    if (!state) {
+    if (!state && config.ask) {
         show(false);
     }
 })();
