@@ -14,3 +14,4 @@ placeholder: 'Content from ##service## is loaded here. This transfers data to th
 load_once: 'Load content'
 load_always: 'Always allow'
 settings_link: 'Cookie settings'
+new_window: '(opens in a new window)'

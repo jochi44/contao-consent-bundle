@@ -14,3 +14,4 @@ placeholder: 'Hier wird ein Inhalt von ##service## geladen. Dabei werden Daten a
 load_once: 'Inhalt laden'
 load_always: 'Immer erlauben'
 settings_link: 'Cookie-Einstellungen'
+new_window: '(öffnet in einem neuen Fenster)'

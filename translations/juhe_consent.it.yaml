@@ -14,3 +14,4 @@ placeholder: 'Qui viene caricato un contenuto di ##service##. In questo modo i d
 load_once: 'Carica contenuto'
 load_always: 'Consenti sempre'
 settings_link: 'Impostazioni cookie'
+new_window: '(si apre in una nuova finestra)'

@@ -1,5 +1,16 @@
 {% extends '@Contao/content_element/_base.html.twig' %}
 
+{#
+    A theme styles the opener through button_attributes, e.g.
+    {% set button_attributes = attrs().addClass('my-button') %}{{ parent() }}
+#}
 {% block content %}
-    <button type="button" class="juhe-consent-settings-button" data-juhe-consent-open>{{ label }}</button>
+    {% block button %}
+        <button{{ attrs(button_attributes|default)
+            .addClass('juhe-consent-settings-button')
+            .set('type', 'button')
+            .set('aria-haspopup', 'dialog')
+            .set('data-juhe-consent-open')
+        }}>{{ label }}</button>
+    {% endblock %}
 {% endblock %}

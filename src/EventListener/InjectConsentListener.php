@@ -81,7 +81,20 @@ final class InjectConsentListener
         $locale = $request->getLocale();
         $trans = fn (string $key): string => $this->translator->trans($key, [], 'juhe_consent', $locale);
 
-        $html = $this->blocker->block($html, $banner, $banner['placeholder'] ?: $trans('placeholder'), $trans('load_once'), $trans('load_always'));
+        $placeholderText = $banner['placeholder'] ?: $trans('placeholder');
+        $count = 0;
+
+        $html = $this->blocker->block($html, $banner, function (array $service, string $original) use (&$count, $placeholderText, $trans): string {
+            return $this->twig->render('@Contao/juhe_consent/placeholder.html.twig', [
+                'id' => 'juhe-consent-placeholder-'.++$count,
+                'group' => $service['group'],
+                'service' => ['key' => $service['key'], 'title' => $service['title']],
+                'text' => str_replace('##service##', $service['title'], $placeholderText),
+                'load_once' => $trans('load_once'),
+                'load_always' => $trans('load_always'),
+                'original' => $original,
+            ]);
+        });
 
         $context = [
             'banner' => $banner,
@@ -112,6 +125,8 @@ final class InjectConsentListener
             'banner' => $banner['id'],
             'version' => $banner['version'],
             'ask' => $banner['ask'],
+            'layout' => $banner['layout'],
+            'blocking' => $banner['blocking'],
             'cookie' => 'juhe_consent_'.$banner['id'],
             'logUrl' => $this->urlGenerator->generate('juhe_consent_log'),
             'groups' => array_map(static fn (array $group): array => [

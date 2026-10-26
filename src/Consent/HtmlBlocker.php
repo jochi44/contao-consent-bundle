@@ -9,13 +9,17 @@ namespace JuheItSolutions\JuheConsentBundle\Consent;
  * the visitor agrees: an iframe becomes a placeholder with the original in a
  * <template>, a script gets type="text/plain" and its URL in data-juhe-consent-src.
  * consent.js brings both back after consent.
+ *
+ * The placeholder markup comes from the caller (the juhe_consent/placeholder
+ * template), so this class has no template dependency.
  */
 final class HtmlBlocker
 {
     /**
-     * @param array<string, mixed> $banner see ConsentConfig::banner()
+     * @param array<string, mixed>                                   $banner      see ConsentConfig::banner()
+     * @param callable(array{group: string, key: string, title: string}, string): string $placeholder renders the placeholder for a service and the original iframe
      */
-    public function block(string $html, array $banner, string $placeholderText, string $loadOnce, string $loadAlways): string
+    public function block(string $html, array $banner, callable $placeholder): string
     {
         $services = [];
 
@@ -31,19 +35,14 @@ final class HtmlBlocker
             return $html;
         }
 
-        $html = preg_replace_callback('/<iframe\b[^>]*>.*?<\/iframe>/is', function (array $match) use ($services, $placeholderText, $loadOnce, $loadAlways): string {
+        $html = preg_replace_callback('/<iframe\b[^>]*>.*?<\/iframe>/is', function (array $match) use ($services, $placeholder): string {
             $service = $this->serviceFor($match[0], $services);
 
             if (null === $service) {
                 return $match[0];
             }
 
-            $text = htmlspecialchars(str_replace('##service##', $service['title'], $placeholderText));
-
-            return \sprintf(
-                '<div class="juhe-consent-placeholder" data-juhe-consent-group="%s" data-juhe-consent-service="%s"><p class="juhe-consent-placeholder__text">%s</p><p class="juhe-consent-placeholder__actions"><button type="button" data-juhe-consent-load>%s</button> <button type="button" data-juhe-consent-allow>%s</button></p><template>%s</template></div>',
-                $service['group'], $service['key'], $text, htmlspecialchars($loadOnce), htmlspecialchars($loadAlways), $match[0],
-            );
+            return $placeholder(['group' => $service['group'], 'key' => $service['key'], 'title' => $service['title']], $match[0]);
         }, $html) ?? $html;
 
         return preg_replace_callback('/<script\b([^>]*)>(\s*)<\/script>/i', function (array $match) use ($services): string {

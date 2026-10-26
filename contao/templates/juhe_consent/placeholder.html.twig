@@ -1,0 +1,13 @@
+{#
+    Stands in for a blocked iframe until consent; the original iframe waits in
+    the <template>. consent.js relies on the class names and data attributes.
+    The icon block is empty: a theme can add a provider icon there. The buttons
+    point to the text, so a screen reader names the service with them.
+#}
+<div class="juhe-consent-placeholder" data-juhe-consent-group="{{ group }}" data-juhe-consent-service="{{ service.key }}">
+    {%- block icon %}{% endblock -%}
+    {%- block text %}<p class="juhe-consent-placeholder__text" id="{{ id }}">{{ text }}</p>{% endblock -%}
+    {%- block actions %}<p class="juhe-consent-placeholder__actions"><button type="button" data-juhe-consent-load aria-describedby="{{ id }}">{{ load_once }}</button> <button type="button" data-juhe-consent-allow aria-describedby="{{ id }}">{{ load_always }}</button></p>{% endblock -%}
+    <template>{{ original|raw }}</template>
+{#- #}</div>
+{#- #}

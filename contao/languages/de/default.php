@@ -10,6 +10,7 @@ $GLOBALS['TL_LANG']['CTE']['juhe_consent_settings'] = ['Cookie-Einstellungen', '
 
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title_legend'] = 'Banner';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text_legend'] = 'Texte';
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout_legend'] = 'Darstellung';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['link_legend'] = 'Links';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version_legend'] = 'Version';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title'] = ['Titel', 'Nur im Backend, z. B. "Website DE".'];
@@ -17,6 +18,9 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['headline'] = ['Überschrift', 'z.
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text'] = ['Text', 'Erklärt kurz, wofür um Einwilligung gebeten wird.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['placeholderText'] = ['Text für blockierte Inhalte', 'Steht anstelle von Videos, Karten usw., solange keine Einwilligung besteht. ##service## wird durch den Namen des Dienstes ersetzt. Leer = Standardtext.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['askOnFirstVisit'] = ['Beim ersten Besuch fragen', 'Zeigt die Karte beim ersten Besuch. Ohne Haken erscheint kein Banner: blockierte Inhalte zeigen nur ihren Platzhalter, die Einstellungen öffnen sich über den Link "Cookie-Einstellungen". Sinnvoll, wenn eine andere Einwilligungslösung (z. B. die von Google für Werbung) schon fragt und hier nur Inhalte zum Anklicken übrig sind.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout'] = ['Darstellung', 'Die Karte lässt die Seite frei; die Leiste zeigt die Gruppen gleich mit an.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layoutOptions'] = ['card' => 'Karte unten links', 'bar' => 'Leiste am unteren Rand'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Seite bis zur Entscheidung sperren', 'Dunkelt die Seite beim ersten Besuch ab, bis eine Auswahl getroffen ist. Mit der Esc-Taste wird die Seite trotzdem bedienbar: der Banner bleibt dann sichtbar, sperrt aber nicht mehr.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Datenschutzerklärung', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Impressum', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Erhöhen, wenn sich Gruppen oder Dienste wesentlich ändern: alle Besucher werden dann erneut gefragt.'];

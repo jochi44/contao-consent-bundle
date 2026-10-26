@@ -10,6 +10,7 @@ $GLOBALS['TL_LANG']['CTE']['juhe_consent_settings'] = ['Cookie settings', 'Link 
 
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title_legend'] = 'Banner';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text_legend'] = 'Texts';
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout_legend'] = 'Display';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['link_legend'] = 'Links';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version_legend'] = 'Version';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title'] = ['Title', 'Backend only, e.g. "Website EN".'];
@@ -17,6 +18,9 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['headline'] = ['Headline', 'e.g. "
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text'] = ['Text', 'Briefly explains what consent is asked for.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['placeholderText'] = ['Text for blocked content', 'Shown instead of videos, maps etc. until consent is given. ##service## is replaced with the service name. Empty = default text.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['askOnFirstVisit'] = ['Ask on the first visit', 'Shows the card on the first visit. Unticked, no banner appears: blocked content shows only its placeholder, and the settings open from the "Cookie settings" link. Useful when another consent solution (e.g. Google\'s for ads) already asks and only click-to-load content is left here.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout'] = ['Display', 'The card leaves the page usable; the bar shows the groups right away.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layoutOptions'] = ['card' => 'Card at the bottom left', 'bar' => 'Bar at the bottom'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Block the page until the visitor decides', 'Dims the page on the first visit until a choice is made. The Esc key still releases the page: the banner stays visible but no longer blocks it.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Privacy policy', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Imprint', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Increase when groups or services change substantially: all visitors are asked again.'];

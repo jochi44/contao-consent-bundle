@@ -57,6 +57,8 @@ final class ConsentConfig
             'text' => $this->insertTagParser->replaceInline((string) $banner['text']),
             'placeholder' => trim((string) $banner['placeholderText']),
             'ask' => (bool) $banner['askOnFirstVisit'],
+            'layout' => self::layout($banner['layout'] ?? null),
+            'blocking' => (bool) ($banner['blocking'] ?? false),
             'privacy_url' => $this->pageUrl((int) $banner['privacyPage']),
             'imprint_url' => $this->pageUrl((int) $banner['imprintPage']),
             'groups' => array_map(fn (array $group): array => [
@@ -67,6 +69,15 @@ final class ConsentConfig
                 'services' => array_values(array_map($this->service(...), array_filter($services, static fn (array $service): bool => $service['pid'] === $group['id']))),
             ], $groups),
         ];
+    }
+
+    /**
+     * "card" (the small card at the bottom left) or "bar" (full width at the bottom,
+     * groups always shown); anything else is a card.
+     */
+    public static function layout(mixed $value): string
+    {
+        return 'bar' === $value ? 'bar' : 'card';
     }
 
     /**
