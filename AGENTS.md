@@ -1,6 +1,6 @@
 # JUHE Consent Bundle
 
-Consent banner for Contao 5.7 and 6 (`juhe-it-solutions/contao-juhe-consent-bundle`),
+Consent banner for Contao 5.7 and 6 (`juhe-it-solutions/contao-consent-bundle`),
 LGPL-3.0-or-later. What it does: README.md. This repository is public; never
 commit local paths, host names, credentials, session links or notes about
 private projects.

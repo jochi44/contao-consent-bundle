@@ -1,5 +1,5 @@
 /*
- * Consent banner of juhe-it-solutions/contao-juhe-consent-bundle. No dependencies.
+ * Consent banner of juhe-it-solutions/contao-consent-bundle. No dependencies.
  *
  * The choice is stored in a first-party cookie (JSON: version, groups,
  * services allowed one by one, random ID, time). Blocked content is marked by
