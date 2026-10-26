@@ -91,8 +91,9 @@ final class InjectConsentListener
 
         $html = $this->insertBefore($html, '</head>', $this->twig->render('@Contao/juhe_consent/head.html.twig', $context));
 
-        // Right after <body>, so keyboard and screen reader users meet it first
-        $html = preg_replace('/<body\b[^>]*>/i', '$0'.addcslashes($this->twig->render('@Contao/juhe_consent/banner.html.twig', $context), '\\$'), $html, 1) ?? $html;
+        // At the end of the page, behind the theme's skip link; juhe-consent.js moves the
+        // first-visit card to the top while it is shown, so keyboard users meet it first
+        $html = $this->insertBefore($html, '</body>', $this->twig->render('@Contao/juhe_consent/banner.html.twig', $context));
 
         $response->setContent($html);
         $response->headers->remove('Content-Length');

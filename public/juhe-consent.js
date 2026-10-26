@@ -244,6 +244,11 @@
             dialog.showModal();
             settings.querySelector('input:not([disabled])')?.focus();
         } else {
+            // The card is not modal: first in the page, so the Tab key reaches it first
+            if (document.body.firstElementChild !== dialog) {
+                document.body.prepend(dialog);
+            }
+
             dialog.show();
         }
     };
