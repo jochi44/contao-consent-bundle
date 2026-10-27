@@ -90,7 +90,9 @@ The banner targets WCAG 2.2 AA; `axe-core` reports no violations in any state.
   controls in forced colors mode; no horizontal scrolling at 320 px. The
   placeholder glyph is decorative (`aria-hidden`) and drawn in system colors in
   forced colors mode; a video or map placeholder keeps its aspect ratio but
-  grows when its text needs more room (200 percent zoom, large fonts).
+  grows when its text needs more room (200 percent zoom, large fonts). Group
+  headings wrap and service details stack on narrow screens, including with a
+  larger browser default font.
 
 A theme that changes the custom properties or templates keeps these
 properties. Do not put `[data-juhe-consent-open]` on an element that is not a

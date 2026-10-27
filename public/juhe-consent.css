@@ -66,6 +66,7 @@
     font: inherit;
     font-size: 0.9375rem;
     line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .juhe-consent[open] {
@@ -294,6 +295,7 @@
 
 .juhe-consent-group__head {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.75rem;
     align-items: center;
     min-height: 44px;
@@ -301,7 +303,8 @@
 }
 
 .juhe-consent-group__title {
-    flex: 1;
+    flex: 1 1 8rem;
+    min-width: 0;
     font-weight: 600;
 }
 
@@ -391,9 +394,15 @@
 
 .juhe-consent-service dl {
     display: grid;
-    grid-template-columns: minmax(6.5rem, max-content) 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.25rem 0.875rem;
     margin: 0;
+}
+
+@media (min-width: 30rem) {
+    .juhe-consent-service dl {
+        grid-template-columns: minmax(6.5rem, max-content) minmax(0, 1fr);
+    }
 }
 
 .juhe-consent-service dt {
