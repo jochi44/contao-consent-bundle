@@ -37,7 +37,7 @@ final class BannerLabelListenerTest extends TestCase
 
     public function testSaysWhenNoWebsiteUsesTheBanner(): void
     {
-        $connection = $this->createMock(Connection::class);
+        $connection = $this->createStub(Connection::class);
         $connection->method('fetchAllAssociative')->willReturn([]);
 
         $this->assertSame('Spare <span class="label-info">Not assigned to a website</span>', (new BannerLabelListener($connection))(['id' => 3], 'Spare'));
