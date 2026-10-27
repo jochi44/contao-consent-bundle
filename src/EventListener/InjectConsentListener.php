@@ -9,6 +9,7 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\PageModel;
 use Doctrine\DBAL\Connection;
 use JuheItSolutions\JuheConsentBundle\Consent\ConsentConfig;
+use JuheItSolutions\JuheConsentBundle\Consent\EmbedKind;
 use JuheItSolutions\JuheConsentBundle\Consent\HtmlBlocker;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -90,7 +91,8 @@ final class InjectConsentListener
             return $this->twig->render('@Contao/juhe_consent/placeholder.html.twig', [
                 'id' => 'juhe-consent-placeholder-'.++$count,
                 'group' => $service['group'],
-                'service' => ['key' => $service['key'], 'title' => $service['title']],
+                'kind' => EmbedKind::fromIframe($original),
+                'service' => ['key' => $service['key'], 'title' => $service['title'], 'provider' => $service['provider'], 'privacy_url' => $service['privacy_url']],
                 'text' => str_replace('##service##', $service['title'], $placeholderText),
                 'load_once' => $trans('load_once'),
                 'load_always' => $trans('load_always'),

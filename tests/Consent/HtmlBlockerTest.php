@@ -21,7 +21,7 @@ final class HtmlBlockerTest extends TestCase
         });
 
         $this->assertSame('<p>a</p><div class="placeholder"></div><p>b</p>', $html);
-        $this->assertSame([[['group' => 'media', 'key' => 's7', 'title' => 'YouTube'], $iframe]], $calls);
+        $this->assertSame([[['group' => 'media', 'key' => 's7', 'title' => 'YouTube', 'provider' => 'Google Ireland Limited', 'privacy_url' => 'https://policies.google.com/privacy'], $iframe]], $calls);
     }
 
     public function testMatchesSubdomainsAndProtocolRelativeUrls(): void
@@ -59,7 +59,7 @@ final class HtmlBlockerTest extends TestCase
     {
         return ['groups' => [
             ['alias' => 'essential', 'essential' => true, 'services' => [['key' => 's1', 'title' => 'CDN', 'hosts' => ['cdn.essential.example']]]],
-            ['alias' => 'media', 'essential' => false, 'services' => [['key' => 's7', 'title' => 'YouTube', 'hosts' => ['youtube-nocookie.com']]]],
+            ['alias' => 'media', 'essential' => false, 'services' => [['key' => 's7', 'title' => 'YouTube', 'provider' => 'Google Ireland Limited', 'privacy_url' => 'https://policies.google.com/privacy', 'hosts' => ['youtube-nocookie.com']]]],
             ['alias' => 'stats', 'essential' => false, 'services' => [['key' => 's8', 'title' => 'Analytics', 'hosts' => ['googletagmanager.com']], ['key' => 's9', 'title' => 'Manual', 'hosts' => []]]],
         ]];
     }

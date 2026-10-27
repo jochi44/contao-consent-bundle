@@ -1,0 +1,33 @@
+{#
+    The placeholder's picture for each kind of blocked content, drawn inline so
+    nothing loads before consent. Decorative (aria-hidden). Without the
+    stylesheet it draws in currentColor; the classes let a theme color the
+    frame, the lines and the marks (see juhe-consent.css).
+#}
+<svg class="juhe-consent-glyph juhe-consent-glyph--{{ kind }}" viewBox="0 0 64 48" width="64" height="48" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+{%- if kind == 'video' -%}
+    <rect class="juhe-consent-glyph__frame" x="3" y="5" width="58" height="38" rx="7"/>
+    <circle class="juhe-consent-glyph__mark" cx="32" cy="22" r="9" fill="currentColor"/>
+    <path class="juhe-consent-glyph__knock" d="M29.5 17.5v9l7.5-4.5z" fill="currentColor" stroke="none"/>
+    <path class="juhe-consent-glyph__line" d="M11 36.5h42"/>
+    <path class="juhe-consent-glyph__stroke" d="M11 36.5h13"/>
+    <circle class="juhe-consent-glyph__mark" cx="24" cy="36.5" r="2.25" fill="currentColor"/>
+{%- elseif kind == 'map' -%}
+    <path class="juhe-consent-glyph__frame" d="M4 11l17-6 22 6 17-6v32l-17 6-22-6-17 6z"/>
+    <path class="juhe-consent-glyph__line" d="M21 5v32M43 11v32"/>
+    <path class="juhe-consent-glyph__mark" d="M32 36s-8-7.5-8-13.5a8 8 0 0 1 16 0c0 6-8 13.5-8 13.5z" fill="currentColor"/>
+    <circle class="juhe-consent-glyph__knock" cx="32" cy="22.5" r="3" fill="currentColor" stroke="none"/>
+{%- elseif kind == 'audio' -%}
+    <rect class="juhe-consent-glyph__frame" x="3" y="5" width="58" height="38" rx="7"/>
+    <path class="juhe-consent-glyph__stroke" d="M14 21v6M20 16v16M26 12v24"/>
+    <path class="juhe-consent-glyph__line" d="M32 18v12M38 14v20M44 19v10M50 22v4"/>
+{%- else -%}
+    <rect class="juhe-consent-glyph__frame" x="3" y="5" width="58" height="38" rx="7"/>
+    <path class="juhe-consent-glyph__line" d="M3 14h58"/>
+    <circle class="juhe-consent-glyph__mark" cx="10" cy="9.5" r="1.5" fill="currentColor" stroke="none"/>
+    <circle class="juhe-consent-glyph__dot" cx="15" cy="9.5" r="1.5" fill="currentColor" stroke="none"/>
+    <circle class="juhe-consent-glyph__dot" cx="20" cy="9.5" r="1.5" fill="currentColor" stroke="none"/>
+    <path class="juhe-consent-glyph__stroke" d="M26 22l-6 6 6 6M38 22l6 6-6 6"/>
+    <path class="juhe-consent-glyph__line" d="M34.5 20l-5 16"/>
+{%- endif -%}
+</svg>

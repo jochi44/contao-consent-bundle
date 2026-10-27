@@ -68,13 +68,18 @@ The banner targets WCAG 2.2 AA; `axe-core` reports no violations in any state.
   element, and they stop being sticky on short screens (e.g. 400 percent zoom).
 - **Names:** the dialog is named by its headline and described by its text;
   each switch is a real checkbox named by its group and described by the group
-  description; the placeholder buttons name the service; the "Dienste" toggles
+  description; each placeholder is a group named by its title, and its buttons
+  and privacy link name the service ("Inhalt laden (YouTube)"), so a list of links and buttons
+  tells several placeholders apart; the "Dienste" toggles
   name their group; links that open a new window say so; openers carry
   `aria-haspopup="dialog"`.
 - **Visuals:** text contrast at least 4.5:1, the switch track and knob at
   least 3:1 in light and dark; targets at least 44 px; visible focus ring
   (`--juhe-consent-focus`); no motion with `prefers-reduced-motion`; native
-  controls in forced colors mode; no horizontal scrolling at 320 px.
+  controls in forced colors mode; no horizontal scrolling at 320 px. The
+  placeholder glyph is decorative (`aria-hidden`) and drawn in system colors in
+  forced colors mode; a video or map placeholder keeps its aspect ratio but
+  grows when its text needs more room (200 percent zoom, large fonts).
 
 A theme that changes the custom properties or templates keeps these
 properties. Do not put `[data-juhe-consent-open]` on an element that is not a
@@ -122,10 +127,20 @@ what it needs (a template of the same name in the theme's `templates/` folder):
 - `@Contao/juhe_consent/head.html.twig`: block `stylesheet`. A theme with its
   own skin overrides it with an empty block.
 - `@Contao/juhe_consent/placeholder.html.twig`: the placeholder for a blocked
-  iframe, blocks `icon` (empty), `text` and `actions`. Variables: `id`,
-  `group`, `service` (`key`, `title`), `text`, `load_once`, `load_always`, and
-  `original`, the blocked iframe, printed raw inside the `<template>`. Never
-  print `original` anywhere else, and never print other values raw.
+  iframe, blocks `icon`, `title`, `text`, `actions` and `privacy`. Variables:
+  `id`, `kind`, `group`, `service` (`key`, `title`, `provider`, `privacy_url`),
+  `text`, `load_once`, `load_always`, `load_attributes` and `allow_attributes`
+  (`attrs()` objects a theme sets to style the buttons), and `original`, the blocked iframe,
+  printed raw inside the `<template>`. Never print `original` anywhere else,
+  and never print other values raw.
+- `@Contao/juhe_consent/glyph.html.twig`: the inline SVG the `icon` block
+  shows for `kind`, one of `video` (YouTube, Vimeo, Dailymotion and other video
+  hosts), `map` (Google Maps, OpenStreetMap, Bing Maps and others), `audio`
+  (Spotify, SoundCloud and other audio hosts) or `embed` (anything else). The
+  kind comes from the iframe's address (`EmbedKind`). Nothing in the
+  placeholder loads from the provider. A theme colors the glyph through the
+  classes `juhe-consent-glyph__frame`, `__line`, `__stroke`, `__mark`, `__dot`
+  and `__knock`, or replaces the template.
 - `@Contao/content_element/juhe_consent_settings.html.twig`: block `button`;
   a theme sets `button_attributes` (an `attrs()` object) to style the opener.
 

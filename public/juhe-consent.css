@@ -411,20 +411,38 @@
     min-height: 44px;
 }
 
-/* Blocked iframes */
+/*
+ * Blocked iframes: a framed card with a glyph for the kind of content, the
+ * service name, the notice and the two buttons. Video and map keep the shape
+ * of the content they stand in for; the card grows when its text needs more.
+ * The glyph is decorative; in forced colors it draws in the system colors.
+ */
 .juhe-consent-placeholder {
     display: grid;
-    gap: 0.875rem;
+    gap: 0.75rem;
     place-content: center;
     justify-items: center;
     box-sizing: border-box;
-    min-height: 14rem;
-    padding: 1.5rem;
+    min-height: 16rem;
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    border: 1px solid var(--juhe-consent-line);
     border-radius: var(--juhe-consent-radius);
     background: var(--juhe-consent-surface);
     color: var(--juhe-consent-text);
     font-size: 0.9375rem;
+    line-height: 1.5;
     text-align: center;
+}
+
+/* min-height auto keeps the content's height as the minimum, so text never overflows the ratio */
+.juhe-consent-placeholder--video {
+    min-height: auto;
+    aspect-ratio: 16 / 9;
+}
+
+.juhe-consent-placeholder--map {
+    min-height: auto;
+    aspect-ratio: 3 / 2;
 }
 
 .juhe-consent-placeholder p {
@@ -432,17 +450,99 @@
     max-width: 34rem;
 }
 
+/* Both sizes set: with height auto, the grid sizes its row too short inside a ratio box */
+.juhe-consent-glyph {
+    width: 5.5rem;
+    height: 4.125rem;
+    margin-block-end: 0.5rem;
+    color: var(--juhe-consent-accent);
+}
+
+.juhe-consent-glyph__frame {
+    fill: var(--juhe-consent-background);
+    stroke: var(--juhe-consent-line);
+}
+
+.juhe-consent-glyph__line {
+    stroke: var(--juhe-consent-muted);
+    opacity: 0.5;
+}
+
+.juhe-consent-glyph__dot {
+    fill: var(--juhe-consent-muted);
+    opacity: 0.5;
+}
+
+.juhe-consent-glyph__knock {
+    fill: var(--juhe-consent-accent-text);
+}
+
+.juhe-consent-placeholder__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.juhe-consent-placeholder__kind {
+    display: block;
+    margin-block-end: 0.125rem;
+    color: var(--juhe-consent-muted);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.juhe-consent-placeholder__text {
+    color: var(--juhe-consent-muted);
+}
+
 .juhe-consent-placeholder__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     justify-content: center;
+    margin-block-start: 0.25rem;
 }
 
 .juhe-consent-placeholder [data-juhe-consent-allow] {
     border-color: var(--juhe-consent-line);
-    background: transparent;
+    background: var(--juhe-consent-background);
     color: var(--juhe-consent-text);
+}
+
+.juhe-consent-placeholder__privacy a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--juhe-consent-muted);
+    font-size: 0.875rem;
+}
+
+@media (forced-colors: active) {
+    .juhe-consent-placeholder {
+        border-color: CanvasText;
+    }
+
+    .juhe-consent-glyph * {
+        stroke: CanvasText;
+        opacity: 1;
+    }
+
+    .juhe-consent-glyph__frame,
+    .juhe-consent-glyph__knock {
+        fill: Canvas;
+    }
+
+    .juhe-consent-glyph__knock {
+        stroke: none;
+    }
+
+    .juhe-consent-glyph__mark,
+    .juhe-consent-glyph__dot {
+        fill: CanvasText;
+    }
 }
 
 /* Last, so it wins over every transition above */

@@ -17,7 +17,7 @@ final class HtmlBlocker
 {
     /**
      * @param array<string, mixed>                                   $banner      see ConsentConfig::banner()
-     * @param callable(array{group: string, key: string, title: string}, string): string $placeholder renders the placeholder for a service and the original iframe
+     * @param callable(array{group: string, key: string, title: string, provider: string, privacy_url: string}, string): string $placeholder renders the placeholder for a service and the original iframe
      */
     public function block(string $html, array $banner, callable $placeholder): string
     {
@@ -26,7 +26,7 @@ final class HtmlBlocker
         foreach ($banner['groups'] as $group) {
             foreach ($group['services'] as $service) {
                 if ($service['hosts'] && !$group['essential']) {
-                    $services[] = ['group' => $group['alias'], 'key' => $service['key'], 'title' => $service['title'], 'hosts' => $service['hosts']];
+                    $services[] = ['group' => $group['alias'], 'key' => $service['key'], 'title' => $service['title'], 'provider' => $service['provider'] ?? '', 'privacy_url' => $service['privacy_url'] ?? '', 'hosts' => $service['hosts']];
                 }
             }
         }
@@ -42,7 +42,7 @@ final class HtmlBlocker
                 return $match[0];
             }
 
-            return $placeholder(['group' => $service['group'], 'key' => $service['key'], 'title' => $service['title']], $match[0]);
+            return $placeholder(['group' => $service['group'], 'key' => $service['key'], 'title' => $service['title'], 'provider' => $service['provider'], 'privacy_url' => $service['privacy_url']], $match[0]);
         }, $html) ?? $html;
 
         return preg_replace_callback('/<script\b([^>]*)>(\s*)<\/script>/i', function (array $match) use ($services): string {

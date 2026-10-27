@@ -1,13 +1,21 @@
+{% trans_default_domain 'juhe_consent' %}
 {#
     Stands in for a blocked iframe until consent; the original iframe waits in
     the <template>. consent.js relies on the class names and data attributes.
-    The icon block is empty: a theme can add a provider icon there. The buttons
-    point to the text, so a screen reader names the service with them.
+    "kind" (video, map, audio, embed) comes from the iframe's host and picks the
+    glyph; nothing in the placeholder loads from the provider. The placeholder
+    is a group named by its title; the button names end in the service name,
+    so a list of buttons tells several placeholders apart, and the buttons and
+    the privacy link point to the text. A theme styles the buttons through
+    load_attributes and allow_attributes (attrs() objects), e.g.
+    {% block actions %}{% set load_attributes = attrs().addClass('my-button') %}{{ parent() }}{% endblock %}
 #}
-<div class="juhe-consent-placeholder" data-juhe-consent-group="{{ group }}" data-juhe-consent-service="{{ service.key }}">
-    {%- block icon %}{% endblock -%}
+<div class="juhe-consent-placeholder juhe-consent-placeholder--{{ kind }}" role="group" aria-labelledby="{{ id }}-title" data-juhe-consent-kind="{{ kind }}" data-juhe-consent-group="{{ group }}" data-juhe-consent-service="{{ service.key }}">
+    {%- block icon %}{% include '@Contao/juhe_consent/glyph.html.twig' %}{% endblock -%}
+    {%- block title %}<p class="juhe-consent-placeholder__title" id="{{ id }}-title"><span class="juhe-consent-placeholder__kind">{{ ('kind_' ~ kind)|trans }}</span> {{ service.title }}</p>{% endblock -%}
     {%- block text %}<p class="juhe-consent-placeholder__text" id="{{ id }}">{{ text }}</p>{% endblock -%}
-    {%- block actions %}<p class="juhe-consent-placeholder__actions"><button type="button" data-juhe-consent-load aria-describedby="{{ id }}">{{ load_once }}</button> <button type="button" data-juhe-consent-allow aria-describedby="{{ id }}">{{ load_always }}</button></p>{% endblock -%}
+    {%- block actions %}<p class="juhe-consent-placeholder__actions"><button{{ attrs(load_attributes|default).set('type', 'button').set('data-juhe-consent-load').set('aria-describedby', id) }}>{{ load_once }}<span class="juhe-consent-sr"> ({{ service.title }})</span></button> <button{{ attrs(allow_attributes|default).set('type', 'button').set('data-juhe-consent-allow').set('aria-describedby', id) }}>{{ load_always }}<span class="juhe-consent-sr"> ({{ service.title }})</span></button></p>{% endblock -%}
+    {%- block privacy %}{% if service.privacy_url %}<p class="juhe-consent-placeholder__privacy"><a href="{{ service.privacy_url }}" target="_blank" rel="noopener noreferrer" aria-describedby="{{ id }}">{{ 'provider_privacy'|trans }}<span class="juhe-consent-sr"> {{ service.title }} {{ 'new_window'|trans }}</span></a></p>{% endif %}{% endblock -%}
     <template>{{ original|raw }}</template>
 {#- #}</div>
 {#- #}
