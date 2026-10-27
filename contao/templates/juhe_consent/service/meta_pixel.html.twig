@@ -1,0 +1,11 @@
+{#
+    Meta Pixel, as in Meta's own snippet: the fbq queue, the pixel and the page
+    view, then fbevents.js. service.id is the pixel ID (digits), checked on
+    saving. Without the <noscript> image, which would load without consent.
+#}
+<script>
+!function(f){if(f.fbq)return;var n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[]}(window);
+fbq('init', '{{ service.id|e('js') }}');
+{% block events %}fbq('track', 'PageView');{% endblock %}
+</script>
+<script async src="https://connect.facebook.net/en_US/fbevents.js"></script>

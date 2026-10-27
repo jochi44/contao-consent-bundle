@@ -195,6 +195,22 @@ final class ConsentConfigTest extends TestCase
         $this->assertSame($service['code'], $services[3]['code']);
     }
 
+    public function testAPresetRendersOnlyWithAValidIdentifier(): void
+    {
+        $service = ['pid' => 3, 'title' => 'GA', 'provider' => '', 'description' => '', 'privacyUrl' => '', 'cookies' => '', 'hosts' => '', 'code' => '', 'serviceType' => 'template', 'serviceTemplate' => 'juhe_consent/service/google_analytics'];
+        $connection = $this->createStub(Connection::class);
+        $connection->method('fetchAssociative')->willReturn(['id' => 7, 'version' => 1, 'headline' => 'H', 'text' => '', 'placeholderText' => '', 'askOnFirstVisit' => 1, 'privacyPage' => 0, 'imprintPage' => 0]);
+        $connection->method('fetchAllAssociative')->willReturnOnConsecutiveCalls(
+            [['id' => 3, 'alias' => 'a', 'title' => 'A', 'description' => '', 'essential' => 0]],
+            [['id' => 1, 'serviceId' => 'G-AB12CD34'] + $service, ['id' => 2, 'serviceId' => "G-1');x('"] + $service],
+        );
+
+        $services = $this->config($connection)->banner(7)['groups'][0]['services'];
+
+        $this->assertStringContainsString('gtag/js?id=G-AB12CD34', $services[0]['code']);
+        $this->assertSame('', $services[1]['code']);
+    }
+
     private function config(Connection $connection): ConsentConfig
     {
         $insertTags = $this->createStub(InsertTagParser::class);

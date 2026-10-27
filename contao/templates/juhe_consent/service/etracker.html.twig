@@ -1,0 +1,6 @@
+{#
+    etracker Analytics, as in etracker's own snippet. service.id is the account
+    key ("secure code"), checked on saving. A theme adds attributes of the
+    etracker documentation in the block "attributes".
+#}
+<script id="_etLoader" charset="UTF-8" data-secure-code="{{ service.id }}"{% block attributes %}{% endblock %} src="https://code.etracker.com/code/e.js" async></script>

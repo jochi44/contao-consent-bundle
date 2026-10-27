@@ -89,6 +89,25 @@ banner under "System > Consent" and select it in the root page.
   `position`, `order`, `template`). Twig escapes values for HTML; inside a
   `<script>` use `|e('js')`. Same permission warning as the code field: a
   template can run any code.
+- **Provider presets:** shipped service templates for Google Analytics 4
+  (`google_analytics`), Google Tag Manager (`google_tag_manager`), Matomo
+  (`matomo`), Matomo Tag Manager (`matomo_tag_manager`), Meta Pixel
+  (`meta_pixel`) and etracker (`etracker`), under `juhe_consent/service/`. Pick
+  one at a service of the type "Template" and enter the "Kennung" (measurement,
+  container, website or pixel ID, or the etracker account key); Matomo and
+  Matomo Tag Manager also need the "Adresse" of the installation. Saving checks
+  both against the preset's format, and a stored value that does not fit
+  renders nothing. Saving also fills in the preset's blocked domains, provider,
+  privacy policy and cookies where these fields are empty (a self-hosted
+  Matomo adds its own host, unless it is the back end's host); check them
+  against the provider's current documentation and your privacy policy. Each
+  preset follows the provider's own snippet, without the `<noscript>` image or
+  iframe, and loads only after consent, like all service code. A Tag Manager
+  loads the tags of its container: give those their own consent there, or
+  list their domains at their own services. Google Consent Mode is not part of
+  the presets. A theme extends a preset and overrides its block (`config`,
+  `commands`, `container`, `events`, `attributes`), or the website adds its
+  own template next to them.
 - **Code without consent (optional):** HTML/JS that runs once per page while
   the service is not allowed after the stored choice is applied: on the first
   visit, after a refusal, and after a withdrawal (which reloads the page, or,

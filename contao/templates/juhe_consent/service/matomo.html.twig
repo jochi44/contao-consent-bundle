@@ -1,0 +1,14 @@
+{#
+    Matomo tracking code, as in Matomo's own snippet. service.url is the address
+    of the Matomo installation (ending with "/"), service.id the website ID,
+    both checked on saving. A theme overrides the block "commands", e.g. to add
+    _paq.push(['disableCookies']).
+#}
+<script>
+var _paq = window._paq = window._paq || [];
+{% block commands %}_paq.push(['trackPageView']);
+_paq.push(['enableLinkTracking']);{% endblock %}
+_paq.push(['setTrackerUrl', '{{ (service.url ~ 'matomo.php')|e('js') }}']);
+_paq.push(['setSiteId', '{{ service.id|e('js') }}']);
+</script>
+<script async src="{{ service.url }}matomo.js"></script>

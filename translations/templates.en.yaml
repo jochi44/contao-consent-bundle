@@ -1,0 +1,6 @@
+'juhe_consent/service/etracker': 'etracker Analytics'
+'juhe_consent/service/google_analytics': 'Google Analytics 4'
+'juhe_consent/service/google_tag_manager': 'Google Tag Manager'
+'juhe_consent/service/matomo': 'Matomo'
+'juhe_consent/service/matomo_tag_manager': 'Matomo Tag Manager'
+'juhe_consent/service/meta_pixel': 'Meta Pixel'

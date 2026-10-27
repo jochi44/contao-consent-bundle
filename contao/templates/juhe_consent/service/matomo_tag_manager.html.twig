@@ -1,0 +1,12 @@
+{#
+    Matomo Tag Manager, as in Matomo's own snippet: the start event, then the
+    container of a self-hosted Matomo. service.url is the address of the Matomo
+    installation (ending with "/"), service.id the container ID, both checked on
+    saving. Matomo Cloud serves containers from another address: override the
+    block "container".
+#}
+<script>
+var _mtm = window._mtm = window._mtm || [];
+_mtm.push({'mtm.startTime': new Date().getTime(), 'event': 'mtm.Start'});
+</script>
+{% block container %}<script async src="{{ service.url }}js/container_{{ service.id|url_encode }}.js"></script>{% endblock %}

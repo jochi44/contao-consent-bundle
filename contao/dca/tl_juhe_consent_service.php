@@ -21,7 +21,7 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
     'palettes' => [
         '__selector__' => ['serviceType'],
         'default' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,serviceType,code,codeDenied,codePosition,loadOrder;{publish_legend},published',
-        'template' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,serviceType,serviceTemplate,codeDenied,codePosition,loadOrder;{publish_legend},published',
+        'template' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,serviceType,serviceTemplate,serviceId,serviceUrl,codeDenied,codePosition,loadOrder;{publish_legend},published',
     ],
     'fields' => [
         'id' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true]],
@@ -70,6 +70,17 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
             'inputType' => 'select',
             'eval' => ['mandatory' => true, 'includeBlankOption' => true, 'chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
             'sql' => ['type' => 'string', 'length' => 128, 'default' => ''],
+        ],
+        // Checked against the selected template (ServicePresetListener)
+        'serviceId' => [
+            'inputType' => 'text',
+            'eval' => ['maxlength' => 64, 'tl_class' => 'w50 clr'],
+            'sql' => ['type' => 'string', 'length' => 64, 'default' => ''],
+        ],
+        'serviceUrl' => [
+            'inputType' => 'text',
+            'eval' => ['rgxp' => 'httpurl', 'maxlength' => 255, 'tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 255, 'default' => ''],
         ],
         'code' => [
             'inputType' => 'textarea',

@@ -1,0 +1,12 @@
+{#
+    Google Tag Manager, as in Google's own snippet: the start event, then gtm.js.
+    service.id is the container ID ("GTM-" and letters or digits), checked on
+    saving. Without the <noscript> iframe, which would load without consent.
+    Tags in the container load with it: give each its own consent in the
+    container, or list their hosts at their own services.
+#}
+<script>
+window.dataLayer = window.dataLayer || [];
+window.dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
+</script>
+<script async src="https://www.googletagmanager.com/gtm.js?id={{ service.id|url_encode }}"></script>

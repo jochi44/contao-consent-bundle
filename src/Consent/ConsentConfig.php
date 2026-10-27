@@ -281,10 +281,21 @@ final class ConsentConfig
             'order' => max(0, (int) ($row['loadOrder'] ?? 0)),
         ];
 
-        // A template service: its template gives the code; the code field does not count
+        /*
+         * A template service: its template gives the code; the code field does not
+         * count. A preset renders only with a valid identifier (and address), which
+         * the back end checks on saving; this check also covers rows from elsewhere.
+         */
         if ('template' === ($row['serviceType'] ?? 'code')) {
-            $service['template'] = (string) ($row['serviceTemplate'] ?? '');
-            $service['code'] = '' === $service['template'] ? '' : $this->templates->render($service['template'], ['service' => array_diff_key($service, ['code' => true, 'code_denied' => true])]);
+            $template = (string) ($row['serviceTemplate'] ?? '');
+            $id = trim((string) ($row['serviceId'] ?? ''));
+            $url = trim((string) ($row['serviceUrl'] ?? ''));
+            $service['template'] = $template;
+            $service['id'] = $id;
+            $service['url'] = ServicePresets::baseUrl($url) ?? '';
+            $service['code'] = '' !== $template && ServicePresets::valid($template, $id, $url)
+                ? $this->templates->render($template, ['service' => array_diff_key($service, ['code' => true, 'code_denied' => true])])
+                : '';
         }
 
         return $service;
