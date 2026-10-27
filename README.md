@@ -50,8 +50,10 @@ banner under "System > Consent" and select it in the root page.
 - **Consent log** (`tl_juhe_consent_log`): banner, version, random consent ID from
   the stored choice, groups, services, page path, time. No IP, no user agent.
   Rate limited (20 per 10 minutes and IP), deleted after three years.
-- **CSP:** the banner script gets the page's nonce, or a nonce is added to
-  the CSP header. A policy with `'unsafe-inline'` and no nonce stays as it is.
+- **CSP:** the banner script gets a nonce accepted by each enforced and
+  report-only policy. Existing policy headers and restrictions for other
+  resource types stay intact. A policy with `'unsafe-inline'` and no nonce or
+  hash stays as it is. Allow each provider's external resources in your policy.
 - **Cache:** the banner is the same for everybody and the choice stays in the
   browser (`localStorage`, no cookie), so pages stay in Contao's HTTP cache.
   Backend changes clear the cache tags.

@@ -28,7 +28,7 @@ use Twig\Environment;
  * Contao has already written the CSP header at this point, so the script
  * nonce is added to the header here (or the page's nonce is reused).
  *
- * The banner is the same for every visitor (the choice lives in a cookie
+ * The banner is the same for every visitor (the choice lives in browser storage
  * and is applied by consent.js), so cached pages stay cacheable.
  */
 #[AsEventListener(priority: 10)]
@@ -159,44 +159,60 @@ final class InjectConsentListener
         $nonce = null;
 
         foreach (['Content-Security-Policy', 'Content-Security-Policy-Report-Only'] as $header) {
-            $policy = $response->headers->get($header);
+            // Intermediaries may combine several policy headers into a comma-separated list.
+            $policies = array_merge(...array_map(static fn (string $value): array => explode(',', $value), $response->headers->all($header)));
 
-            if (null === $policy) {
-                continue;
-            }
+            foreach ($policies as &$policy) {
+                $directives = [];
 
-            $directives = [];
-
-            foreach (array_filter(array_map('trim', explode(';', $policy))) as $directive) {
-                $parts = preg_split('/\s+/', $directive);
-                $directives[strtolower($parts[0])] = $parts;
-            }
-
-            // The browser uses the most specific directive for <script> elements
-            $name = array_find(['script-src-elem', 'script-src', 'default-src'], static fn (string $name): bool => isset($directives[$name]));
-
-            if (null === $name) {
-                continue;
-            }
-
-            foreach ($directives[$name] as $source) {
-                if (preg_match("/^'nonce-([A-Za-z0-9+\/=_-]+)'$/", $source, $match)) {
-                    $nonce ??= $match[1];
-
-                    continue 2;
+                foreach (array_filter(array_map('trim', explode(';', $policy))) as $directive) {
+                    $parts = preg_split('/\\s+/', $directive);
+                    $directives[strtolower($parts[0])] ??= $parts;
                 }
+
+                $name = array_find(['script-src-elem', 'script-src', 'default-src'], static fn (string $name): bool => isset($directives[$name]));
+
+                if (null === $name) {
+                    continue;
+                }
+
+                $existing = [];
+
+                foreach ($directives[$name] as $source) {
+                    if (preg_match("/^'nonce-([A-Za-z0-9+\\/=_-]+)'$/", $source, $match)) {
+                        $existing[] = $match[1];
+                    }
+                }
+
+                $nonce ??= $existing[0] ?? null;
+
+                if (null !== $nonce && \in_array($nonce, $existing, true)) {
+                    continue;
+                }
+
+                $hasHashes = (bool) preg_grep("/^'sha(256|384|512)-/", $directives[$name]);
+
+                if (!$existing && \in_array("'unsafe-inline'", $directives[$name], true) && !$hasHashes) {
+                    continue;
+                }
+
+                $nonce ??= base64_encode(random_bytes(18));
+
+                // Do not relax default-src for styles or other resource types.
+                if ('default-src' === $name) {
+                    $directives['script-src'] = $directives[$name];
+                    $directives['script-src'][0] = 'script-src';
+                    $name = 'script-src';
+                }
+
+                $directives[$name][] = "'nonce-{$nonce}'";
+                $policy = implode('; ', array_map(static fn (array $parts): string => implode(' ', $parts), $directives));
             }
+            unset($policy);
 
-            $hasHashes = (bool) preg_grep("/^'sha(256|384|512)-/", $directives[$name]);
-
-            if (\in_array("'unsafe-inline'", $directives[$name], true) && !$hasHashes) {
-                continue;
+            if ($policies) {
+                $response->headers->set($header, $policies);
             }
-
-            $nonce ??= base64_encode(random_bytes(18));
-            $directives[$name][] = "'nonce-{$nonce}'";
-
-            $response->headers->set($header, implode('; ', array_map(static fn (array $parts): string => implode(' ', $parts), $directives)));
         }
 
         return $nonce;
