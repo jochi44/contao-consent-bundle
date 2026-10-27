@@ -114,6 +114,21 @@ final class ConsentConfig
     }
 
     /**
+     * The banner of a page's website, as that page shows it (see forPage()), or
+     * null if the website has no banner. The root page's "Consent banner" decides,
+     * so two websites (or two language roots) each get their own banner.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function bannerForPage(PageModel $page): array|null
+    {
+        $bannerId = (int) $this->connection->fetchOne('SELECT juheConsentBanner FROM tl_page WHERE id = ?', [(int) $page->loadDetails()->rootId]);
+        $banner = $bannerId > 0 ? $this->banner($bannerId) : null;
+
+        return null === $banner ? null : self::forPage($banner, (int) $page->id);
+    }
+
+    /**
      * The banner as a page shows it. On the banner's own privacy policy and imprint
      * the page is never blocked: a visitor must be able to read them before
      * choosing. The banner still asks there, as a non-modal dialog.

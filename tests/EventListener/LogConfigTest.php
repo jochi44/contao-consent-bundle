@@ -7,7 +7,6 @@ namespace JuheItSolutions\JuheConsentBundle\Tests\EventListener;
 use Contao\CoreBundle\Cache\CacheTagManager;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\Security\Authentication\Token\TokenChecker;
-use Doctrine\DBAL\Connection;
 use JuheItSolutions\JuheConsentBundle\Consent\ConsentConfig;
 use JuheItSolutions\JuheConsentBundle\Consent\HtmlBlocker;
 use JuheItSolutions\JuheConsentBundle\EventListener\InjectConsentListener;
@@ -32,7 +31,6 @@ final class LogConfigTest extends TestCase
 
         $listener = new InjectConsentListener(
             $this->createStub(ScopeMatcher::class),
-            $this->createStub(Connection::class),
             (new \ReflectionClass(ConsentConfig::class))->newInstanceWithoutConstructor(),
             (new \ReflectionClass(HtmlBlocker::class))->newInstanceWithoutConstructor(),
             $this->createStub(Environment::class),

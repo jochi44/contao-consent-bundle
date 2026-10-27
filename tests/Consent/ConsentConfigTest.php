@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace JuheItSolutions\JuheConsentBundle\Tests\Consent;
 
+use Contao\CoreBundle\InsertTag\InsertTagParser;
+use Contao\CoreBundle\Routing\ContentUrlGenerator;
+use Contao\PageModel;
+use Doctrine\DBAL\Connection;
 use JuheItSolutions\JuheConsentBundle\Consent\ConsentConfig;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
@@ -115,5 +119,46 @@ final class ConsentConfigTest extends TestCase
     public function testLifetimeStaysWithinThirteenMonths(mixed $value, int $expected): void
     {
         $this->assertSame($expected, ConsentConfig::lifetime($value));
+    }
+
+    public function testThePageLookupReadsTheBannerOfTheRootPage(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())->method('fetchOne')->with($this->stringContains('tl_page'), [4])->willReturn('7');
+        $connection->method('fetchAssociative')->willReturn(['id' => 7, 'version' => 2, 'headline' => 'H', 'text' => '', 'placeholderText' => '', 'askOnFirstVisit' => 1, 'privacyPage' => 0, 'imprintPage' => 0, 'excludePages' => serialize(['12'])]);
+        $connection->method('fetchAllAssociative')->willReturnOnConsecutiveCalls([['id' => 3, 'alias' => 'notwendig', 'title' => 'N', 'description' => '', 'essential' => 1]], []);
+
+        $banner = $this->config($connection)->bannerForPage($this->page(12, 4));
+
+        $this->assertSame(7, $banner['id']);
+        $this->assertSame('notwendig', $banner['groups'][0]['alias']);
+        // As the page shows it: page 12 is excluded
+        $this->assertTrue($banner['quiet']);
+    }
+
+    public function testThePageLookupWithoutABannerIsNull(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->method('fetchOne')->willReturn(false);
+        $connection->expects($this->never())->method('fetchAssociative');
+
+        $this->assertNull($this->config($connection)->bannerForPage($this->page(2, 1)));
+    }
+
+    private function config(Connection $connection): ConsentConfig
+    {
+        $insertTags = $this->createStub(InsertTagParser::class);
+        $insertTags->method('replaceInline')->willReturnArgument(0);
+
+        return new ConsentConfig($connection, $this->createStub(ContentUrlGenerator::class), $insertTags);
+    }
+
+    private function page(int $id, int $rootId): PageModel
+    {
+        $page = $this->getMockBuilder(PageModel::class)->disableOriginalConstructor()->onlyMethods(['loadDetails', '__get'])->getMock();
+        $page->method('loadDetails')->willReturnSelf();
+        $page->method('__get')->willReturnMap([['id', $id], ['rootId', $rootId]]);
+
+        return $page;
     }
 }

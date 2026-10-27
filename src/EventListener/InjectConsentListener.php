@@ -8,7 +8,6 @@ use Contao\CoreBundle\Cache\CacheTagManager;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\Security\Authentication\Token\TokenChecker;
 use Contao\PageModel;
-use Doctrine\DBAL\Connection;
 use JuheItSolutions\JuheConsentBundle\Consent\ConsentConfig;
 use JuheItSolutions\JuheConsentBundle\Consent\EmbedKind;
 use JuheItSolutions\JuheConsentBundle\Consent\HtmlBlocker;
@@ -39,7 +38,6 @@ final class InjectConsentListener
 {
     public function __construct(
         private readonly ScopeMatcher $scopeMatcher,
-        private readonly Connection $connection,
         private readonly ConsentConfig $config,
         private readonly HtmlBlocker $blocker,
         private readonly Environment $twig,
@@ -72,14 +70,12 @@ final class InjectConsentListener
             return;
         }
 
-        $bannerId = $this->bannerId($page);
-        $banner = $bannerId ? $this->config->banner($bannerId) : null;
+        $banner = $this->config->bannerForPage($page);
 
         if (null === $banner) {
             return;
         }
 
-        $banner = ConsentConfig::forPage($banner, (int) $page->id);
         $banner['restricted'] = $this->restricted($request, $response, $banner);
 
         // Edits to the banner, its groups or services clear the cached pages
@@ -178,11 +174,6 @@ final class InjectConsentListener
         $response->setPrivate();
 
         return true;
-    }
-
-    private function bannerId(PageModel $page): int
-    {
-        return (int) $this->connection->fetchOne('SELECT juheConsentBanner FROM tl_page WHERE id = ?', [(int) $page->loadDetails()->rootId]);
     }
 
     /**

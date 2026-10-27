@@ -15,7 +15,11 @@
  * the template prints them, per optional service ([data-juhe-consent-service-checkbox]).
  *
  * API: window.juheConsent.has('statistik'), .open(), .pending() (the banner
- * waits for a first choice), .onChange(callback), and these events on document:
+ * waits for a first choice), .onChange(callback), .state() (a copy: decided,
+ * groups, services), .subscribe(callback) (called at once and after every
+ * change, returns the unsubscribe function), the queue window.juheConsentQueue
+ * for code that runs before this script, and these events on document:
+ * "juhe-consent:ready" (detail: the state) once the API exists,
  * "juhe-consent" after every change, "juhe-consent:open" (detail.settings) and
  * "juhe-consent:close" (cancelable: preventDefault() keeps focus where it is
  * instead of returning it to the element that opened the settings).
@@ -37,6 +41,7 @@
     const config = JSON.parse(configElement.textContent);
     const nonce = document.currentScript?.nonce || '';
     const listeners = [];
+    const subscribers = new Set();
     const running = new Set();
 
     const essential = config.groups.filter((group) => group.essential).map((group) => group.alias);
@@ -79,6 +84,30 @@
 
     const allows = (consent, group, service) => essential.includes(group) || (!!consent && (consent.groups.includes(group) || consent.services.includes(service)));
     const allowed = (element) => allows(state, element.dataset.juheConsentGroup, element.dataset.juheConsentService);
+
+    // A copy of the current state: allowed groups and services, and whether the visitor decided
+    const snapshot = () => ({
+        decided: !!state,
+        groups: aliases.filter((alias) => allows(state, alias, undefined)),
+        services: services.filter((service) => allows(state, service.group, service.key)).map((service) => service.key),
+    });
+
+    // A failing callback must not stop the others; its error still reaches the console
+    const call = (callback, value) => {
+        try {
+            callback(value);
+        } catch (error) {
+            setTimeout(() => {
+                throw error;
+            });
+        }
+    };
+
+    const changed = () => {
+        listeners.forEach((callback) => call(callback, api));
+        subscribers.forEach((callback) => call(callback, snapshot()));
+        document.dispatchEvent(new CustomEvent('juhe-consent', { detail: { groups: [...state.groups], services: [...state.services] } }));
+    };
 
     const uuid = () => {
         if (crypto.randomUUID) {
@@ -234,16 +263,18 @@
         // Withdrawn: the cookies go, and scripts that already run only stop with a reload
         const withdrawn = services.filter((service) => !allows(state, service.group, service.key) && (running.has(service.key) || allows(previous, service.group, service.key)));
         removeCookies(withdrawn.flatMap((service) => service.cookies));
+        const reload = withdrawn.some((service) => running.has(service.key));
 
-        if (withdrawn.some((service) => running.has(service.key))) {
-            location.reload();
-
-            return;
+        if (!reload) {
+            apply();
         }
 
-        apply();
-        listeners.forEach((callback) => callback(api));
-        document.dispatchEvent(new CustomEvent('juhe-consent', { detail: { groups: [...state.groups], services: [...state.services] } }));
+        // Before a reload too, so integrations can pass a withdrawal on (e.g. to a consent mode)
+        changed();
+
+        if (reload) {
+            location.reload();
+        }
     };
 
     // The dialog
@@ -421,6 +452,21 @@
         onChange: (callback) => {
             listeners.push(callback);
         },
+        state: snapshot,
+        // Called at once with the current state and after every change; returns the unsubscribe function
+        subscribe: (callback) => {
+            if ('function' !== typeof callback) {
+                throw new TypeError('juheConsent.subscribe() needs a function');
+            }
+
+            const subscriber = (value) => callback(value);
+            subscribers.add(subscriber);
+            call(subscriber, snapshot());
+
+            return () => {
+                subscribers.delete(subscriber);
+            };
+        },
     };
 
     // After a choice or Esc: focus back to the opener, unless a listener cancels "juhe-consent:close"
@@ -538,6 +584,28 @@
     document.querySelectorAll(openers).forEach((element) => element.setAttribute('aria-haspopup', 'dialog'));
 
     window.juheConsent = api;
+
+    /*
+     * Code that ran before this script queued functions in window.juheConsentQueue.
+     * They run now, before any service starts, and later pushes run at once.
+     */
+    const queued = Array.isArray(window.juheConsentQueue) ? window.juheConsentQueue : [];
+    const run = (callback) => {
+        if ('function' === typeof callback) {
+            call(callback, api);
+        }
+    };
+
+    window.juheConsentQueue = {
+        push: (...callbacks) => {
+            callbacks.forEach(run);
+
+            return 0;
+        },
+    };
+
+    queued.forEach(run);
+    document.dispatchEvent(new CustomEvent('juhe-consent:ready', { detail: snapshot() }));
 
     apply();
 
