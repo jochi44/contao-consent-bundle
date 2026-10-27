@@ -175,7 +175,7 @@ final class ConsentConfigTest extends TestCase
 
     private function page(int $id, int $rootId): PageModel
     {
-        $page = $this->getMockBuilder(PageModel::class)->disableOriginalConstructor()->onlyMethods(['loadDetails', '__get'])->getMock();
+        $page = $this->createStub(PageModel::class);
         $page->method('loadDetails')->willReturnSelf();
         $page->method('__get')->willReturnMap([['id', $id], ['rootId', $rootId]]);
 
