@@ -102,7 +102,7 @@ site data) the banner asks on every page.
 ## JavaScript API
 
 ```js
-window.juheConsent.has('statistik');  // group alias or service key "s<id>"
+window.juheConsent.has('statistik');  // effective permission for a group alias or service key "s<id>"
 window.juheConsent.open();            // settings; focus returns to the active element afterwards
 window.juheConsent.pending();         // true while the banner waits for a first choice
 window.juheConsent.onChange((consent) => {});

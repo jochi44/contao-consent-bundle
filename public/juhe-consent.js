@@ -340,7 +340,9 @@
     };
 
     const api = {
-        has: (name) => essential.includes(name) || (!!state && (state.groups.includes(name) || state.services.includes(name))),
+        has: (name) => aliases.includes(name)
+            ? allows(state, name, undefined)
+            : services.some((service) => service.key === name && allows(state, service.group, service.key)),
         open: () => open(document.activeElement),
         pending,
         onChange: (callback) => {
