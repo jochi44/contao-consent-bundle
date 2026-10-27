@@ -62,6 +62,8 @@ final class ConsentConfig
             'privacy_url' => $this->pageUrl((int) $banner['privacyPage']),
             'imprint_url' => $this->pageUrl((int) $banner['imprintPage']),
             'legal_pages' => array_values(array_filter([(int) $banner['privacyPage'], (int) $banner['imprintPage']])),
+            'quiet_pages' => self::pageIds($banner['excludePages'] ?? null),
+            'quiet' => false,
             'groups' => array_map(fn (array $group): array => [
                 'alias' => (string) $group['alias'],
                 'title' => (string) $group['title'],
@@ -77,6 +79,10 @@ final class ConsentConfig
      * the page is never blocked: a visitor must be able to read them before
      * choosing. The banner still asks there, as a non-modal dialog.
      *
+     * On the pages the banner excludes ("quiet" pages) it does not open by
+     * itself. Blocked content stays blocked there, and the settings still open
+     * from a link or a button.
+     *
      * @param array<string, mixed> $banner
      *
      * @return array<string, mixed>
@@ -87,7 +93,24 @@ final class ConsentConfig
             $banner['blocking'] = false;
         }
 
+        if (\in_array($pageId, $banner['quiet_pages'] ?? [], true)) {
+            $banner['quiet'] = true;
+            $banner['blocking'] = false;
+        }
+
         return $banner;
+    }
+
+    /**
+     * Page IDs from a page picker with several pages, in their order.
+     *
+     * @return list<int>
+     */
+    public static function pageIds(mixed $value): array
+    {
+        $ids = \is_string($value) || \is_array($value) ? StringUtil::deserialize($value, true) : [];
+
+        return array_values(array_unique(array_filter(array_map('intval', array_filter($ids, 'is_scalar')), static fn (int $id): bool => $id > 0)));
     }
 
     /**

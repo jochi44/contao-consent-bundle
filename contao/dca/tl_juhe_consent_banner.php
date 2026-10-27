@@ -20,7 +20,7 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
         'label' => ['fields' => ['title', 'version'], 'format' => '%s <span class="label-info">(v%s)</span>'],
     ],
     'palettes' => [
-        'default' => '{title_legend},title;{text_legend},headline,text,placeholderText,askOnFirstVisit;{layout_legend},layout,blocking;{link_legend},privacyPage,imprintPage;{version_legend},version',
+        'default' => '{title_legend},title;{text_legend},headline,text,placeholderText,askOnFirstVisit;{layout_legend},layout,blocking;{pages_legend:hide},excludePages;{link_legend},privacyPage,imprintPage;{version_legend},version',
     ],
     'fields' => [
         'id' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true]],
@@ -62,6 +62,13 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
             'inputType' => 'checkbox',
             'eval' => ['tl_class' => 'w50 m12'],
             'sql' => ['type' => 'boolean', 'default' => false],
+        ],
+        'excludePages' => [
+            'inputType' => 'pageTree',
+            'foreignKey' => 'tl_page.title',
+            'eval' => ['multiple' => true, 'fieldType' => 'checkbox', 'tl_class' => 'clr'],
+            'sql' => ['type' => 'blob', 'notnull' => false],
+            'relation' => ['type' => 'hasMany', 'load' => 'lazy'],
         ],
         'privacyPage' => [
             'inputType' => 'pageTree',

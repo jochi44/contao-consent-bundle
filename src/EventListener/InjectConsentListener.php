@@ -129,6 +129,7 @@ final class InjectConsentListener
             'banner' => $banner['id'],
             'version' => $banner['version'],
             'ask' => $banner['ask'],
+            'quiet' => $banner['quiet'] ?? false,
             'layout' => $banner['layout'],
             'blocking' => $banner['blocking'],
             'storage' => 'juhe_consent_'.$banner['id'],

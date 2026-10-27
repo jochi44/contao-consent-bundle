@@ -237,6 +237,9 @@
     const checkboxes = [...dialog.querySelectorAll('[data-juhe-consent-checkbox]')];
     const bar = 'bar' === config.layout;
     const pending = () => !state && !!config.ask;
+
+    // Waiting for a choice and allowed to ask by itself: not on a page the banner excludes
+    const prompting = () => pending() && !config.quiet;
     const openers = '[data-juhe-consent-open], a[href$="#cookie-einstellungen"]';
 
     let shown = false;
@@ -387,7 +390,7 @@
          * always fire): the settings go back to the banner, and the blocking banner
          * releases the page and stays as a non-modal dialog.
          */
-        if (pending()) {
+        if (prompting()) {
             if (!withSettings) {
                 released = true;
             }
@@ -468,7 +471,7 @@
 
     apply();
 
-    if (pending()) {
+    if (prompting()) {
         show(false);
     }
 })();

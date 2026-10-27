@@ -32,6 +32,12 @@ banner under "System > Consent" and select it in the root page.
   sperren" makes the first-visit banner modal with a scrim. The banner's
   privacy policy and imprint pages are never blocked: there it asks as a
   non-modal dialog, so visitors can read them before they choose.
+- **Pages without automatic opening:** "Nicht automatisch öffnen auf" lists
+  pages where the banner does not open by itself (a contact or landing page,
+  for example). Blocked content stays blocked there, nothing is allowed
+  without a choice, and the settings still open from a link or button. The
+  next ordinary page asks as usual. The pages are part of the banner, so the
+  cached pages stay the same for every visitor.
 - **Blocking on the server:** iframes and external scripts whose host (or a
   subdomain) is listed at a service of a non-essential group are held back
   in the HTML. Iframes become a placeholder with "Inhalt laden" (this time)

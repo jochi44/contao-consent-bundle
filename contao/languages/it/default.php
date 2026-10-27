@@ -11,6 +11,7 @@ $GLOBALS['TL_LANG']['CTE']['juhe_consent_settings'] = ['Impostazioni cookie', 'L
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title_legend'] = 'Banner';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text_legend'] = 'Testi';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout_legend'] = 'Visualizzazione';
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['pages_legend'] = 'Pagine senza apertura automatica';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['link_legend'] = 'Link';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version_legend'] = 'Versione';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title'] = ['Titolo', 'Solo nel backend, ad es. "Sito IT".'];
@@ -21,6 +22,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['askOnFirstVisit'] = ['Chiedi alla
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout'] = ['Visualizzazione', 'La scheda lascia la pagina utilizzabile; la barra mostra subito i gruppi.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layoutOptions'] = ['card' => 'Scheda in basso a sinistra', 'bar' => 'Barra in basso'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Blocca la pagina fino alla scelta', 'Alla prima visita oscura la pagina finché non viene fatta una scelta. Il tasto Esc libera comunque la pagina: il banner resta visibile ma non la blocca più.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['excludePages'] = ['Non aprire automaticamente su', 'Su queste pagine il banner non si apre da solo, ad es. su una pagina di contatto o una landing page. I contenuti bloccati restano bloccati e le impostazioni si aprono comunque dal link "Impostazioni cookie". L\'informativa sulla privacy e le note legali non bloccano mai la pagina.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Informativa sulla privacy', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Note legali', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Versione', 'Da aumentare quando gruppi o servizi cambiano in modo sostanziale: a tutti i visitatori viene chiesto di nuovo il consenso.'];

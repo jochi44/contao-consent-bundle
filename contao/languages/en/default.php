@@ -11,6 +11,7 @@ $GLOBALS['TL_LANG']['CTE']['juhe_consent_settings'] = ['Cookie settings', 'Link 
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title_legend'] = 'Banner';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text_legend'] = 'Texts';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout_legend'] = 'Display';
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['pages_legend'] = 'Pages without automatic opening';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['link_legend'] = 'Links';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version_legend'] = 'Version';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title'] = ['Title', 'Backend only, e.g. "Website EN".'];
@@ -21,6 +22,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['askOnFirstVisit'] = ['Ask on the 
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout'] = ['Display', 'The card leaves the page usable; the bar shows the groups right away.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layoutOptions'] = ['card' => 'Card at the bottom left', 'bar' => 'Bar at the bottom'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Block the page until the visitor decides', 'Dims the page on the first visit until a choice is made. The Esc key still releases the page: the banner stays visible but no longer blocks it.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['excludePages'] = ['Do not open automatically on', 'On these pages the banner does not open by itself, e.g. on a contact or landing page. Blocked content stays blocked, and the settings still open from the "Cookie settings" link. The privacy policy and imprint never block the page anyway.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Privacy policy', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Imprint', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Increase when groups or services change substantially: all visitors are asked again.'];
