@@ -17,10 +17,12 @@ class JuheConsentBundle extends AbstractBundle
 
     public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        // The anonymous consent log takes at most this many entries per visitor
+        // The consent log takes at most this many entries per IP. Many visitors can
+        // share one IP (office or carrier NAT), so the cap only stops floods; a site
+        // may set framework.rate_limiter.juhe_consent_log itself.
         $builder->prependExtensionConfig('framework', ['rate_limiter' => ['juhe_consent_log' => [
             'policy' => 'sliding_window',
-            'limit' => 20,
+            'limit' => 120,
             'interval' => '10 minutes',
         ]]]);
     }
