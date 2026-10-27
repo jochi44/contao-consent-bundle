@@ -1,0 +1,6 @@
+{#
+    The label of a banner in the banner list: the title Contao built (label,
+    already escaped) and the websites that use the banner, with their language.
+#}
+{{ label|raw }} <span class="label-info">{% if sites %}{{ used_by }} {% for site in sites %}{{ site.title }} ({{ site.language }}){% if not loop.last %}, {% endif %}{% endfor %}{% else %}{{ used_by_none }}{% endif %}</span>
+{#- #}

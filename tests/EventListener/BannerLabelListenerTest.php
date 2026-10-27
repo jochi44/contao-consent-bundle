@@ -6,6 +6,7 @@ namespace JuheItSolutions\JuheConsentBundle\Tests\EventListener;
 
 use Doctrine\DBAL\Connection;
 use JuheItSolutions\JuheConsentBundle\EventListener\BannerLabelListener;
+use JuheItSolutions\JuheConsentBundle\Tests\BundleTwig;
 use PHPUnit\Framework\TestCase;
 
 final class BannerLabelListenerTest extends TestCase
@@ -30,7 +31,7 @@ final class BannerLabelListenerTest extends TestCase
             ->willReturn([['title' => 'Website DE', 'language' => 'de'], ['title' => 'Sito <IT>', 'language' => 'it']])
         ;
 
-        $label = (new BannerLabelListener($connection))(['id' => '7'], 'Main');
+        $label = (new BannerLabelListener($connection, BundleTwig::create()))(['id' => '7'], 'Main');
 
         $this->assertSame('Main <span class="label-info">Used by: Website DE (de), Sito &lt;IT&gt; (it)</span>', $label);
     }
@@ -40,6 +41,6 @@ final class BannerLabelListenerTest extends TestCase
         $connection = $this->createStub(Connection::class);
         $connection->method('fetchAllAssociative')->willReturn([]);
 
-        $this->assertSame('Spare <span class="label-info">Not assigned to a website</span>', (new BannerLabelListener($connection))(['id' => 3], 'Spare'));
+        $this->assertSame('Spare <span class="label-info">Not assigned to a website</span>', (new BannerLabelListener($connection, BundleTwig::create()))(['id' => 3], 'Spare'));
     }
 }

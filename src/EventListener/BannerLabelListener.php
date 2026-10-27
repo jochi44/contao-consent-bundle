@@ -6,8 +6,8 @@ namespace JuheItSolutions\JuheConsentBundle\EventListener;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
-use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
+use Twig\Environment;
 
 /**
  * The banner list names the websites (root pages) that use each banner, with
@@ -17,8 +17,10 @@ use Doctrine\DBAL\Connection;
 #[AsCallback(table: 'tl_juhe_consent_banner', target: 'list.label.label')]
 final class BannerLabelListener
 {
-    public function __construct(private readonly Connection $connection)
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly Environment $twig,
+    ) {
     }
 
     /**
@@ -33,15 +35,11 @@ final class BannerLabelListener
 
         $lang = $GLOBALS['TL_LANG']['tl_juhe_consent_banner'] ?? [];
 
-        if ([] === $roots) {
-            return $label.' <span class="label-info">'.($lang['usedByNone'] ?? '').'</span>';
-        }
-
-        $sites = array_map(
-            static fn (array $root): string => StringUtil::specialchars((string) $root['title']).' ('.StringUtil::specialchars((string) $root['language']).')',
-            $roots,
-        );
-
-        return $label.' <span class="label-info">'.($lang['usedBy'] ?? '').' '.implode(', ', $sites).'</span>';
+        return trim($this->twig->render('@Contao/juhe_consent/backend/banner_label.html.twig', [
+            'label' => $label,
+            'sites' => array_map(static fn (array $root): array => ['title' => (string) $root['title'], 'language' => (string) $root['language']], $roots),
+            'used_by' => (string) ($lang['usedBy'] ?? ''),
+            'used_by_none' => (string) ($lang['usedByNone'] ?? ''),
+        ]));
     }
 }
