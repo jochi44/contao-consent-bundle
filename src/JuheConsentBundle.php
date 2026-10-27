@@ -25,6 +25,13 @@ class JuheConsentBundle extends AbstractBundle
             'limit' => 120,
             'interval' => '10 minutes',
         ]]]);
+
+        // The same cap for the cookie cleanup on withdrawal (framework.rate_limiter.juhe_consent_cookies)
+        $builder->prependExtensionConfig('framework', ['rate_limiter' => ['juhe_consent_cookies' => [
+            'policy' => 'sliding_window',
+            'limit' => 120,
+            'interval' => '10 minutes',
+        ]]]);
     }
 
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void

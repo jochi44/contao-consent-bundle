@@ -86,11 +86,29 @@ banner under "System > Consent" and select it in the root page.
   services have no switch. A template without the service switches (see
   Styling and templates) keeps the group switches only.
 - **Withdrawal:** saving the settings replaces earlier choices, including
-  individual "Always allow" approvals (they show as switched-on services). Rejection also stops one-time embeds by
-  reloading the page. Withdrawal deletes listed cookies at path `/` (also on
-  parent domains, `name*` for prefixes). JavaScript cannot remove HttpOnly or
-  third-party cookies, or cookies at other paths. Configure those providers'
-  server-side withdrawal separately.
+  individual "Always allow" approvals (they show as switched-on services).
+  Rejection also stops one-time embeds by reloading the page. Withdrawal
+  deletes the cookies listed at the withdrawn services (`name*` for a prefix;
+  a bare `*` matches nothing, and names an essential service lists are kept):
+  - In the browser, every listed cookie that scripts can see, at path `/` and
+    every parent of the current page's path (a cookie set on `/shop/cart`
+    without a path lives at `/shop`), as a host-only cookie and on the host
+    and its parent domains (browsers ignore a public suffix such as `co.uk`,
+    so the registrable domain is the last that takes effect).
+  - On the server, the HttpOnly first-party cookies: if a withdrawn service
+    lists cookies, the browser posts the banner ID, the withdrawn service keys
+    and the page path to `/_juhe_consent/cookies` (JSON only, at most 4 KiB,
+    rate limited like the log: 120 per 10 minutes and IP,
+    `framework.rate_limiter.juhe_consent_cookies`). The request never names a
+    cookie: the server expires only the names configured at those services
+    that the request carries, for the same paths and domains, and refuses
+    essential and unknown services. Before a reload, the page waits for the
+    answer (at most 2 seconds).
+
+  Not reachable: third-party cookies (set by the provider's own domain, for
+  example `doubleclick.net`), and HttpOnly cookies at a path the cleanup
+  request does not see (only cookies at `/` reach it). Configure those
+  providers' server-side withdrawal separately.
 - **New version = ask again:** raise the banner version after big changes.
   Without a change a choice counts for the banner's lifetime (see Storage).
 - **Consent log** (`tl_juhe_consent_log`): banner, version, random consent ID from

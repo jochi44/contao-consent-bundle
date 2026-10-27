@@ -220,21 +220,33 @@ final class ConsentConfig
     }
 
     /**
-     * @param array<string, mixed> $row
+     * The cookies of a service, one "name: lifetime" per line.
      *
-     * @return array<string, mixed>
+     * @return list<array{name: string, duration: string}>
      */
-    private function service(array $row): array
+    public static function cookies(string $value): array
     {
         $cookies = [];
 
-        foreach (StringUtil::trimsplit('\n', (string) $row['cookies']) as $line) {
+        foreach (StringUtil::trimsplit('\n', $value) as $line) {
             [$name, $duration] = array_map('trim', explode(':', $line, 2)) + [1 => ''];
 
             if ('' !== $name) {
                 $cookies[] = ['name' => $name, 'duration' => $duration];
             }
         }
+
+        return $cookies;
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     *
+     * @return array<string, mixed>
+     */
+    private function service(array $row): array
+    {
+        $cookies = self::cookies((string) $row['cookies']);
 
         // "https://www.youtube.com/embed" or "youtube.com" both end up as "youtube.com"
         $hosts = array_values(array_filter(array_map(

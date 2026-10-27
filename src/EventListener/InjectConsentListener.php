@@ -139,6 +139,8 @@ final class InjectConsentListener
             // Without logging the script posts nothing
             'logUrl' => ($banner['log'] ?? true) ? $this->urlGenerator->generate('juhe_consent_log') : null,
             'logPage' => $banner['log_page'] ?? 'path',
+            // Expires the HttpOnly cookies of withdrawn services
+            'cookieUrl' => $this->urlGenerator->generate('juhe_consent_cookies'),
             'groups' => array_map(static fn (array $group): array => [
                 'alias' => $group['alias'],
                 'essential' => $group['essential'],

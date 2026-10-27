@@ -208,23 +208,64 @@
         });
     };
 
-    const removeCookies = (patterns) => {
-        const names = document.cookie.split('; ').map((cookie) => cookie.split('=')[0]).filter(Boolean);
-        const parts = location.hostname.split('.');
-        const domains = [''];
+    /*
+     * Expires the listed cookies that scripts can see ("name*" for a prefix; a bare
+     * "*" matches nothing): at "/" and every parent of the current path, as
+     * host-only cookies and on the host and its parent domains (trackers often use
+     * the parent domain; browsers ignore a public suffix such as "co.uk").
+     * HttpOnly cookies are left to the server (cleanup() below).
+     */
+    const matching = (patterns, name) => patterns.some((pattern) => (pattern.endsWith('*') ? pattern.length > 1 && name.startsWith(pattern.slice(0, -1)) : pattern === name));
 
-        // Trackers often set their cookies on the parent domain
-        for (let i = 0; i < parts.length - 1; i += 1) {
-            domains.push(`; domain=.${parts.slice(i).join('.')}`);
+    const removeCookies = (patterns) => {
+        const names = document.cookie.split(';').map((cookie) => cookie.split('=')[0].trim()).filter(Boolean);
+        const host = location.hostname;
+        const parts = host.split('.');
+        const domains = [''];
+        const paths = ['/'];
+
+        if (!/^[\d.]+$|:|^\[/.test(host)) {
+            for (let i = 0; i < parts.length - 1; i += 1) {
+                domains.push(`; domain=.${parts.slice(i).join('.')}`);
+            }
         }
 
-        patterns.forEach((pattern) => {
-            const matches = pattern.endsWith('*') ? names.filter((name) => name.startsWith(pattern.slice(0, -1))) : [pattern];
+        // A cookie set without a path on /shop/cart has the path /shop
+        location.pathname.split('/').filter(Boolean).slice(0, 8).reduce((path, segment) => {
+            const next = `${path}/${segment}`;
+            paths.push(next, `${next}/`);
 
-            matches.forEach((name) => domains.forEach((domain) => {
-                document.cookie = `${name}=; path=/; max-age=0${domain}`;
-            }));
-        });
+            return next;
+        }, '');
+
+        // Names that an essential service lists stay
+        const keep = services.filter((service) => essential.includes(service.group)).flatMap((service) => service.cookies);
+        const exact = patterns.filter((pattern) => !pattern.endsWith('*'));
+        const matches = [...new Set([...exact, ...names.filter((name) => matching(patterns, name))])].filter((name) => !matching(keep, name));
+
+        matches.forEach((name) => paths.forEach((path) => domains.forEach((domain) => {
+            document.cookie = `${name}=; path=${path}; max-age=0${domain}`;
+        })));
+    };
+
+    /*
+     * HttpOnly first-party cookies: the server expires the configured names of the
+     * withdrawn services that the request carries. The request names the banner,
+     * the services and the page path, never a cookie. Third-party cookies stay out
+     * of reach.
+     */
+    const cleanup = (withdrawn) => {
+        if (!config.cookieUrl || !withdrawn.some((service) => service.cookies.length)) {
+            return Promise.resolve();
+        }
+
+        return fetch(config.cookieUrl, {
+            method: 'POST',
+            keepalive: true,
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ banner: config.banner, services: withdrawn.map((service) => service.key), path: location.pathname }),
+        }).catch(() => {});
     };
 
     const log = () => {
@@ -263,6 +304,7 @@
         // Withdrawn: the cookies go, and scripts that already run only stop with a reload
         const withdrawn = services.filter((service) => !allows(state, service.group, service.key) && (running.has(service.key) || allows(previous, service.group, service.key)));
         removeCookies(withdrawn.flatMap((service) => service.cookies));
+        const cleaned = cleanup(withdrawn);
         const reload = withdrawn.some((service) => running.has(service.key));
 
         if (!reload) {
@@ -272,8 +314,11 @@
         // Before a reload too, so integrations can pass a withdrawal on (e.g. to a consent mode)
         changed();
 
+        // The reloaded page must not send the expired cookies again; wait at most 2 s for the server
         if (reload) {
-            location.reload();
+            Promise.race([cleaned, new Promise((resolve) => {
+                setTimeout(resolve, 2000);
+            })]).then(() => location.reload());
         }
     };
 
