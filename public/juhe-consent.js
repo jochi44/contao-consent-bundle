@@ -447,11 +447,11 @@
             if (load.hasAttribute('data-juhe-consent-allow')) {
                 save(state?.groups || [], [...(state?.services || []), placeholder.dataset.juheConsentService]);
             } else {
+                running.add(placeholder.dataset.juheConsentService);
                 reveal(placeholder);
             }
 
             return;
-                running.add(placeholder.dataset.juheConsentService);
         }
 
         const trigger = event.target.closest(openers);
