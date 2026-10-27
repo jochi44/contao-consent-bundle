@@ -29,7 +29,9 @@ banner under "System > Consent" and select it in the root page.
   where another consent solution already asks (e.g. Google's CMP for ads).
 - **Display:** "Karte unten links" (default) or "Leiste am unteren Rand", a
   full-width bar that shows the groups right away. "Seite bis zur Entscheidung
-  sperren" makes the first-visit banner modal with a scrim.
+  sperren" makes the first-visit banner modal with a scrim. The banner's
+  privacy policy and imprint pages are never blocked: there it asks as a
+  non-modal dialog, so visitors can read them before they choose.
 - **Blocking on the server:** iframes and external scripts whose host (or a
   subdomain) is listed at a service of a non-essential group are held back
   in the HTML. Iframes become a placeholder with "Inhalt laden" (this time)

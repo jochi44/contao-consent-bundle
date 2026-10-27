@@ -20,4 +20,21 @@ final class ConsentConfigTest extends TestCase
     {
         $this->assertSame($expected, ConsentConfig::layout($value));
     }
+
+    #[TestWith([8, false])]
+    #[TestWith([9, false])]
+    #[TestWith([10, true])]
+    #[TestWith([0, true])]
+    public function testTheLegalPagesAreNeverBlocked(int $pageId, bool $blocking): void
+    {
+        $banner = ['blocking' => true, 'legal_pages' => [8, 9]];
+
+        $this->assertSame($blocking, ConsentConfig::forPage($banner, $pageId)['blocking']);
+    }
+
+    public function testANonBlockingBannerStaysNonBlocking(): void
+    {
+        $this->assertFalse(ConsentConfig::forPage(['blocking' => false, 'legal_pages' => [8]], 10)['blocking']);
+        $this->assertFalse(ConsentConfig::forPage(['blocking' => false], 8)['blocking']);
+    }
 }

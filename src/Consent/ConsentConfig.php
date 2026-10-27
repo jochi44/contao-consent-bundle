@@ -61,6 +61,7 @@ final class ConsentConfig
             'blocking' => (bool) ($banner['blocking'] ?? false),
             'privacy_url' => $this->pageUrl((int) $banner['privacyPage']),
             'imprint_url' => $this->pageUrl((int) $banner['imprintPage']),
+            'legal_pages' => array_values(array_filter([(int) $banner['privacyPage'], (int) $banner['imprintPage']])),
             'groups' => array_map(fn (array $group): array => [
                 'alias' => (string) $group['alias'],
                 'title' => (string) $group['title'],
@@ -69,6 +70,24 @@ final class ConsentConfig
                 'services' => array_values(array_map($this->service(...), array_filter($services, static fn (array $service): bool => $service['pid'] === $group['id']))),
             ], $groups),
         ];
+    }
+
+    /**
+     * The banner as a page shows it. On the banner's own privacy policy and imprint
+     * the page is never blocked: a visitor must be able to read them before
+     * choosing. The banner still asks there, as a non-modal dialog.
+     *
+     * @param array<string, mixed> $banner
+     *
+     * @return array<string, mixed>
+     */
+    public static function forPage(array $banner, int $pageId): array
+    {
+        if (\in_array($pageId, $banner['legal_pages'] ?? [], true)) {
+            $banner['blocking'] = false;
+        }
+
+        return $banner;
     }
 
     /**

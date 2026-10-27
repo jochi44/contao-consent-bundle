@@ -75,6 +75,8 @@ final class InjectConsentListener
             return;
         }
 
+        $banner = ConsentConfig::forPage($banner, (int) $page->id);
+
         // Edits to the banner, its groups or services clear the cached pages
         $this->cacheTagManager->tagWith(['contao.db.tl_juhe_consent_banner', 'contao.db.tl_juhe_consent_group', 'contao.db.tl_juhe_consent_service']);
 
