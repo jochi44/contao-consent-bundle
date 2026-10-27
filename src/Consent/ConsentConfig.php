@@ -268,6 +268,7 @@ final class ConsentConfig
             'cookies' => $cookies,
             'hosts' => $hosts,
             'code' => trim((string) $row['code']),
+            'code_denied' => trim((string) ($row['codeDenied'] ?? '')),
             'position' => \in_array($row['codePosition'] ?? null, self::CODE_POSITIONS, true) ? $row['codePosition'] : self::CODE_POSITIONS[0],
             'order' => max(0, (int) ($row['loadOrder'] ?? 0)),
         ];

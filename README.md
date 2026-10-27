@@ -78,6 +78,16 @@ banner under "System > Consent" and select it in the root page.
   Configure every optional provider's hosts, and put its initialization code
   here rather than in an ordinary inline script. The blocker does not inspect
   JavaScript, stylesheets, resource hints or requests created by other scripts.
+- **Code without consent (optional):** HTML/JS that runs once per page while
+  the service is not allowed after the stored choice is applied: on the first
+  visit, after a refusal, and after a withdrawal (which reloads the page, or,
+  if the service was not running yet, at once). It never runs for an allowed
+  service, and it is not undone when the visitor allows the service later on
+  the same page. It must not contact the provider or load anything from it:
+  the blocker does not hold it back, and running it is not consent. Use it for
+  local fallbacks, for example to tell a tag manager or a site script that
+  consent is missing. Same permission warning, position and order as the code
+  after consent.
 - **Position and order:** "Position des Codes" puts the code at the end of the
   page (default) or in the head. "Ladereihenfolge" decides which service
   starts first: the smaller number, and with the same number the order in the
@@ -322,7 +332,8 @@ what it needs (a template of the same name in the theme's `templates/` folder):
   `top-center`, `top-right`; for the bar `bottom` or `top`) for a theme's own
   stylesheet.
 - The `code` block prints one inert `<template data-juhe-consent-code>` per
-  service with code, with `data-juhe-consent-group`, `data-juhe-consent-service`
+  service with code and one `<template data-juhe-consent-denied>` per optional
+  service with code without consent, each with `data-juhe-consent-group`, `data-juhe-consent-service`
   and `data-juhe-consent-placement` (`body` or `head`). Keep them when
   overriding it.
 - `@Contao/juhe_consent/head.html.twig`: block `stylesheet`. A theme with its

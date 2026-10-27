@@ -10,7 +10,8 @@
  * Blocked content is marked by
  * the server: script[type="text/plain"][data-juhe-consent-src], placeholders with
  * the original iframe in a <template>, and template[data-juhe-consent-code] with
- * the code of a service. All of it carries data-juhe-consent-group/-service.
+ * the code of a service, template[data-juhe-consent-denied] with its code
+ * without consent. All of it carries data-juhe-consent-group/-service.
  * The settings have a switch per group ([data-juhe-consent-checkbox]) and, if
  * the template prints them, per optional service ([data-juhe-consent-service-checkbox]).
  *
@@ -334,6 +335,21 @@
 
     const matching = (patterns, name) => patterns.some((pattern) => (pattern.endsWith('*') ? pattern.length > 1 && name.startsWith(pattern.slice(0, -1)) : pattern === name));
 
+    /*
+     * Code without consent: once per page for each service that is not allowed
+     * after the choice is applied (first visit, refusal, withdrawal), in the
+     * services' order. It never runs for an allowed service.
+     */
+    const deny = () => {
+        [...document.querySelectorAll('template[data-juhe-consent-denied]')]
+            .filter((template) => !taken.has(template) && !allowed(template))
+            .sort((a, b) => byRank(a.dataset.juheConsentService, b.dataset.juheConsentService))
+            .forEach((template) => {
+                taken.add(template);
+                queue = queue.then(() => runScripts(insertCode(template), [])).catch(() => {});
+            });
+    };
+
     const removeCookies = (patterns) => {
         const names = document.cookie.split(';').map((cookie) => cookie.split('=')[0].trim()).filter(Boolean);
         const host = location.hostname;
@@ -426,6 +442,7 @@
 
         if (!reload) {
             apply();
+            deny();
         }
 
         // Before a reload too, so integrations can pass a withdrawal on (e.g. to a consent mode)
@@ -772,6 +789,7 @@
     document.dispatchEvent(new CustomEvent('juhe-consent:ready', { detail: snapshot() }));
 
     apply();
+    deny();
 
     if (prompting()) {
         show(false);

@@ -19,7 +19,7 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
         'label' => ['fields' => ['title', 'provider'], 'format' => '%s <span class="label-info">(%s)</span>'],
     ],
     'palettes' => [
-        'default' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,code,codePosition,loadOrder;{publish_legend},published',
+        'default' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,code,codeDenied,codePosition,loadOrder;{publish_legend},published',
     ],
     'fields' => [
         'id' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true]],
@@ -57,6 +57,11 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
             'sql' => ['type' => 'text', 'notnull' => false],
         ],
         'code' => [
+            'inputType' => 'textarea',
+            'eval' => ['allowHtml' => true, 'preserveTags' => true, 'decodeEntities' => true, 'class' => 'monospace', 'rte' => 'ace|html', 'tl_class' => 'clr'],
+            'sql' => ['type' => 'text', 'notnull' => false],
+        ],
+        'codeDenied' => [
             'inputType' => 'textarea',
             'eval' => ['allowHtml' => true, 'preserveTags' => true, 'decodeEntities' => true, 'class' => 'monospace', 'rte' => 'ace|html', 'tl_class' => 'clr'],
             'sql' => ['type' => 'text', 'notnull' => false],
