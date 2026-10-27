@@ -474,7 +474,8 @@
 
     // Waiting for a choice and allowed to ask by itself: not on a page the banner excludes
     const prompting = () => pending() && !config.quiet && !privacySignal;
-    const openers = '[data-juhe-consent-open], a[href$="#cookie-einstellungen"]';
+    // A navigation entry (a redirect page) links to "#juhe-consent"; "#cookie-einstellungen" stays for older links
+    const openers = '[data-juhe-consent-open], a[href$="#juhe-consent"], a[href$="#cookie-einstellungen"]';
 
     let shown = false;
     let shownWithSettings = false;
@@ -791,7 +792,10 @@
     apply();
     deny();
 
-    if (prompting()) {
+    // A page opened with "#juhe-consent" (e.g. in a new tab from an opener) shows the settings
+    if (['#juhe-consent', '#cookie-einstellungen'].includes(location.hash)) {
+        open(null);
+    } else if (prompting()) {
         show(false);
     }
 })();

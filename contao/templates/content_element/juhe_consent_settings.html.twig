@@ -3,14 +3,11 @@
 {#
     A theme styles the opener through button_attributes, e.g.
     {% set button_attributes = attrs().addClass('my-button') %}{{ parent() }}
+    The markup is juhe_consent/opener.html.twig: a link to the privacy policy
+    page (or a button without one) with data-juhe-consent-open.
 #}
 {% block content %}
     {% block button %}
-        <button{{ attrs(button_attributes|default)
-            .addClass('juhe-consent-settings-button')
-            .set('type', 'button')
-            .set('aria-haspopup', 'dialog')
-            .set('data-juhe-consent-open')
-        }}>{{ label }}</button>
+        {% include '@Contao/juhe_consent/opener.html.twig' %}
     {% endblock %}
 {% endblock %}

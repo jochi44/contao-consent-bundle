@@ -32,11 +32,25 @@ groups and services.
 - **Card and settings:** first visit shows a small card at the bottom left
   that leaves the page usable: "Nur notwendige", "Alle akzeptieren" (same
   look), "Einstellungen". The settings are a modal dialog with one switch
-  per group and, in the service details, one switch per optional service. Links to `#cookie-einstellungen`, any
-  `[data-juhe-consent-open]` element and the content element "Cookie-Einstellungen"
-  open it again. A banner can skip the card ("Beim ersten Besuch fragen"
+  per group and, in the service details, one switch per optional service.
+  They open again from the content element and the front end module
+  "Cookie-Einstellungen", the insert tag `{{juhe_consent::settings}}`, any
+  link to `#juhe-consent` (or the older `#cookie-einstellungen`) and any
+  `[data-juhe-consent-open]` element (see Settings openers). A banner can skip the card ("Beim ersten Besuch fragen"
   off): then only the placeholders and the settings link remain, for sites
   where another consent solution already asks (e.g. Google's CMP for ads).
+- **Settings openers:** the content element and the front end module
+  "Cookie-Einstellungen" (for a layout, e.g. the footer; "Eigene Bezeichnung"
+  sets its text) and the insert tag `{{juhe_consent::settings}}` (in a text)
+  print the same opener (`juhe_consent/opener.html.twig`). With a privacy
+  policy page in the banner it is a link to that page with `#juhe-consent`:
+  without JavaScript it leads there, with JavaScript it opens the settings,
+  prefilled with the stored choice. Without a privacy policy page it is a
+  button. A page opened with `#juhe-consent` (a link opened in a new tab)
+  shows the settings at once. For a navigation entry, add a page of the type
+  "Externe Weiterleitung" with the address `{{link_url::<privacy page ID>}}#juhe-consent`
+  (or just `#juhe-consent`); the navigation shows it like any page and the
+  click opens the settings.
 - **Display:** "Karte" (default) or "Leiste über die ganze Breite", a
   full-width bar that shows the groups right away. "Position" places the card
   at the bottom left (default), bottom centre, bottom right, in the centre,
@@ -401,8 +415,15 @@ what it needs (a template of the same name in the theme's `templates/` folder):
   placeholder loads from the provider. A theme colors the glyph through the
   classes `juhe-consent-glyph__frame`, `__line`, `__stroke`, `__mark`, `__dot`
   and `__knock`, or replaces the template.
-- `@Contao/content_element/juhe_consent_settings.html.twig`: block `button`;
-  a theme sets `button_attributes` (an `attrs()` object) to style the opener.
+- `@Contao/juhe_consent/opener.html.twig`: the settings opener, block
+  `opener`; a link (`a.juhe-consent-settings-button[data-juhe-consent-open]`
+  with `href` to the privacy policy page and `#juhe-consent`) or, without
+  that page, a `button`. Variables: `label`, `url` (the privacy policy page or
+  null) and `button_attributes`. The insert tag renders it directly.
+- `@Contao/content_element/juhe_consent_settings.html.twig` and
+  `@Contao/frontend_module/juhe_consent_settings.html.twig`: block `button`,
+  which includes the opener; a theme sets `button_attributes` (an `attrs()`
+  object) to style it, or overrides the opener template for all three.
 
 ## Translations
 

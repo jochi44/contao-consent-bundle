@@ -1,0 +1,12 @@
+{% extends '@Contao/frontend_module/_base.html.twig' %}
+
+{#
+    The front end module "Cookie-Einstellungen": the same opener as the content
+    element (juhe_consent/opener.html.twig), e.g. for the footer of a layout.
+    A theme styles it through button_attributes.
+#}
+{% block content %}
+    {% block button %}
+        {% include '@Contao/juhe_consent/opener.html.twig' %}
+    {% endblock %}
+{% endblock %}

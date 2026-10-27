@@ -7,6 +7,7 @@ $GLOBALS['TL_LANG']['MOD']['juhe_consent_log'] = ['Registro dei consensi', 'Regi
 $GLOBALS['TL_LANG']['MOD']['tl_juhe_consent_group'] = 'Gruppi';
 $GLOBALS['TL_LANG']['MOD']['tl_juhe_consent_service'] = 'Servizi';
 $GLOBALS['TL_LANG']['CTE']['juhe_consent_settings'] = ['Impostazioni cookie', 'Link che apre le impostazioni del consenso.'];
+$GLOBALS['TL_LANG']['FMD']['juhe_consent_settings'] = ['Impostazioni cookie', 'Link che apre le impostazioni del consenso, ad es. per il piè di pagina. Senza JavaScript porta all\'informativa sulla privacy del banner.'];
 
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title_legend'] = 'Banner';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text_legend'] = 'Testi';

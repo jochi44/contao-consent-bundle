@@ -1,0 +1,20 @@
+{#
+    Opens the consent settings. Shared by the content element and the front end
+    module "Cookie-Einstellungen" and the insert tag {{juhe_consent::settings}}.
+    With a privacy policy page (url) it is a link to that page: without
+    JavaScript it leads there, with JavaScript it opens the settings. Without
+    one it is a button. A theme styles it through button_attributes (an attrs()
+    object) or overrides the block "opener"; keep data-juhe-consent-open.
+#}
+{% block opener %}
+    {%- set opener_attributes = attrs(button_attributes|default)
+        .addClass('juhe-consent-settings-button')
+        .set('aria-haspopup', 'dialog')
+        .set('data-juhe-consent-open')
+    -%}
+    {%- if url|default -%}
+        <a{{ opener_attributes.set('href', url ~ '#juhe-consent') }}>{{ label }}</a>
+    {%- else -%}
+        <button{{ opener_attributes.set('type', 'button') }}>{{ label }}</button>
+    {%- endif -%}
+{% endblock %}
