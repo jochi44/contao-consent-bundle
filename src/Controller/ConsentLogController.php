@@ -12,8 +12,8 @@ use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * Stores a choice in the anonymous consent log: banner, version, the random
- * ID from the visitor's cookie, the allowed groups and services and the page.
+ * Stores a choice in the pseudonymous consent log: banner, version, the random
+ * ID from the visitor's browser storage, the allowed groups and services and the page.
  * No IP address or user agent is stored; the IP is only the rate limit key.
  */
 #[Route('/_juhe_consent/log', name: 'juhe_consent_log', methods: ['POST'], defaults: ['_scope' => 'frontend', '_token_check' => false])]
@@ -57,7 +57,7 @@ final class ConsentLogController
     }
 
     /**
-     * Only takes what matches the current banner, so the log holds no free text.
+     * Checks choices against the current banner and accepts only relative page paths.
      *
      * @param array<mixed> $data
      *
@@ -102,12 +102,19 @@ final class ConsentLogController
             }
         }
 
+        $groupList = implode(',', array_unique($groups));
+        $serviceList = implode(',', array_unique($services));
+
+        if (\strlen($groupList) > 255 || \strlen($serviceList) > 255) {
+            return null;
+        }
+
         return [
             'pid' => $bannerId,
             'version' => $data['version'],
             'consentId' => $data['id'],
-            'groups' => implode(',', array_unique($groups)),
-            'services' => implode(',', array_unique($services)),
+            'groups' => $groupList,
+            'services' => $serviceList,
             'url' => $url,
         ];
     }

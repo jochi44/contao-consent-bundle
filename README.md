@@ -49,7 +49,12 @@ banner under "System > Consent" and select it in the root page.
 - **New version = ask again:** raise the banner version after big changes.
 - **Consent log** (`tl_juhe_consent_log`): banner, version, random consent ID from
   the stored choice, groups, services, page path, time. No IP, no user agent.
-  Rate limited (20 per 10 minutes and IP), deleted after three years.
+  Rate limited (20 per 10 minutes and IP), deleted after three years. The random
+  ID is pseudonymous, not a guarantee of anonymity. Avoid personal data in page
+  paths. The rate limiter also processes the client IP as its key. Check the
+  retention period and legal basis with your privacy adviser. Each serialized
+  group or service list is limited to 255 bytes. Larger choices receive HTTP 400
+  and are not logged.
 - **CSP:** the banner script gets a nonce accepted by each enforced and
   report-only policy. Existing policy headers and restrictions for other
   resource types stay intact. A policy with `'unsafe-inline'` and no nonce or

@@ -70,6 +70,18 @@ final class ConsentLogControllerTest extends TestCase
         yield 'url too long' => [['url' => '/'.str_repeat('a', 255)]];
     }
 
+    public function testRejectsAChoiceThatExceedsTheLogColumns(): void
+    {
+        $groups = array_map(static fn (int $i): string => str_repeat('a', 30).$i, range(1, 9));
+        $connection = $this->createMock(Connection::class);
+        $connection->method('fetchOne')->willReturn(3);
+        $connection->method('fetchAllKeyValue')->willReturn(array_combine($groups, range(1, 9)));
+        $connection->method('fetchFirstColumn')->willReturn([]);
+        $connection->expects($this->never())->method('insert');
+
+        $this->assertSame(400, $this->controller($connection)($this->request(['groups' => $groups]))->getStatusCode());
+    }
+
     public function testRejectsBodiesThatAreNotJson(): void
     {
         $connection = $this->connection();
