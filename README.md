@@ -93,7 +93,7 @@ button or a link.
 
 One `localStorage` entry `juhe_consent_<banner id>`, JSON:
 `{v: version, g: [groups], s: [services], id: uuid, t: timestamp}`. It counts
-for one year from `t`; a new banner version asks again. No cookie: Contao's
+for one year from `t`; invalid or future timestamps and a new banner version ask again. No cookie: Contao's
 cache proxy passes every request with an unknown cookie to PHP, and the server
 never needs the choice. List the entry as a necessary service in the banner
 (for example `juhe_consent_*: 1 year`). Without storage (private mode, blocked

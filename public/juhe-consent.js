@@ -47,7 +47,9 @@
             const value = JSON.parse(localStorage.getItem(config.storage) || 'null');
 
             // A new banner version or a choice older than a year asks again
-            if (!value || value.v !== config.version || !Array.isArray(value.g) || Date.now() / 1000 - Number(value.t) > maxAge) {
+            const now = Date.now() / 1000;
+
+            if (!value || value.v !== config.version || !Array.isArray(value.g) || !Number.isFinite(value.t) || value.t < 0 || value.t > now || now - value.t > maxAge) {
                 return null;
             }
 
