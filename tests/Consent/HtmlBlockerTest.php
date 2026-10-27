@@ -45,6 +45,40 @@ final class HtmlBlockerTest extends TestCase
         $this->assertSame($html, (new HtmlBlocker())->block($html, $this->banner(), static fn (): string => 'P'));
     }
 
+    public function testBlocksUnquotedUrlsAndExternalScriptsWithFallbackText(): void
+    {
+        $html = '<iframe src=https://www.youtube-nocookie.com/embed/abc></iframe><script src=https://www.googletagmanager.com/x.js>/* fallback */</script>';
+        $result = (new HtmlBlocker())->block($html, $this->banner(), static fn (): string => 'P');
+
+        $this->assertSame('P<script type="text/plain" data-juhe-consent-group="stats" data-juhe-consent-service="s8" data-juhe-consent-src="https://www.googletagmanager.com/x.js">/* fallback */</script>', $result);
+    }
+
+    public function testQuotedGreaterThanDoesNotEndTheOpeningTag(): void
+    {
+        $html = '<iframe title="a > b" src="https://www.youtube-nocookie.com/embed/abc"></iframe>';
+        $this->assertSame('P', (new HtmlBlocker())->block($html, $this->banner(), static fn (): string => 'P'));
+    }
+
+    public function testMatchesBrowserNormalizedProviderUrls(): void
+    {
+        foreach ([
+            "https://www.you\ntube-nocookie.com/embed/abc",
+            'https://www.%79outube-nocookie.com/embed/abc',
+            'https:\\\\www.youtube-nocookie.com\\embed\\abc',
+        ] as $url) {
+            $this->assertSame('P', (new HtmlBlocker())->block('<iframe src="'.$url.'"></iframe>', $this->banner(), static fn (): string => 'P'), $url);
+        }
+    }
+
+    public function testDoesNotRewriteCommentsOrRawTextAsLiveElements(): void
+    {
+        $iframe = '<iframe src="https://www.youtube-nocookie.com/embed/abc"></iframe>';
+        $script = '<script src="https://www.googletagmanager.com/x.js"></script>';
+        foreach (['<!--'.$iframe.$script.'-->', '<script>const markup = `'.$iframe.'`;</script>', '<textarea>'.$iframe.$script.'</textarea>'] as $html) {
+            $this->assertSame($html, (new HtmlBlocker())->block($html, $this->banner(), static fn (): string => 'P'));
+        }
+    }
+
     public function testNeverBlocksEssentialServices(): void
     {
         $html = '<script src="https://cdn.essential.example/x.js"></script>';

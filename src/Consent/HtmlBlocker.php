@@ -15,6 +15,10 @@ namespace JuheItSolutions\JuheConsentBundle\Consent;
  */
 final class HtmlBlocker
 {
+    private const ATTRIBUTES = '(?:[^>"\']|"[^"]*"|\'[^\']*\')*';
+    private const NON_ELEMENTS = '(?:<!--.*?-->|<(?<raw>style|textarea|title)\b'.self::ATTRIBUTES.'>.*?<\/\k<raw>\s*>)(*SKIP)(*F)|';
+    private const ATTRIBUTE = '/\\s+([^\\s=\/>]+)(?:\\s*=\\s*(?:"([^"]*)"|\'([^\']*)\'|([^\\s>]+)))?/';
+
     /**
      * @param array<string, mixed>                                   $banner      see ConsentConfig::banner()
      * @param callable(array{group: string, key: string, title: string, provider: string, privacy_url: string}, string): string $placeholder renders the placeholder for a service and the original iframe
@@ -35,7 +39,7 @@ final class HtmlBlocker
             return $html;
         }
 
-        $html = preg_replace_callback('/<iframe\b[^>]*>.*?<\/iframe>/is', function (array $match) use ($services, $placeholder): string {
+        $html = preg_replace_callback('/' .self::NON_ELEMENTS.'<script\b'.self::ATTRIBUTES.'>.*?<\/script\s*>(*SKIP)(*F)|<iframe\b'.self::ATTRIBUTES.'>.*?<\/iframe\s*>/is', function (array $match) use ($services, $placeholder): string {
             $service = $this->serviceFor($match[0], $services);
 
             if (null === $service) {
@@ -45,16 +49,19 @@ final class HtmlBlocker
             return $placeholder(['group' => $service['group'], 'key' => $service['key'], 'title' => $service['title'], 'provider' => $service['provider'], 'privacy_url' => $service['privacy_url']], $match[0]);
         }, $html) ?? $html;
 
-        return preg_replace_callback('/<script\b([^>]*)>(\s*)<\/script>/i', function (array $match) use ($services): string {
-            if (!preg_match('/\ssrc\s*=\s*(["\'])(.*?)\1/i', $match[1], $src) || null === ($service = $this->serviceFor($match[0], $services))) {
+        return preg_replace_callback('/'.self::NON_ELEMENTS.'<script\b(?<attributes>'.self::ATTRIBUTES.')>(?<body>.*?)<\/script\s*>/is', function (array $match) use ($services): string {
+            $src = $this->attribute($match['attributes'], 'src');
+
+            if (null === $src || null === ($service = $this->serviceFor($match[0], $services))) {
                 return $match[0];
             }
 
             // The original type (e.g. "module") is kept for consent.js
-            $type = preg_match('/\stype\s*=\s*(["\'])(.*?)\1/i', $match[1], $typeMatch) ? \sprintf(' data-juhe-consent-type="%s"', $typeMatch[2]) : '';
-            $attributes = preg_replace('/\s(src|type)\s*=\s*(["\']).*?\2/i', '', $match[1]);
+            $originalType = $this->attribute($match['attributes'], 'type');
+            $type = null !== $originalType ? \sprintf(' data-juhe-consent-type="%s"', htmlspecialchars($originalType, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')) : '';
+            $attributes = preg_replace_callback(self::ATTRIBUTE, static fn (array $attribute): string => \in_array(strtolower($attribute[1]), ['src', 'type'], true) ? '' : $attribute[0], $match['attributes']);
 
-            return \sprintf('<script type="text/plain" data-juhe-consent-group="%s" data-juhe-consent-service="%s" data-juhe-consent-src="%s"%s%s></script>', $service['group'], $service['key'], $src[2], $type, $attributes);
+            return \sprintf('<script type="text/plain" data-juhe-consent-group="%s" data-juhe-consent-service="%s" data-juhe-consent-src="%s"%s%s>%s</script>', $service['group'], $service['key'], htmlspecialchars($src, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), $type, $attributes, $match['body']);
         }, $html) ?? $html;
     }
 
@@ -65,12 +72,17 @@ final class HtmlBlocker
      */
     private function serviceFor(string $tag, array $services): array|null
     {
-        if (!preg_match('/\ssrc\s*=\s*(["\'])(.*?)\1/i', $tag, $src)) {
+        preg_match('/^<\\w+('.self::ATTRIBUTES.')>/s', $tag, $opening);
+        $src = $this->attribute($opening[1] ?? '', 'src');
+
+        if (null === $src) {
             return null;
         }
 
-        $url = html_entity_decode($src[2], ENT_QUOTES | ENT_HTML5);
-        $host = strtolower((string) parse_url(str_starts_with($url, '//') ? 'https:'.$url : $url, PHP_URL_HOST));
+        // HTTP URLs in HTML follow browser normalization, not PHP's URL grammar.
+        $url = str_replace(["\t", "\n", "\r"], '', trim($src, "\x00..\x20"));
+        $url = str_replace('\\', '/', $url);
+        $host = strtolower(rawurldecode((string) parse_url(str_starts_with($url, '//') ? 'https:'.$url : $url, PHP_URL_HOST)));
 
         if ('' === $host) {
             return null;
@@ -81,6 +93,19 @@ final class HtmlBlocker
                 if ($host === $blocked || str_ends_with($host, '.'.$blocked)) {
                     return $service;
                 }
+            }
+        }
+
+        return null;
+    }
+
+    private function attribute(string $attributes, string $name): string|null
+    {
+        preg_match_all(self::ATTRIBUTE, $attributes, $matches, PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL);
+
+        foreach ($matches as $match) {
+            if (strtolower($match[1]) === $name) {
+                return html_entity_decode($match[2] ?? $match[3] ?? $match[4] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
             }
         }
 
