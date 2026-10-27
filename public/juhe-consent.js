@@ -19,7 +19,9 @@
  * groups, services), .subscribe(callback) (called at once and after every
  * change, returns the unsubscribe function), the queue window.juheConsentQueue
  * for code that runs before this script, and these events on document:
- * "juhe-consent:ready" (detail: the state) once the API exists,
+ * .whenLoaded(key) (a Promise for when the external scripts of a service have
+ * loaded), "juhe-consent:ready" (detail: the state) once the API exists,
+ * "juhe-consent:loaded" (detail.service, detail.failed) per started service,
  * "juhe-consent" after every change, "juhe-consent:open" (detail.settings) and
  * "juhe-consent:close" (cancelable: preventDefault() keeps focus where it is
  * instead of returning it to the element that opened the settings).
@@ -184,11 +186,117 @@
         }
     };
 
+    /*
+     * Services start in their order (smaller first, ties as in the back end). In
+     * a service, the page's blocked scripts come first, then its code, at the end
+     * of the body or in the head. Scripts run in document order: an external
+     * script without async has loaded (or failed) before the next one runs, so a
+     * library is there before its setup. whenLoaded(key) and the event
+     * "juhe-consent:loaded" report when all external scripts of a service have
+     * finished; a service without them reports as soon as it started.
+     */
+    const rank = new Map(services.map((service, index) => [service.key, [Number.isInteger(service.order) ? service.order : 0, index]]));
+    const byRank = (a, b) => {
+        const [x, i] = rank.get(a) || [0, services.length];
+        const [y, j] = rank.get(b) || [0, services.length];
+
+        return x - y || i - j;
+    };
+
+    const readiness = new Map();
+    const loaded = (key) => {
+        if (!readiness.has(key)) {
+            let resolve;
+            const promise = new Promise((done) => {
+                resolve = done;
+            });
+            readiness.set(key, { promise, resolve });
+        }
+
+        return readiness.get(key);
+    };
+
+    const started = new Set();
+    const taken = new WeakSet();
+    let queue = Promise.resolve();
+
+    // Browsers fetch no external script of another type, and no nomodule script
+    const fetched = (script) => script.hasAttribute('src') && !script.noModule && (!script.type || /^(module|(text|application)\/(x-)?(java|ecma)script)$/i.test(script.type));
+
+    // [slot, original] pairs: each original becomes a runnable script in its slot, in order
+    const runScripts = async (pairs, failed) => {
+        const pending = [];
+
+        for (const [slot, old] of pairs) {
+            const script = runnable(old);
+            const done = fetched(script) ? new Promise((resolve) => {
+                script.addEventListener('load', () => resolve(), { once: true });
+                script.addEventListener('error', () => {
+                    failed.push(script.src);
+                    resolve();
+                }, { once: true });
+            }) : null;
+
+            slot.replaceWith(script);
+
+            if (done) {
+                pending.push(done);
+
+                if (!old.hasAttribute('async')) {
+                    await done;
+                }
+            }
+        }
+
+        await Promise.all(pending);
+    };
+
+    // The code of a template goes in place first; its scripts start one by one afterwards
+    const insertCode = (template) => {
+        const fragment = document.importNode(template.content, true);
+        const pairs = [...fragment.querySelectorAll('script')].map((old) => {
+            const slot = document.createComment('');
+            old.replaceWith(slot);
+
+            return [slot, old];
+        });
+
+        ('head' === template.dataset.juheConsentPlacement ? document.head : document.body).append(fragment);
+        template.remove();
+
+        return pairs;
+    };
+
+    const start = async (key, scripts, templates) => {
+        const failed = [];
+        await runScripts(scripts.map((old) => [old, old]), failed);
+
+        for (const template of templates) {
+            await runScripts(insertCode(template), failed);
+        }
+
+        if (!started.has(key)) {
+            started.add(key);
+            const detail = { service: key, failed };
+            loaded(key).resolve(detail);
+            document.dispatchEvent(new CustomEvent('juhe-consent:loaded', { detail: { ...detail, failed: [...failed] } }));
+        }
+    };
+
     const apply = () => {
+        const batch = new Map();
+        const entry = (key) => {
+            if (!batch.has(key)) {
+                batch.set(key, { scripts: [], templates: [] });
+            }
+
+            return batch.get(key);
+        };
+
         document.querySelectorAll('script[type="text/plain"][data-juhe-consent-src]').forEach((old) => {
-            if (allowed(old)) {
-                running.add(old.dataset.juheConsentService);
-                old.replaceWith(runnable(old));
+            if (!taken.has(old) && allowed(old)) {
+                taken.add(old);
+                entry(old.dataset.juheConsentService).scripts.push(old);
             }
         });
 
@@ -200,21 +308,30 @@
         });
 
         document.querySelectorAll('template[data-juhe-consent-code]').forEach((template) => {
-            if (allowed(template)) {
-                running.add(template.dataset.juheConsentService);
-                document.body.append(content(template));
-                template.remove();
+            if (!taken.has(template) && allowed(template)) {
+                taken.add(template);
+                entry(template.dataset.juheConsentService).templates.push(template);
             }
+        });
+
+        // Allowed services without scripts or code still report that they started
+        services.forEach((service) => {
+            if (!started.has(service.key) && allows(state, service.group, service.key)) {
+                entry(service.key);
+            }
+        });
+
+        [...batch.keys()].sort(byRank).forEach((key) => {
+            const { scripts, templates } = batch.get(key);
+
+            if (scripts.length || templates.length) {
+                running.add(key);
+            }
+
+            queue = queue.then(() => start(key, scripts, templates)).catch(() => {});
         });
     };
 
-    /*
-     * Expires the listed cookies that scripts can see ("name*" for a prefix; a bare
-     * "*" matches nothing): at "/" and every parent of the current path, as
-     * host-only cookies and on the host and its parent domains (trackers often use
-     * the parent domain; browsers ignore a public suffix such as "co.uk").
-     * HttpOnly cookies are left to the server (cleanup() below).
-     */
     const matching = (patterns, name) => patterns.some((pattern) => (pattern.endsWith('*') ? pattern.length > 1 && name.startsWith(pattern.slice(0, -1)) : pattern === name));
 
     const removeCookies = (patterns) => {
@@ -498,6 +615,8 @@
             listeners.push(callback);
         },
         state: snapshot,
+        // Resolves once all external scripts of the service have loaded; never for a service that is not allowed
+        whenLoaded: (key) => loaded(String(key)).promise,
         // Called at once with the current state and after every change; returns the unsubscribe function
         subscribe: (callback) => {
             if ('function' !== typeof callback) {

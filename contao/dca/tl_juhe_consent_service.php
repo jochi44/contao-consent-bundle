@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Contao\DataContainer;
 use Contao\DC_Table;
+use JuheItSolutions\JuheConsentBundle\Consent\ConsentConfig;
 
 // One provider in a group: what it loads, which hosts wait for consent, its cookies
 $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
@@ -18,7 +19,7 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
         'label' => ['fields' => ['title', 'provider'], 'format' => '%s <span class="label-info">(%s)</span>'],
     ],
     'palettes' => [
-        'default' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,code;{publish_legend},published',
+        'default' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,code,codePosition,loadOrder;{publish_legend},published',
     ],
     'fields' => [
         'id' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true]],
@@ -59,6 +60,18 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
             'inputType' => 'textarea',
             'eval' => ['allowHtml' => true, 'preserveTags' => true, 'decodeEntities' => true, 'class' => 'monospace', 'rte' => 'ace|html', 'tl_class' => 'clr'],
             'sql' => ['type' => 'text', 'notnull' => false],
+        ],
+        'codePosition' => [
+            'inputType' => 'select',
+            'options' => ConsentConfig::CODE_POSITIONS,
+            'reference' => &$GLOBALS['TL_LANG']['tl_juhe_consent_service']['codePositionOptions'],
+            'eval' => ['tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 8, 'default' => 'body'],
+        ],
+        'loadOrder' => [
+            'inputType' => 'text',
+            'eval' => ['rgxp' => 'natural', 'maxlength' => 5, 'tl_class' => 'w50'],
+            'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ],
         'published' => [
             'toggle' => true,

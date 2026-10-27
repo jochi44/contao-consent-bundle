@@ -145,6 +145,26 @@ final class ConsentConfigTest extends TestCase
         $this->assertNull($this->config($connection)->bannerForPage($this->page(2, 1)));
     }
 
+    public function testCodePositionAndOrderFallBackToTheDefaults(): void
+    {
+        $service = ['pid' => 3, 'title' => 'S', 'provider' => '', 'description' => '', 'privacyUrl' => '', 'cookies' => "_ga*: 2 years\n\n_gid", 'hosts' => '', 'code' => ''];
+        $connection = $this->createStub(Connection::class);
+        $connection->method('fetchAssociative')->willReturn(['id' => 7, 'version' => 1, 'headline' => 'H', 'text' => '', 'placeholderText' => '', 'askOnFirstVisit' => 1, 'privacyPage' => 0, 'imprintPage' => 0]);
+        $connection->method('fetchAllAssociative')->willReturnOnConsecutiveCalls(
+            [['id' => 3, 'alias' => 'a', 'title' => 'A', 'description' => '', 'essential' => 0]],
+            [
+                ['id' => 1, 'codePosition' => 'head', 'loadOrder' => '4'] + $service,
+                ['id' => 2, 'codePosition' => '<evil>', 'loadOrder' => '-3'] + $service,
+                ['id' => 3] + $service,
+            ],
+        );
+
+        $services = $this->config($connection)->banner(7)['groups'][0]['services'];
+
+        $this->assertSame([['head', 4], ['body', 0], ['body', 0]], array_map(static fn (array $s): array => [$s['position'], $s['order']], $services));
+        $this->assertSame([['name' => '_ga*', 'duration' => '2 years'], ['name' => '_gid', 'duration' => '']], $services[0]['cookies']);
+    }
+
     private function config(Connection $connection): ConsentConfig
     {
         $insertTags = $this->createStub(InsertTagParser::class);

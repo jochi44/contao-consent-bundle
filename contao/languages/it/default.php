@@ -65,6 +65,9 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_service']['description'] = ['Scopo', 'Per c
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['cookies'] = ['Cookie', 'Un cookie per riga: "nome: durata", ad es. "_ga: 2 anni". Un asterisco alla fine indica un prefisso, ad es. "_ga*". Viene mostrato ai visitatori e cancellato alla revoca, anche i cookie HttpOnly di questo sito. I cookie di altri domini (cookie di terze parti) non si possono cancellare.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['hosts'] = ['Domini bloccati', 'Un dominio per riga, ad es. "youtube.com". Iframe e script da questi domini (sottodomini inclusi) si caricano solo dopo il consenso.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['code'] = ['Codice dopo il consenso', 'HTML/JavaScript inserito alla fine della pagina dopo il consenso, ad es. lo script di tracciamento.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['codePosition'] = ['Posizione del codice', 'Dove viene inserito il codice dopo il consenso: alla fine della pagina (predefinito) o nell\'intestazione. Gli script mantengono i loro attributi (async, defer, type).'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['codePositionOptions'] = ['body' => 'Fine della pagina', 'head' => 'Intestazione (head)'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['loadOrder'] = ['Ordine di caricamento', 'I servizi con il numero più piccolo partono per primi; a parità di numero vale l\'ordine nel backend. In un servizio gli script vengono eseguiti nell\'ordine del codice; uno script esterno senza async viene caricato prima che parta il successivo.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['published'] = ['Pubblicato', ''];
 
 $GLOBALS['TL_LANG']['tl_juhe_consent_log']['tstamp'] = ['Data e ora', ''];

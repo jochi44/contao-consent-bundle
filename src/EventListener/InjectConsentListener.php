@@ -147,6 +147,8 @@ final class InjectConsentListener
                 'services' => array_map(static fn (array $service): array => [
                     'key' => $service['key'],
                     'cookies' => array_column($service['cookies'], 'name'),
+                    // Smaller starts first; the same order keeps the order of the back end
+                    'order' => $service['order'] ?? 0,
                 ], $group['services']),
             ], $banner['groups']),
         ];

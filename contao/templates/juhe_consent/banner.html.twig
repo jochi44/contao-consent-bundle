@@ -127,7 +127,7 @@
 {% block code %}
 {% for group in banner.groups %}
     {% for service in group.services|filter(service => service.code) %}
-        <template data-juhe-consent-code data-juhe-consent-group="{{ group.alias }}" data-juhe-consent-service="{{ service.key }}">{{ service.code|raw }}</template>
+        <template data-juhe-consent-code data-juhe-consent-group="{{ group.alias }}" data-juhe-consent-service="{{ service.key }}" data-juhe-consent-placement="{{ service.position|default('body') }}">{{ service.code|raw }}</template>
     {% endfor %}
 {% endfor %}
 {% endblock %}

@@ -28,6 +28,11 @@ final class ConsentConfig
     public const BAR_POSITIONS = ['bottom', 'top'];
 
     /**
+     * Where the code of a service goes after consent; the first one is the default.
+     */
+    public const CODE_POSITIONS = ['body', 'head'];
+
+    /**
      * How many days a choice counts: one year by default, at most 13 months.
      */
     public const DEFAULT_LIFETIME = 365;
@@ -263,6 +268,8 @@ final class ConsentConfig
             'cookies' => $cookies,
             'hosts' => $hosts,
             'code' => trim((string) $row['code']),
+            'position' => \in_array($row['codePosition'] ?? null, self::CODE_POSITIONS, true) ? $row['codePosition'] : self::CODE_POSITIONS[0],
+            'order' => max(0, (int) ($row['loadOrder'] ?? 0)),
         ];
     }
 

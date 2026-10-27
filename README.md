@@ -78,6 +78,17 @@ banner under "System > Consent" and select it in the root page.
   Configure every optional provider's hosts, and put its initialization code
   here rather than in an ordinary inline script. The blocker does not inspect
   JavaScript, stylesheets, resource hints or requests created by other scripts.
+- **Position and order:** "Position des Codes" puts the code at the end of the
+  page (default) or in the head. "Ladereihenfolge" decides which service
+  starts first: the smaller number, and with the same number the order in the
+  back end. A service starts with the page's blocked scripts of its hosts,
+  then its code. Scripts run in document order: an external script without
+  `async` has loaded (or failed) before the next script runs, so a library is
+  there before the inline setup that follows it. Each service waits for the
+  one before it. Scripts keep their attributes (`async`, `defer`, `type`,
+  `data-*` and others) and get the page's CSP nonce. Each service starts once
+  per page. `juheConsent.whenLoaded(key)` and the event `juhe-consent:loaded`
+  report when a service's external scripts have loaded (see JavaScript API).
 - **Single services:** a group switch turns all its services on or off. With
   only some services on, the group switch shows a mixed state (a native
   indeterminate checkbox, "mixed" for screen readers). The choice stores the
@@ -209,10 +220,12 @@ consent tools is not a goal.
 window.juheConsent.has('statistik');  // effective permission for a group alias or service key "s<id>"; unknown names: false
 window.juheConsent.state();           // a copy: {decided, groups, services}
 window.juheConsent.subscribe((state) => {}); // returns a function that unsubscribes
+window.juheConsent.whenLoaded('s12').then((detail) => {}); // detail: {service, failed}
 window.juheConsent.open();            // settings; focus returns to the active element afterwards
 window.juheConsent.pending();         // true while the banner waits for a first choice
 window.juheConsent.onChange((api) => {});
 document.addEventListener('juhe-consent:ready', (event) => event.detail.groups);
+document.addEventListener('juhe-consent:loaded', (event) => event.detail.service);
 document.addEventListener('juhe-consent', (event) => event.detail.groups);
 document.addEventListener('juhe-consent:open', (event) => event.detail.settings);
 // Cancelable: preventDefault() keeps focus where it is instead of returning it to the opener
@@ -234,6 +247,17 @@ document.addEventListener('juhe-consent:close', (event) => {});
   the others; its error shows in the console.
 - `onChange(callback)`: older form, called after every change with the API
   object (not at once).
+- `whenLoaded(key)`: a Promise for the service key `s<id>`. It resolves once
+  the service started and all its external scripts (blocked page scripts and
+  scripts in its code, `async` ones included) have loaded, or at once after
+  the start for a service without external scripts. A script that fails to
+  load (blocked, offline) counts as finished; its URL is in `detail.failed`.
+  For a service that is not allowed, and for an unknown key, it stays pending
+  until the service is allowed on this page, so code that waits for it never
+  runs without consent.
+- `juhe-consent:loaded` on `document`: once per service and page, at the same
+  moment, with the same `detail` (`service`, `failed`). Essential services
+  report too.
 - `juhe-consent:ready` on `document`: once, when the API exists and before any
   service starts; `detail` is the state.
 - `juhe-consent` on `document`: after every change; `detail.groups` are the
@@ -297,6 +321,10 @@ what it needs (a template of the same name in the theme's `templates/` folder):
   (`bottom-left`, `bottom-center`, `bottom-right`, `center`, `top-left`,
   `top-center`, `top-right`; for the bar `bottom` or `top`) for a theme's own
   stylesheet.
+- The `code` block prints one inert `<template data-juhe-consent-code>` per
+  service with code, with `data-juhe-consent-group`, `data-juhe-consent-service`
+  and `data-juhe-consent-placement` (`body` or `head`). Keep them when
+  overriding it.
 - `@Contao/juhe_consent/head.html.twig`: block `stylesheet`. A theme with its
   own skin overrides it with an empty block.
 - `@Contao/juhe_consent/placeholder.html.twig`: the placeholder for a blocked
