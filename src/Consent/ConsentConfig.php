@@ -9,6 +9,7 @@ use Contao\CoreBundle\Routing\ContentUrlGenerator;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\Routing\Exception\ExceptionInterface as RoutingException;
 
 /**
  * A banner with its published groups and services, as the templates and the
@@ -55,12 +56,14 @@ final class ConsentConfig
             'version' => (int) $banner['version'],
             'headline' => (string) $banner['headline'],
             'text' => $this->insertTagParser->replaceInline((string) $banner['text']),
+            'info' => trim($this->insertTagParser->replaceInline((string) ($banner['infoText'] ?? ''))),
             'placeholder' => trim((string) $banner['placeholderText']),
             'ask' => (bool) $banner['askOnFirstVisit'],
             'layout' => self::layout($banner['layout'] ?? null),
             'blocking' => (bool) ($banner['blocking'] ?? false),
             'privacy_url' => $this->pageUrl((int) $banner['privacyPage']),
             'imprint_url' => $this->pageUrl((int) $banner['imprintPage']),
+            'links' => $this->links(self::pageIds($banner['infoPages'] ?? null)),
             'legal_pages' => array_values(array_filter([(int) $banner['privacyPage'], (int) $banner['imprintPage']])),
             'quiet_pages' => self::pageIds($banner['excludePages'] ?? null),
             'quiet' => false,
@@ -157,10 +160,43 @@ final class ConsentConfig
         ];
     }
 
+    /**
+     * The further links: published pages with an address, in the chosen order.
+     *
+     * @param list<int> $ids
+     *
+     * @return list<array{url: string, title: string}>
+     */
+    private function links(array $ids): array
+    {
+        $links = [];
+
+        foreach ($ids as $id) {
+            $page = PageModel::findPublishedById($id);
+            $url = $page ? $this->url($page) : null;
+
+            if (null !== $url) {
+                $links[] = ['url' => $url, 'title' => (string) $page->title];
+            }
+        }
+
+        return $links;
+    }
+
     private function pageUrl(int $id): string|null
     {
         $page = $id ? PageModel::findPublishedById($id) : null;
 
-        return $page ? $this->urlGenerator->generate($page) : null;
+        return $page ? $this->url($page) : null;
+    }
+
+    private function url(PageModel $page): string|null
+    {
+        // A root or folder page has no address of its own
+        try {
+            return $this->urlGenerator->generate($page);
+        } catch (RoutingException) {
+            return null;
+        }
     }
 }

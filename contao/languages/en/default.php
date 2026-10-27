@@ -17,6 +17,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version_legend'] = 'Version';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title'] = ['Title', 'Backend only, e.g. "Website EN".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['headline'] = ['Headline', 'e.g. "Your privacy".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text'] = ['Text', 'Briefly explains what consent is asked for.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['infoText'] = ['Additional information', 'Shown in the settings below the groups, e.g. a note on transfers to other countries or how to change the choice later. Empty = no text.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['placeholderText'] = ['Text for blocked content', 'Shown instead of videos, maps etc. until consent is given. ##service## is replaced with the service name. Empty = default text.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['askOnFirstVisit'] = ['Ask on the first visit', 'Shows the card on the first visit. Unticked, no banner appears: blocked content shows only its placeholder, and the settings open from the "Cookie settings" link. Useful when another consent solution (e.g. Google\'s for ads) already asks and only click-to-load content is left here.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout'] = ['Display', 'The card leaves the page usable; the bar shows the groups right away.'];
@@ -25,6 +26,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Block the page unt
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['excludePages'] = ['Do not open automatically on', 'On these pages the banner does not open by itself, e.g. on a contact or landing page. Blocked content stays blocked, and the settings still open from the "Cookie settings" link. The privacy policy and imprint never block the page anyway.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Privacy policy', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Imprint', ''];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['infoPages'] = ['Further links', 'Pages linked after the privacy policy and imprint, in this order. The link shows the page title. Unpublished pages are left out.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Increase when groups or services change substantially: all visitors are asked again.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedBy'] = 'Used by:';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedByNone'] = 'Not assigned to a website';

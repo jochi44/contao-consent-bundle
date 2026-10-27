@@ -73,6 +73,13 @@
                 </section>
                 {% endblock %}
             {% endfor %}
+
+            {# Additional information from the banner, shown with the groups #}
+            {% block info %}
+            {% if banner.info %}
+                <div class="juhe-consent__info">{{ banner.info|raw }}</div>
+            {% endif %}
+            {% endblock %}
         </div>
         {% endblock %}
 
@@ -86,10 +93,11 @@
         {% endblock %}
 
         {% block links %}
-        {% if banner.privacy_url or banner.imprint_url %}
+        {% if banner.privacy_url or banner.imprint_url or banner.links|default([]) %}
             <p class="juhe-consent__links">
                 {% if banner.privacy_url %}<a href="{{ banner.privacy_url }}">{{ 'privacy_policy'|trans }}</a>{% endif %}
                 {% if banner.imprint_url %}<a href="{{ banner.imprint_url }}">{{ 'imprint'|trans }}</a>{% endif %}
+                {% for link in banner.links|default([]) %}<a href="{{ link.url }}">{{ link.title }}</a>{% endfor %}
             </p>
         {% endif %}
         {% endblock %}

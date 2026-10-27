@@ -17,6 +17,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version_legend'] = 'Versione';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title'] = ['Titolo', 'Solo nel backend, ad es. "Sito IT".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['headline'] = ['Titolo del banner', 'Ad es. "La tua privacy".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text'] = ['Testo', 'Spiega in breve per che cosa si chiede il consenso.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['infoText'] = ['Informazioni aggiuntive', 'Appare nelle impostazioni sotto i gruppi, ad es. una nota sui trasferimenti verso paesi terzi o su come modificare la scelta in seguito. Vuoto = nessun testo.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['placeholderText'] = ['Testo per i contenuti bloccati', 'Appare al posto di video, mappe ecc. finché manca il consenso. ##service## viene sostituito dal nome del servizio. Vuoto = testo predefinito.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['askOnFirstVisit'] = ['Chiedi alla prima visita', 'Mostra la scheda alla prima visita. Senza spunta non appare alcun banner: i contenuti bloccati mostrano solo il segnaposto e le impostazioni si aprono dal link "Impostazioni cookie". Utile quando un\'altra soluzione per il consenso (ad es. quella di Google per la pubblicità) chiede già e qui restano solo contenuti da caricare con un clic.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout'] = ['Visualizzazione', 'La scheda lascia la pagina utilizzabile; la barra mostra subito i gruppi.'];
@@ -25,6 +26,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Blocca la pagina f
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['excludePages'] = ['Non aprire automaticamente su', 'Su queste pagine il banner non si apre da solo, ad es. su una pagina di contatto o una landing page. I contenuti bloccati restano bloccati e le impostazioni si aprono comunque dal link "Impostazioni cookie". L\'informativa sulla privacy e le note legali non bloccano mai la pagina.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Informativa sulla privacy', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Note legali', ''];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['infoPages'] = ['Altri link', 'Pagine collegate dopo l\'informativa sulla privacy e le note legali, in questo ordine. Il link mostra il titolo della pagina. Le pagine non pubblicate vengono omesse.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Versione', 'Da aumentare quando gruppi o servizi cambiano in modo sostanziale: a tutti i visitatori viene chiesto di nuovo il consenso.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedBy'] = 'Usato da:';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedByNone'] = 'Non assegnato a nessun sito';

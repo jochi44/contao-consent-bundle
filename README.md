@@ -38,6 +38,12 @@ banner under "System > Consent" and select it in the root page.
   without a choice, and the settings still open from a link or button. The
   next ordinary page asks as usual. The pages are part of the banner, so the
   cached pages stay the same for every visitor.
+- **More information and links:** "Weitere Informationen" is a text shown in
+  the settings below the groups. "Weitere Links" adds pages after the privacy
+  policy and imprint, in the chosen order, each named by its page title;
+  unpublished pages drop out. Texts and links belong to the banner: a site
+  with several languages has one banner per language root (see
+  Translations), there is no per-root override.
 - **Blocking on the server:** iframes and external scripts whose host (or a
   subdomain) is listed at a service of a non-essential group are held back
   in the HTML. Iframes become a placeholder with "Inhalt laden" (this time)
@@ -147,8 +153,10 @@ The templates are Twig with blocks, so a theme extends them and overrides only
 what it needs (a template of the same name in the theme's `templates/` folder):
 
 - `@Contao/juhe_consent/banner.html.twig`: `dialog_attributes`, `headline`,
-  `text`, `settings`, `group`, `service`, `buttons`, `links`, `code`, `config`,
-  `script`. The class names and `data-juhe-consent-*` attributes are what the
+  `text`, `settings`, `group`, `service`, `info` (inside `settings`), `buttons`,
+  `links`, `code`, `config`, `script`. `banner.info` is the additional
+  information (HTML from the editor), `banner.links` the further links
+  (`url`, `title`); a theme that overrides `links` prints them too. The class names and `data-juhe-consent-*` attributes are what the
   script relies on; keep them.
 - `@Contao/juhe_consent/head.html.twig`: block `stylesheet`. A theme with its
   own skin overrides it with an empty block.

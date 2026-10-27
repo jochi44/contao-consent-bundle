@@ -164,6 +164,22 @@
     outline-offset: 2px;
 }
 
+/* Additional information below the groups, across all columns of the bar */
+.juhe-consent__info {
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
+    color: var(--juhe-consent-muted);
+    font-size: 0.875rem;
+}
+
+.juhe-consent__info > * {
+    margin: 0 0 0.5em;
+}
+
+.juhe-consent__info > :last-child {
+    margin-bottom: 0;
+}
+
 .juhe-consent__links {
     display: flex;
     flex-wrap: wrap;

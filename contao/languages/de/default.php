@@ -17,6 +17,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version_legend'] = 'Version';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title'] = ['Titel', 'Nur im Backend, z. B. "Website DE".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['headline'] = ['Überschrift', 'z. B. "Ihre Privatsphäre".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text'] = ['Text', 'Erklärt kurz, wofür um Einwilligung gebeten wird.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['infoText'] = ['Weitere Informationen', 'Erscheint in den Einstellungen unter den Gruppen, z. B. ein Hinweis auf Drittländer oder wie man die Auswahl später ändert. Leer = kein Text.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['placeholderText'] = ['Text für blockierte Inhalte', 'Steht anstelle von Videos, Karten usw., solange keine Einwilligung besteht. ##service## wird durch den Namen des Dienstes ersetzt. Leer = Standardtext.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['askOnFirstVisit'] = ['Beim ersten Besuch fragen', 'Zeigt die Karte beim ersten Besuch. Ohne Haken erscheint kein Banner: blockierte Inhalte zeigen nur ihren Platzhalter, die Einstellungen öffnen sich über den Link "Cookie-Einstellungen". Sinnvoll, wenn eine andere Einwilligungslösung (z. B. die von Google für Werbung) schon fragt und hier nur Inhalte zum Anklicken übrig sind.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout'] = ['Darstellung', 'Die Karte lässt die Seite frei; die Leiste zeigt die Gruppen gleich mit an.'];
@@ -25,6 +26,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Seite bis zur Ents
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['excludePages'] = ['Nicht automatisch öffnen auf', 'Auf diesen Seiten öffnet sich der Banner nicht von selbst, z. B. auf einer Kontakt- oder Landingpage. Blockierte Inhalte bleiben blockiert, und die Einstellungen öffnen sich weiterhin über den Link "Cookie-Einstellungen". Datenschutzerklärung und Impressum sperren die Seite ohnehin nie.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Datenschutzerklärung', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Impressum', ''];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['infoPages'] = ['Weitere Links', 'Seiten, die nach Datenschutzerklärung und Impressum verlinkt werden, in dieser Reihenfolge. Der Link trägt den Seitentitel. Nicht veröffentlichte Seiten fallen weg.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Erhöhen, wenn sich Gruppen oder Dienste wesentlich ändern: alle Besucher werden dann erneut gefragt.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedBy'] = 'Verwendet von:';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedByNone'] = 'Keiner Website zugeordnet';
