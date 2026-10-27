@@ -444,7 +444,8 @@
         }).catch(() => {});
     };
 
-    const save = (groups, allowedServices) => {
+    // additive: "Always allow" on a placeholder only adds a service and withdraws nothing
+    const save = (groups, allowedServices, additive = false) => {
         const previous = state;
 
         state = {
@@ -464,7 +465,7 @@
         }
 
         // Withdrawn: the cookies go, and scripts that already run only stop with a reload
-        const withdrawn = services.filter((service) => !allows(state, service.group, service.key) && (running.has(service.key) || allows(previous, service.group, service.key)));
+        const withdrawn = additive ? [] : services.filter((service) => !allows(state, service.group, service.key) && (running.has(service.key) || allows(previous, service.group, service.key)));
         removeCookies(withdrawn.flatMap((service) => service.cookies));
         const cleaned = cleanup(withdrawn);
         const reload = withdrawn.some((service) => running.has(service.key));
@@ -775,7 +776,8 @@
             focusAfterReveal = placeholder;
 
             if (load.hasAttribute('data-juhe-consent-allow')) {
-                save(state?.groups || [], [...(state?.services || []), placeholder.dataset.juheConsentService]);
+                // Content loaded once on this page stays: allowing another service is no refusal
+                save(state?.groups || [], [...(state?.services || []), placeholder.dataset.juheConsentService], true);
             } else {
                 running.add(placeholder.dataset.juheConsentService);
                 reveal(placeholder);

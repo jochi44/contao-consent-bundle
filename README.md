@@ -190,7 +190,9 @@ groups and services.
   Styling and templates) keeps the group switches only.
 - **Withdrawal:** saving the settings replaces earlier choices, including
   individual "Always allow" approvals (they show as switched-on services).
-  Rejection also stops one-time embeds by reloading the page. Withdrawal
+  Rejection also stops one-time embeds by reloading the page. "Immer
+  erlauben" on a placeholder only adds that service: content loaded once on
+  the page stays. Withdrawal
   deletes the cookies listed at the withdrawn services (`name*` for a prefix;
   a bare `*` matches nothing, and names an essential service lists are kept):
   - In the browser, every listed cookie that scripts can see, at path `/` and
