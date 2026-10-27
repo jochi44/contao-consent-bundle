@@ -137,7 +137,8 @@ groups and services.
   into the same inert `<template>` as the code, so nothing of it runs or loads
   before consent, and it starts once, like the code. The template gets
   `service` (`key`, `title`, `provider`, `privacy_url`, `hosts`, `cookies`,
-  `position`, `order`, `template`). Twig escapes values for HTML; inside a
+  `position`, `order`, `template`, and the "Kennung" as `id` and the
+  "Adresse" as `url`, ending with a slash). Twig escapes values for HTML; inside a
   `<script>` use `|e('js')`. Same permission warning as the code field: a
   template can run any code.
 - **Provider presets:** shipped service templates for Google Analytics 4
