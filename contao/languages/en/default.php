@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 $GLOBALS['TL_LANG']['MOD']['juhe_consent'] = ['Consent', 'Consent banner, groups and services'];
-$GLOBALS['TL_LANG']['MOD']['juhe_consent_log'] = ['Consent log', 'Anonymous log of consents'];
+$GLOBALS['TL_LANG']['MOD']['juhe_consent_log'] = ['Consent log', 'Consent log without IP addresses or user agents'];
 $GLOBALS['TL_LANG']['MOD']['tl_juhe_consent_group'] = 'Groups';
 $GLOBALS['TL_LANG']['MOD']['tl_juhe_consent_service'] = 'Services';
 $GLOBALS['TL_LANG']['CTE']['juhe_consent_settings'] = ['Cookie settings', 'Link that opens the consent settings.'];

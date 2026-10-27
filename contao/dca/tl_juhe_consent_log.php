@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Contao\DataContainer;
 use Contao\DC_Table;
 
-// Proof of consent without personal data: no IP address, no user agent, only a random ID
+// Consent choices without IP addresses or user agents; the random ID is pseudonymous
 $GLOBALS['TL_DCA']['tl_juhe_consent_log'] = [
     'config' => [
         'dataContainer' => DC_Table::class,

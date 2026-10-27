@@ -39,7 +39,11 @@ banner under "System > Consent" and select it in the root page.
   `type="text/plain"`. Works for any layout, theme or content element,
   because it runs on the finished page.
 - **Code after consent:** a service can carry HTML/JS that is inserted once
-  consent exists (e.g. the tracking snippet).
+  consent exists (e.g. the tracking snippet). This field can run arbitrary code
+  on your website. Grant its field permission only to trusted administrators.
+  Configure every optional provider's hosts, and put its initialization code
+  here rather than in an ordinary inline script. The blocker does not inspect
+  JavaScript, stylesheets, resource hints or requests created by other scripts.
 - **Withdrawal:** saving the group switches replaces earlier choices, including
   individual "Always allow" approvals. Rejection also stops one-time embeds by
   reloading the page. Withdrawal deletes listed cookies at path `/` (also on

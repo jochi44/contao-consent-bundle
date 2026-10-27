@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 $GLOBALS['TL_LANG']['MOD']['juhe_consent'] = ['Einwilligung', 'Consent-Banner, Gruppen und Dienste'];
-$GLOBALS['TL_LANG']['MOD']['juhe_consent_log'] = ['Einwilligungs-Protokoll', 'Anonymes Protokoll der Einwilligungen'];
+$GLOBALS['TL_LANG']['MOD']['juhe_consent_log'] = ['Einwilligungs-Protokoll', 'Protokoll der Einwilligungen ohne IP-Adresse oder User-Agent'];
 $GLOBALS['TL_LANG']['MOD']['tl_juhe_consent_group'] = 'Gruppen';
 $GLOBALS['TL_LANG']['MOD']['tl_juhe_consent_service'] = 'Dienste';
 $GLOBALS['TL_LANG']['CTE']['juhe_consent_settings'] = ['Cookie-Einstellungen', 'Link, der die Einwilligungs-Einstellungen öffnet.'];
