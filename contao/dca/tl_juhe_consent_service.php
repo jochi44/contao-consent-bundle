@@ -20,8 +20,8 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
     ],
     'palettes' => [
         '__selector__' => ['serviceType'],
-        'default' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,serviceType,code,codeDenied,codePosition,loadOrder;{publish_legend},published',
-        'template' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,serviceType,serviceTemplate,serviceId,serviceUrl,codeDenied,codePosition,loadOrder;{publish_legend},published',
+        'default' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{notice_legend:hide},noticeText,noticeTemplate;{blocking_legend},hosts,serviceType,code,codeDenied,codePosition,loadOrder;{publish_legend},published',
+        'template' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{notice_legend:hide},noticeText,noticeTemplate;{blocking_legend},hosts,serviceType,serviceTemplate,serviceId,serviceUrl,codeDenied,codePosition,loadOrder;{publish_legend},published',
     ],
     'fields' => [
         'id' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true]],
@@ -52,6 +52,18 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
             'inputType' => 'textarea',
             'eval' => ['maxlength' => 2000, 'tl_class' => 'clr'],
             'sql' => ['type' => 'text', 'notnull' => false],
+        ],
+        // The notice of a blocked iframe of this service; empty = the banner's text and template
+        'noticeText' => [
+            'inputType' => 'textarea',
+            'eval' => ['maxlength' => 1000, 'tl_class' => 'clr'],
+            'sql' => ['type' => 'text', 'notnull' => false],
+        ],
+        // Options: juhe_consent/placeholder and its variants (ConsentNotices::options())
+        'noticeTemplate' => [
+            'inputType' => 'select',
+            'eval' => ['chosen' => true, 'tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 128, 'default' => ''],
         ],
         'hosts' => [
             'inputType' => 'textarea',

@@ -57,6 +57,9 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_group']['aliasExists'] = 'Die Kennung "%s" 
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['title_legend'] = 'Dienst';
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['text_legend'] = 'Angaben für Besucher';
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['blocking_legend'] = 'Blockieren und Laden';
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['notice_legend'] = 'Hinweis für blockierte Inhalte';
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['noticeText'] = ['Hinweistext', 'Ersetzt für diesen Dienst den Text des Banners für blockierte Inhalte. ##service## wird durch den Namen des Dienstes ersetzt. Leer = Text des Banners.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['noticeTemplate'] = ['Hinweis-Template', 'juhe_consent/placeholder (Standard) oder eine Variante aus juhe_consent/placeholder/, z. B. für eine Karte mit eigenem Aussehen.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['publish_legend'] = 'Veröffentlichung';
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['title'] = ['Name', 'z. B. "YouTube".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['provider'] = ['Anbieter', 'z. B. "Google Ireland Limited, Gordon House, Dublin 4, Irland".'];

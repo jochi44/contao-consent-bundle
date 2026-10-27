@@ -57,6 +57,9 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_group']['aliasExists'] = 'La chiave "%s" es
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['title_legend'] = 'Servizio';
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['text_legend'] = 'Informazioni per i visitatori';
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['blocking_legend'] = 'Blocco e caricamento';
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['notice_legend'] = 'Avviso per contenuti bloccati';
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['noticeText'] = ['Testo dell\'avviso', 'Sostituisce per questo servizio il testo del banner per i contenuti bloccati. ##service## viene sostituito dal nome del servizio. Vuoto = testo del banner.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['noticeTemplate'] = ['Template dell\'avviso', 'juhe_consent/placeholder (predefinito) o una variante da juhe_consent/placeholder/, ad es. per una mappa con un aspetto proprio.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['publish_legend'] = 'Pubblicazione';
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['title'] = ['Nome', 'Ad es. "YouTube".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['provider'] = ['Fornitore', 'Ad es. "Google Ireland Limited, Gordon House, Dublino 4, Irlanda".'];

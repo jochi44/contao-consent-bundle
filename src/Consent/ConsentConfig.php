@@ -274,6 +274,9 @@ final class ConsentConfig
             'privacy_url' => (string) $row['privacyUrl'],
             'cookies' => $cookies,
             'hosts' => $hosts,
+            // The notice of a blocked iframe: the service's own text and template, or empty for the banner's
+            'notice' => trim((string) ($row['noticeText'] ?? '')),
+            'notice_template' => ConsentNotices::isName((string) ($row['noticeTemplate'] ?? '')) ? (string) $row['noticeTemplate'] : '',
             'template' => null,
             'code' => trim((string) $row['code']),
             'code_denied' => trim((string) ($row['codeDenied'] ?? '')),

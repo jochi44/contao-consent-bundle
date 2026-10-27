@@ -72,6 +72,13 @@ banner under "System > Consent" and select it in the root page.
   and "Immer erlauben" (remembered for this service). Scripts get
   `type="text/plain"`. Works for any layout, theme or content element,
   because it runs on the finished page.
+- **Notice per service (optional):** a service's "Hinweistext" replaces the
+  banner's text for blocked content for that service (`##service##` is the
+  service name), and its "Hinweis-Template" picks
+  `juhe_consent/placeholder` (default) or a variant under
+  `juhe_consent/placeholder/` (for example `placeholder/map.html.twig` that
+  extends the default and overrides a block). The buttons, their names and
+  the remembered choice stay the same.
 - **Code after consent:** a service can carry HTML/JS that is inserted once
   consent exists (e.g. the tracking snippet). This field can run arbitrary code
   on your website. Grant its field permission only to trusted administrators.
@@ -369,7 +376,8 @@ what it needs (a template of the same name in the theme's `templates/` folder):
 - `@Contao/juhe_consent/head.html.twig`: block `stylesheet`. A theme with its
   own skin overrides it with an empty block.
 - `@Contao/juhe_consent/placeholder.html.twig`: the placeholder for a blocked
-  iframe, blocks `icon`, `title`, `text`, `actions` and `privacy`. Variables:
+  iframe (a service can pick a variant under `juhe_consent/placeholder/`; a
+  variant extends this template and keeps its blocks), blocks `icon`, `title`, `text`, `actions` and `privacy`. Variables:
   `id`, `kind`, `group`, `service` (`key`, `title`, `provider`, `privacy_url`),
   `text`, `load_once`, `load_always`, `load_attributes` and `allow_attributes`
   (`attrs()` objects a theme sets to style the buttons), and `original`, the blocked iframe,

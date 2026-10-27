@@ -57,6 +57,9 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_group']['aliasExists'] = 'The key "%s" alre
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['title_legend'] = 'Service';
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['text_legend'] = 'Information for visitors';
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['blocking_legend'] = 'Blocking and loading';
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['notice_legend'] = 'Notice for blocked content';
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['noticeText'] = ['Notice text', 'Replaces the banner\'s text for blocked content for this service. ##service## is replaced with the service name. Empty = the banner\'s text.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_service']['noticeTemplate'] = ['Notice template', 'juhe_consent/placeholder (default) or a variant from juhe_consent/placeholder/, e.g. for a map with its own look.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['publish_legend'] = 'Publishing';
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['title'] = ['Name', 'e.g. "YouTube".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['provider'] = ['Provider', 'e.g. "Google Ireland Limited, Gordon House, Dublin 4, Ireland".'];

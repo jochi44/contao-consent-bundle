@@ -21,7 +21,7 @@ final class HtmlBlockerTest extends TestCase
         });
 
         $this->assertSame('<p>a</p><div class="placeholder"></div><p>b</p>', $html);
-        $this->assertSame([[['group' => 'media', 'key' => 's7', 'title' => 'YouTube', 'provider' => 'Google Ireland Limited', 'privacy_url' => 'https://policies.google.com/privacy'], $iframe]], $calls);
+        $this->assertSame([[['group' => 'media', 'key' => 's7', 'title' => 'YouTube', 'provider' => 'Google Ireland Limited', 'privacy_url' => 'https://policies.google.com/privacy', 'notice' => '', 'notice_template' => ''], $iframe]], $calls);
     }
 
     public function testMatchesSubdomainsAndProtocolRelativeUrls(): void

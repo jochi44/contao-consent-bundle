@@ -21,7 +21,7 @@ final class HtmlBlocker
 
     /**
      * @param array<string, mixed>                                   $banner      see ConsentConfig::banner()
-     * @param callable(array{group: string, key: string, title: string, provider: string, privacy_url: string}, string): string $placeholder renders the placeholder for a service and the original iframe
+     * @param callable(array{group: string, key: string, title: string, provider: string, privacy_url: string, notice: string, notice_template: string}, string): string $placeholder renders the placeholder for a service and the original iframe
      */
     public function block(string $html, array $banner, callable $placeholder): string
     {
@@ -30,7 +30,7 @@ final class HtmlBlocker
         foreach ($banner['groups'] as $group) {
             foreach ($group['services'] as $service) {
                 if ($service['hosts'] && !$group['essential']) {
-                    $services[] = ['group' => $group['alias'], 'key' => $service['key'], 'title' => $service['title'], 'provider' => $service['provider'] ?? '', 'privacy_url' => $service['privacy_url'] ?? '', 'hosts' => $service['hosts']];
+                    $services[] = ['group' => $group['alias'], 'key' => $service['key'], 'title' => $service['title'], 'provider' => $service['provider'] ?? '', 'privacy_url' => $service['privacy_url'] ?? '', 'notice' => $service['notice'] ?? '', 'notice_template' => $service['notice_template'] ?? '', 'hosts' => $service['hosts']];
                 }
             }
         }
@@ -46,7 +46,7 @@ final class HtmlBlocker
                 return $match[0];
             }
 
-            return $placeholder(['group' => $service['group'], 'key' => $service['key'], 'title' => $service['title'], 'provider' => $service['provider'], 'privacy_url' => $service['privacy_url']], $match[0]);
+            return $placeholder(array_diff_key($service, ['hosts' => true]), $match[0]);
         }, $html) ?? $html;
 
         return preg_replace_callback('/'.self::NON_ELEMENTS.'<script\b(?<attributes>'.self::ATTRIBUTES.')>(?<body>.*?)<\/script\s*>/is', function (array $match) use ($services): string {
