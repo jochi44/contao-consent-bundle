@@ -65,7 +65,15 @@
         }
     };
 
-    let state = read();
+    /*
+     * A logged-in member or a back end user in the preview on a banner with "No
+     * optional services for logged-in users": the stored choice is ignored (and
+     * kept), the banner does not ask, and choices made on the page count for
+     * this page only. The server only sends this flag on private pages.
+     */
+    const restricted = !!config.restricted;
+
+    let state = restricted ? null : read();
 
     const allows = (consent, group, service) => essential.includes(group) || (!!consent && (consent.groups.includes(group) || consent.services.includes(service)));
     const allowed = (element) => allows(state, element.dataset.juheConsentGroup, element.dataset.juheConsentService);
@@ -210,13 +218,15 @@
             services: [...new Set(allowedServices)],
         };
 
-        try {
-            localStorage.setItem(config.storage, JSON.stringify({ v: config.version, g: state.groups, s: state.services, id: state.id, t: Math.floor(Date.now() / 1000) }));
-        } catch {
-            // No storage: the choice holds for this page only
-        }
+        if (!restricted) {
+            try {
+                localStorage.setItem(config.storage, JSON.stringify({ v: config.version, g: state.groups, s: state.services, id: state.id, t: Math.floor(Date.now() / 1000) }));
+            } catch {
+                // No storage: the choice holds for this page only
+            }
 
-        log();
+            log();
+        }
 
         // Withdrawn: the cookies go, and scripts that already run only stop with a reload
         const withdrawn = services.filter((service) => !allows(state, service.group, service.key) && (running.has(service.key) || allows(previous, service.group, service.key)));
@@ -238,7 +248,7 @@
     const button = (action) => dialog.querySelector(`[data-juhe-consent-action="${action}"]`);
     const checkboxes = [...dialog.querySelectorAll('[data-juhe-consent-checkbox]')];
     const bar = 'bar' === config.layout;
-    const pending = () => !state && !!config.ask;
+    const pending = () => !state && !!config.ask && !restricted;
 
     /*
      * Global Privacy Control or Do Not Track, if the banner respects them: the

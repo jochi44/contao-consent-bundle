@@ -55,6 +55,17 @@ banner under "System > Consent" and select it in the root page.
   the page stays the same for everybody and in the cache. The visitor can
   still open the settings, and a choice saved there wins. Off by default. This
   is a policy option, not a statement that it meets any law.
+- **Logged-in users (optional):** with "Keine optionalen Dienste für angemeldete
+  Benutzer", a logged-in front end member and a back end user in the front end
+  preview get no banner and no optional service by themselves. Their stored
+  choice is kept but not applied; a choice made on the page (a placeholder, the
+  settings) counts for that page only and is neither stored nor logged. Such a
+  page is sent with `Cache-Control: private` before the banner is added, so it
+  never enters a shared cache; anonymous visitors keep the public, cached page.
+  Limit: a page that the cache serves without asking PHP never sees the login.
+  With "Immer aus dem Shared-Cache laden" on the page, a member can get the
+  public page from the cache, banner included. Back end users outside the
+  preview count as visitors. Off by default.
 - **Blocking on the server:** iframes and external scripts whose host (or a
   subdomain) is listed at a service of a non-essential group are held back
   in the HTML. Iframes become a placeholder with "Inhalt laden" (this time)
@@ -90,9 +101,9 @@ banner under "System > Consent" and select it in the root page.
   report-only policy. Existing policy headers and restrictions for other
   resource types stay intact. A policy with `'unsafe-inline'` and no nonce or
   hash stays as it is. Allow each provider's external resources in your policy.
-- **Cache:** the banner is the same for everybody and the choice stays in the
-  browser (`localStorage`, no cookie), so pages stay in Contao's HTTP cache.
-  Backend changes clear the cache tags.
+- **Cache:** apart from the logged-in option above, the banner is the same for
+  everybody and the choice stays in the browser (`localStorage`, no cookie), so
+  pages stay in Contao's HTTP cache. Backend changes clear the cache tags.
 
 ## Accessibility
 

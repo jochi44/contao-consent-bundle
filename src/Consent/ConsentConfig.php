@@ -78,6 +78,7 @@ final class ConsentConfig
             'placeholder' => trim((string) $banner['placeholderText']),
             'ask' => (bool) $banner['askOnFirstVisit'],
             'privacy_signals' => (bool) ($banner['privacySignals'] ?? false),
+            'restrict_users' => (bool) ($banner['noOptionalForUsers'] ?? false),
             'layout' => self::layout($banner['layout'] ?? null),
             'position' => self::position($banner),
             'blocking' => (bool) ($banner['blocking'] ?? false),

@@ -6,6 +6,7 @@ namespace JuheItSolutions\JuheConsentBundle\EventListener;
 
 use Contao\CoreBundle\Cache\CacheTagManager;
 use Contao\CoreBundle\Routing\ScopeMatcher;
+use Contao\CoreBundle\Security\Authentication\Token\TokenChecker;
 use Contao\PageModel;
 use Doctrine\DBAL\Connection;
 use JuheItSolutions\JuheConsentBundle\Consent\ConsentConfig;
@@ -13,6 +14,7 @@ use JuheItSolutions\JuheConsentBundle\Consent\EmbedKind;
 use JuheItSolutions\JuheConsentBundle\Consent\HtmlBlocker;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -29,7 +31,8 @@ use Twig\Environment;
  * nonce is added to the header here (or the page's nonce is reused).
  *
  * The banner is the same for every visitor (the choice lives in browser storage
- * and is applied by consent.js), so cached pages stay cacheable.
+ * and is applied by consent.js), so cached pages stay cacheable. The one
+ * exception, the page for a logged-in user, is made private (see restricted()).
  */
 #[AsEventListener(priority: 10)]
 final class InjectConsentListener
@@ -43,9 +46,9 @@ final class InjectConsentListener
         private readonly TranslatorInterface $translator,
         private readonly CacheTagManager $cacheTagManager,
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly TokenChecker $tokenChecker,
     ) {
     }
-
 
     public function __invoke(ResponseEvent $event): void
     {
@@ -77,6 +80,7 @@ final class InjectConsentListener
         }
 
         $banner = ConsentConfig::forPage($banner, (int) $page->id);
+        $banner['restricted'] = $this->restricted($request, $response, $banner);
 
         // Edits to the banner, its groups or services clear the cached pages
         $this->cacheTagManager->tagWith(['contao.db.tl_juhe_consent_banner', 'contao.db.tl_juhe_consent_group', 'contao.db.tl_juhe_consent_service']);
@@ -132,6 +136,7 @@ final class InjectConsentListener
             'ask' => $banner['ask'],
             'quiet' => $banner['quiet'] ?? false,
             'privacySignals' => $banner['privacy_signals'] ?? false,
+            'restricted' => $banner['restricted'] ?? false,
             'layout' => $banner['layout'],
             'blocking' => $banner['blocking'],
             'storage' => 'juhe_consent_'.$banner['id'],
@@ -145,6 +150,32 @@ final class InjectConsentListener
                 ], $group['services']),
             ], $banner['groups']),
         ];
+    }
+
+    /**
+     * "No optional services for logged-in users" covers front end members and
+     * back end users in the front end preview. Their page differs from the
+     * public one, so it is made private before anything is added: it never
+     * enters a shared cache. (Contao makes it private later anyway, because the
+     * visitor has a session.) An anonymous page is left as it is. A page that a
+     * proxy serves from its cache never reaches this listener, so with "always
+     * load from cache" a member can still get the public page.
+     *
+     * @param array<string, mixed> $banner
+     */
+    private function restricted(Request $request, Response $response, array $banner): bool
+    {
+        if (!($banner['restrict_users'] ?? false)) {
+            return false;
+        }
+
+        if (!$this->tokenChecker->hasFrontendUser() && !($request->attributes->get('_preview', false) && $this->tokenChecker->hasBackendUser())) {
+            return false;
+        }
+
+        $response->setPrivate();
+
+        return true;
     }
 
     private function bannerId(PageModel $page): int
