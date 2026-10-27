@@ -1,0 +1,8 @@
+{#
+    "Create essential group" in a banner's group list: a POST form, because it
+    adds records. Running it twice adds nothing.
+#}
+<form action="{{ action }}" method="post" class="juhe-consent-essential">
+    <input type="hidden" name="REQUEST_TOKEN" value="{{ request_token }}">
+    <button type="submit" class="header_new juhe-consent-essential__button" title="{{ title }}">{{ label }}</button>
+</form>

@@ -53,6 +53,16 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_group']['essential'] = ['Tecnicamente neces
 $GLOBALS['TL_LANG']['tl_juhe_consent_group']['description'] = ['Descrizione', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_group']['published'] = ['Pubblicato', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_group']['aliasExists'] = 'La chiave "%s" esiste già in questo banner.';
+$GLOBALS['TL_LANG']['tl_juhe_consent_group']['essential_starter'] = ['Crea gruppo necessario', 'Aggiunge il gruppo "Tecnicamente necessari" e un servizio per la scelta memorizzata, se mancano. Un secondo clic non crea doppioni.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_group']['essentialTitle'] = 'Tecnicamente necessari';
+$GLOBALS['TL_LANG']['tl_juhe_consent_group']['essentialDescription'] = 'Il sito web ha bisogno di questi servizi per funzionare. Non possono essere deselezionati.';
+$GLOBALS['TL_LANG']['tl_juhe_consent_group']['choiceTitle'] = 'Consenso';
+$GLOBALS['TL_LANG']['tl_juhe_consent_group']['choiceProvider'] = 'Gestore di questo sito web';
+$GLOBALS['TL_LANG']['tl_juhe_consent_group']['choiceDescription'] = 'Memorizza in questo browser (localStorage, non un cookie) la Sua scelta su cookie e servizi, così non Le viene chiesto di nuovo a ogni pagina.';
+$GLOBALS['TL_LANG']['tl_juhe_consent_group']['choiceDuration'] = '%d giorni';
+$GLOBALS['TL_LANG']['tl_juhe_consent_group']['essentialCreatedGroup'] = 'Il gruppo "%s" è stato creato.';
+$GLOBALS['TL_LANG']['tl_juhe_consent_group']['essentialCreatedService'] = 'Il servizio "%s" per la scelta memorizzata è stato creato.';
+$GLOBALS['TL_LANG']['tl_juhe_consent_group']['essentialExists'] = 'Il gruppo necessario e il servizio per la scelta memorizzata esistono già.';
 
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['title_legend'] = 'Servizio';
 $GLOBALS['TL_LANG']['tl_juhe_consent_service']['text_legend'] = 'Informazioni per i visitatori';

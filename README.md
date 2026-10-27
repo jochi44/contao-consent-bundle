@@ -12,7 +12,17 @@ composer require juhe-it-solutions/contao-consent-bundle:dev-main
 ```
 
 Then update the database (Contao Manager or `contao:migrate`), create a
-banner under "System > Consent" and select it in the root page.
+banner under "System > Consent" and select it in the root page. In the
+banner's group list, "Notwendige Gruppe anlegen" adds the essential group
+("Technisch notwendig", published, always on) and a service "Einwilligung"
+that describes the stored choice (`juhe_consent_<banner id>` in
+localStorage, with the banner's lifetime), in the editor's language. It adds
+only what is missing: a banner that already has an essential group keeps it,
+and a service that lists `juhe_consent_<id>` (or a pattern such as
+`juhe_consent_*`) counts as the description. Running it twice adds nothing.
+It assumes no optional provider; add those groups and services yourself. The
+action is a POST form with the request token and needs the rights to create
+groups and services.
 
 ## What it does
 

@@ -18,6 +18,13 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_group'] = [
     'list' => [
         'sorting' => ['mode' => DataContainer::MODE_PARENT, 'fields' => ['sorting'], 'headerFields' => ['title', 'version'], 'panelLayout' => 'limit'],
         'label' => ['fields' => ['title', 'alias'], 'format' => '%s <span class="label-info">[%s]</span>'],
+        'global_operations' => [
+            // A POST form (EssentialOperationListener); adds the essential group and the service for the stored choice if missing
+            'essential' => [
+                'label' => &$GLOBALS['TL_LANG']['tl_juhe_consent_group']['essential_starter'],
+                'primary' => true,
+            ],
+        ],
     ],
     'palettes' => [
         'default' => '{title_legend},title,alias,essential;{text_legend},description;{publish_legend},published',
