@@ -17,7 +17,7 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
     ],
     'list' => [
         'sorting' => ['mode' => DataContainer::MODE_SORTED, 'fields' => ['title'], 'flag' => DataContainer::SORT_INITIAL_LETTER_ASC, 'panelLayout' => 'search,limit'],
-        'label' => ['fields' => ['title', 'version'], 'format' => '%s <span class="label-info">(Version %s)</span>'],
+        'label' => ['fields' => ['title', 'version'], 'format' => '%s <span class="label-info">(v%s)</span>'],
     ],
     'palettes' => [
         'default' => '{title_legend},title;{text_legend},headline,text,placeholderText,askOnFirstVisit;{layout_legend},layout,blocking;{link_legend},privacyPage,imprintPage;{version_legend},version',

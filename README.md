@@ -146,9 +146,18 @@ what it needs (a template of the same name in the theme's `templates/` folder):
 
 ## Translations
 
-Button and label texts: `translations/juhe_consent.{de,en,it}.yaml` (in the
-page language). Headline and text come from the banner record, so a site per
-language gets its own banner.
+German, English and Italian are complete, in the backend and for visitors:
+
+- Visitor texts (buttons, labels, the placeholder): `translations/juhe_consent.{de,en,it}.yaml`,
+  in the page language. Other page languages use the installation's fallback
+  locale (`framework.translator.fallbacks`, English in a default Contao install).
+- Backend labels and help texts: `contao/languages/{de,en,it}/default.php`, in
+  the backend user's language.
+- Headline, text, groups and services come from the banner records, so a site
+  per language gets its own banner (one per root page).
+
+`tests/LanguageParityTest.php` fails when a key is missing in one of the three
+languages; a new text goes into all three in the same change.
 
 ## License
 
