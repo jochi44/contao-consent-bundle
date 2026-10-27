@@ -40,8 +40,12 @@ banner under "System > Consent" and select it in the root page.
   because it runs on the finished page.
 - **Code after consent:** a service can carry HTML/JS that is inserted once
   consent exists (e.g. the tracking snippet).
-- **Withdrawal:** switching a group off deletes the listed cookies (also on
-  parent domains, `name*` for prefixes) and reloads if its scripts already ran.
+- **Withdrawal:** saving the group switches replaces earlier choices, including
+  individual "Always allow" approvals. Rejection also stops one-time embeds by
+  reloading the page. Withdrawal deletes listed cookies at path `/` (also on
+  parent domains, `name*` for prefixes). JavaScript cannot remove HttpOnly or
+  third-party cookies, or cookies at other paths. Configure those providers'
+  server-side withdrawal separately.
 - **New version = ask again:** raise the banner version after big changes.
 - **Consent log** (`tl_juhe_consent_log`): banner, version, random consent ID from
   the stored choice, groups, services, page path, time. No IP, no user agent.

@@ -428,7 +428,8 @@
         } else if ('settings' === action) {
             show(true);
         } else if ('save' === action) {
-            choose(checkboxes.filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value), state?.services || []);
+            // The group switches replace all optional choices, including single-service approvals.
+            choose(checkboxes.filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value), []);
         }
     });
 
@@ -446,6 +447,7 @@
             }
 
             return;
+                running.add(placeholder.dataset.juheConsentService);
         }
 
         const trigger = event.target.closest(openers);
