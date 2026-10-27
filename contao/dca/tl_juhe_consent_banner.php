@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Contao\DataContainer;
 use Contao\DC_Table;
+use JuheItSolutions\JuheConsentBundle\Consent\ConsentConfig;
 
 // One banner per site (root page): texts, version and its consent groups
 $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
@@ -20,7 +21,12 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
         'label' => ['fields' => ['title', 'version'], 'format' => '%s <span class="label-info">(v%s)</span>'],
     ],
     'palettes' => [
+        '__selector__' => ['layout'],
         'default' => '{title_legend},title;{text_legend},headline,text,infoText,placeholderText,askOnFirstVisit;{layout_legend},layout,blocking;{pages_legend:hide},excludePages;{link_legend},privacyPage,imprintPage,infoPages;{version_legend},version',
+    ],
+    'subpalettes' => [
+        'layout_card' => 'position',
+        'layout_bar' => 'barPosition',
     ],
     'fields' => [
         'id' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true]],
@@ -60,8 +66,22 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
             'inputType' => 'select',
             'options' => ['card', 'bar'],
             'reference' => &$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layoutOptions'],
-            'eval' => ['tl_class' => 'w50'],
+            'eval' => ['submitOnChange' => true, 'tl_class' => 'w50'],
             'sql' => ['type' => 'string', 'length' => 8, 'default' => 'card'],
+        ],
+        'position' => [
+            'inputType' => 'select',
+            'options' => ConsentConfig::CARD_POSITIONS,
+            'reference' => &$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['positionOptions'],
+            'eval' => ['tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 16, 'default' => 'bottom-left'],
+        ],
+        'barPosition' => [
+            'inputType' => 'select',
+            'options' => ConsentConfig::BAR_POSITIONS,
+            'reference' => &$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['barPositionOptions'],
+            'eval' => ['tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 8, 'default' => 'bottom'],
         ],
         'blocking' => [
             'inputType' => 'checkbox',

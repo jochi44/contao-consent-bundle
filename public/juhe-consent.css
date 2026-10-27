@@ -1,8 +1,8 @@
 /*
  * Consent banner of juhe-it-solutions/contao-consent-bundle.
  * A small card at the bottom left (or a bar at the bottom), the settings as a
- * centered dialog. Themes adapt it through the custom properties; the font is
- * inherited.
+ * centered dialog. Other positions come from data-juhe-consent-position.
+ * Themes adapt it through the custom properties; the font is inherited.
  *
  * Accessibility: text meets 4.5:1 and the switch track and knob 3:1 against
  * their background (WCAG 1.4.3, 1.4.11); targets are at least 44px; focus is
@@ -195,6 +195,38 @@
     min-height: 44px;
 }
 
+/*
+ * Other card positions. Each keeps the 1rem distance to the edges and the
+ * size limits above, so the card never leaves the viewport and the page
+ * scrolls under it. The settings rule below wins and centres the settings.
+ */
+.juhe-consent[data-juhe-consent-position="bottom-right"] {
+    inset: auto 1rem 1rem auto;
+}
+
+.juhe-consent[data-juhe-consent-position="bottom-center"] {
+    inset: auto 0 1rem;
+    margin-inline: auto;
+}
+
+.juhe-consent[data-juhe-consent-position="center"] {
+    inset: 0;
+    margin: auto;
+}
+
+.juhe-consent[data-juhe-consent-position="top-left"] {
+    inset: 1rem auto auto 1rem;
+}
+
+.juhe-consent[data-juhe-consent-position="top-right"] {
+    inset: 1rem 1rem auto auto;
+}
+
+.juhe-consent[data-juhe-consent-position="top-center"] {
+    inset: 1rem 0 auto;
+    margin-inline: auto;
+}
+
 /* The settings dialog */
 .juhe-consent.juhe-consent--settings {
     inset: 0;
@@ -272,6 +304,13 @@
     width: 100%;
     border-width: 1px 0 0;
     border-radius: var(--juhe-consent-radius) var(--juhe-consent-radius) 0 0;
+}
+
+/* The bar at the top edge */
+.juhe-consent[data-juhe-consent-layout="bar"][data-juhe-consent-position="top"] {
+    inset: 0 0 auto;
+    border-width: 0 0 1px;
+    border-radius: 0 0 var(--juhe-consent-radius) var(--juhe-consent-radius);
 }
 
 .juhe-consent[data-juhe-consent-layout="bar"] .juhe-consent__inner {

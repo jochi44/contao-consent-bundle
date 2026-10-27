@@ -16,6 +16,7 @@
     .set('aria-labelledby', 'juhe-consent-headline')
     .set('aria-describedby', 'juhe-consent-text')
     .set('data-juhe-consent-layout', banner.layout)
+    .set('data-juhe-consent-position', banner.position|default(banner.layout == 'bar' ? 'bottom' : 'bottom-left'))
     .set('data-juhe-consent-blocking', banner.blocking)
 }}{% endblock %}>
     <div class="juhe-consent__inner">

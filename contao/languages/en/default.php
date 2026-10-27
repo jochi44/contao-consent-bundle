@@ -20,8 +20,12 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text'] = ['Text', 'Briefly explai
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['infoText'] = ['Additional information', 'Shown in the settings below the groups, e.g. a note on transfers to other countries or how to change the choice later. Empty = no text.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['placeholderText'] = ['Text for blocked content', 'Shown instead of videos, maps etc. until consent is given. ##service## is replaced with the service name. Empty = default text.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['askOnFirstVisit'] = ['Ask on the first visit', 'Shows the card on the first visit. Unticked, no banner appears: blocked content shows only its placeholder, and the settings open from the "Cookie settings" link. Useful when another consent solution (e.g. Google\'s for ads) already asks and only click-to-load content is left here.'];
-$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout'] = ['Display', 'The card leaves the page usable; the bar shows the groups right away.'];
-$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layoutOptions'] = ['card' => 'Card at the bottom left', 'bar' => 'Bar at the bottom'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout'] = ['Display', 'The card leaves the page usable; the bar shows the groups right away. Choose the position below.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layoutOptions'] = ['card' => 'Card', 'bar' => 'Full-width bar'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['position'] = ['Position', 'Where the card sits. The settings always open in the centre.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['positionOptions'] = ['bottom-left' => 'Bottom left', 'bottom-center' => 'Bottom centre', 'bottom-right' => 'Bottom right', 'center' => 'Centre', 'top-left' => 'Top left', 'top-center' => 'Top centre', 'top-right' => 'Top right'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['barPosition'] = ['Position', 'Whether the bar sits at the bottom or the top edge.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['barPositionOptions'] = ['bottom' => 'At the bottom', 'top' => 'At the top'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Block the page until the visitor decides', 'Dims the page on the first visit until a choice is made. The Esc key still releases the page: the banner stays visible but no longer blocks it.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['excludePages'] = ['Do not open automatically on', 'On these pages the banner does not open by itself, e.g. on a contact or landing page. Blocked content stays blocked, and the settings still open from the "Cookie settings" link. The privacy policy and imprint never block the page anyway.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Privacy policy', ''];

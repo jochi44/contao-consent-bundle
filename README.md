@@ -27,8 +27,12 @@ banner under "System > Consent" and select it in the root page.
   open it again. A banner can skip the card ("Beim ersten Besuch fragen"
   off): then only the placeholders and the settings link remain, for sites
   where another consent solution already asks (e.g. Google's CMP for ads).
-- **Display:** "Karte unten links" (default) or "Leiste am unteren Rand", a
-  full-width bar that shows the groups right away. "Seite bis zur Entscheidung
+- **Display:** "Karte" (default) or "Leiste über die ganze Breite", a
+  full-width bar that shows the groups right away. "Position" places the card
+  at the bottom left (default), bottom centre, bottom right, in the centre,
+  top left, top centre or top right, and the bar at the bottom (default) or
+  the top. The card keeps 1rem from the edges and never grows beyond the
+  viewport, and the settings always open in the centre. "Seite bis zur Entscheidung
   sperren" makes the first-visit banner modal with a scrim. The banner's
   privacy policy and imprint pages are never blocked: there it asks as a
   non-modal dialog, so visitors can read them before they choose.
@@ -156,8 +160,12 @@ what it needs (a template of the same name in the theme's `templates/` folder):
   `text`, `settings`, `group`, `service`, `info` (inside `settings`), `buttons`,
   `links`, `code`, `config`, `script`. `banner.info` is the additional
   information (HTML from the editor), `banner.links` the further links
-  (`url`, `title`); a theme that overrides `links` prints them too. The class names and `data-juhe-consent-*` attributes are what the
-  script relies on; keep them.
+  (`url`, `title`); a theme that overrides `links` prints them too. The class
+  names and `data-juhe-consent-*` attributes are what the script relies on;
+  keep them. `data-juhe-consent-position` on the dialog carries the position
+  (`bottom-left`, `bottom-center`, `bottom-right`, `center`, `top-left`,
+  `top-center`, `top-right`; for the bar `bottom` or `top`) for a theme's own
+  stylesheet.
 - `@Contao/juhe_consent/head.html.twig`: block `stylesheet`. A theme with its
   own skin overrides it with an empty block.
 - `@Contao/juhe_consent/placeholder.html.twig`: the placeholder for a blocked

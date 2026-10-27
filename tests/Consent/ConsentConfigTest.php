@@ -64,4 +64,18 @@ final class ConsentConfigTest extends TestCase
     {
         $this->assertSame($expected, ConsentConfig::pageIds($value));
     }
+
+    #[TestWith([['layout' => 'card', 'position' => 'top-right'], 'top-right'])]
+    #[TestWith([['layout' => 'card', 'position' => 'center'], 'center'])]
+    #[TestWith([['layout' => 'card', 'position' => 'top'], 'bottom-left'])]
+    #[TestWith([['layout' => 'card', 'position' => '<x>'], 'bottom-left'])]
+    #[TestWith([['layout' => 'card'], 'bottom-left'])]
+    #[TestWith([['layout' => 'bar', 'barPosition' => 'top', 'position' => 'center'], 'top'])]
+    #[TestWith([['layout' => 'bar', 'barPosition' => 'top-left'], 'bottom'])]
+    #[TestWith([['layout' => 'bar'], 'bottom'])]
+    #[TestWith([[], 'bottom-left'])]
+    public function testPositionFallsBackToTheDefaultOfTheLayout(array $banner, string $expected): void
+    {
+        $this->assertSame($expected, ConsentConfig::position($banner));
+    }
 }

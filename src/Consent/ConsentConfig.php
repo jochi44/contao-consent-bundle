@@ -18,6 +18,16 @@ use Symfony\Component\Routing\Exception\ExceptionInterface as RoutingException;
 final class ConsentConfig
 {
     /**
+     * Where the card sits; the first one is the default.
+     */
+    public const CARD_POSITIONS = ['bottom-left', 'bottom-center', 'bottom-right', 'center', 'top-left', 'top-center', 'top-right'];
+
+    /**
+     * Where the bar sits; the first one is the default.
+     */
+    public const BAR_POSITIONS = ['bottom', 'top'];
+
+    /**
      * @var array<int, array<string, mixed>|null>
      */
     private array $loaded = [];
@@ -60,6 +70,7 @@ final class ConsentConfig
             'placeholder' => trim((string) $banner['placeholderText']),
             'ask' => (bool) $banner['askOnFirstVisit'],
             'layout' => self::layout($banner['layout'] ?? null),
+            'position' => self::position($banner),
             'blocking' => (bool) ($banner['blocking'] ?? false),
             'privacy_url' => $this->pageUrl((int) $banner['privacyPage']),
             'imprint_url' => $this->pageUrl((int) $banner['imprintPage']),
@@ -123,6 +134,21 @@ final class ConsentConfig
     public static function layout(mixed $value): string
     {
         return 'bar' === $value ? 'bar' : 'card';
+    }
+
+    /**
+     * The position of the card or the bar; anything unknown is the default
+     * (bottom left for the card, bottom for the bar).
+     *
+     * @param array<string, mixed> $banner the banner record
+     */
+    public static function position(array $banner): string
+    {
+        [$positions, $value] = 'bar' === self::layout($banner['layout'] ?? null)
+            ? [self::BAR_POSITIONS, $banner['barPosition'] ?? null]
+            : [self::CARD_POSITIONS, $banner['position'] ?? null];
+
+        return \in_array($value, $positions, true) ? $value : $positions[0];
     }
 
     /**
