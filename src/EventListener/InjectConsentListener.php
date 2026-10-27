@@ -129,7 +129,7 @@ final class InjectConsentListener
             'ask' => $banner['ask'],
             'layout' => $banner['layout'],
             'blocking' => $banner['blocking'],
-            'cookie' => 'juhe_consent_'.$banner['id'],
+            'storage' => 'juhe_consent_'.$banner['id'],
             'logUrl' => $this->urlGenerator->generate('juhe_consent_log'),
             'groups' => array_map(static fn (array $group): array => [
                 'alias' => $group['alias'],

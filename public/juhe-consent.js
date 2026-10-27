@@ -1,8 +1,12 @@
 /*
  * Consent banner of juhe-it-solutions/contao-consent-bundle. No dependencies.
  *
- * The choice is stored in a first-party cookie (JSON: version, groups,
- * services allowed one by one, random ID, time). Blocked content is marked by
+ * The choice is stored in localStorage under juhe_consent_<banner id> (JSON:
+ * version, groups, services allowed one by one, random ID, time), not in a
+ * cookie: a request cookie makes Contao's HTTP cache pass every page to PHP, and
+ * the server never needs the choice. It expires after one year; without
+ * storage (private mode, blocked site data) the banner simply asks again.
+ * Blocked content is marked by
  * the server: script[type="text/plain"][data-juhe-consent-src], placeholders with
  * the original iframe in a <template>, and template[data-juhe-consent-code] with
  * the code of a service. All of it carries data-juhe-consent-group/-service.
@@ -36,18 +40,14 @@
     const aliases = config.groups.map((group) => group.alias);
     const services = config.groups.flatMap((group) => group.services.map((service) => ({ ...service, group: group.alias })));
 
+    const maxAge = 31536000;
+
     const read = () => {
-        const match = document.cookie.match(new RegExp(`(?:^|; )${config.cookie}=([^;]*)`));
-
-        if (!match) {
-            return null;
-        }
-
         try {
-            const value = JSON.parse(decodeURIComponent(match[1]));
+            const value = JSON.parse(localStorage.getItem(config.storage) || 'null');
 
-            // A new banner version asks again
-            if (value.v !== config.version || !Array.isArray(value.g)) {
+            // A new banner version or a choice older than a year asks again
+            if (!value || value.v !== config.version || !Array.isArray(value.g) || Date.now() / 1000 - Number(value.t) > maxAge) {
                 return null;
             }
 
@@ -206,8 +206,12 @@
             services: [...new Set(allowedServices)],
         };
 
-        const value = encodeURIComponent(JSON.stringify({ v: config.version, g: state.groups, s: state.services, id: state.id, t: Math.floor(Date.now() / 1000) }));
-        document.cookie = `${config.cookie}=${value}; path=/; max-age=31536000; SameSite=Lax${'https:' === location.protocol ? '; Secure' : ''}`;
+        try {
+            localStorage.setItem(config.storage, JSON.stringify({ v: config.version, g: state.groups, s: state.services, id: state.id, t: Math.floor(Date.now() / 1000) }));
+        } catch {
+            // No storage: the choice holds for this page only
+        }
+
         log();
 
         // Withdrawn: the cookies go, and scripts that already run only stop with a reload
