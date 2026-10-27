@@ -88,15 +88,26 @@ banner under "System > Consent" and select it in the root page.
   Without a change a choice counts for the banner's lifetime (see Storage).
 - **Consent log** (`tl_juhe_consent_log`): banner, version, random consent ID from
   the stored choice, groups, services, page path, time. No IP, no user agent.
-  Rate limited (120 per 10 minutes and IP, so visitors behind one office or
-  carrier IP are still logged; override `framework.rate_limiter.juhe_consent_log`
-  to change it). A rejected post loses only the log row, never the visitor's
-  choice. Deleted after three years. The random
-  ID is pseudonymous, not a guarantee of anonymity. Avoid personal data in page
-  paths. The rate limiter also processes the client IP as its key. Check the
-  retention period and legal basis with your privacy adviser. Each serialized
-  group or service list is limited to 255 bytes. Larger choices receive HTTP 400
-  and are not logged.
+  The random ID is pseudonymous: the log is not anonymous, and nothing here is
+  a statement that it meets any law. Each banner decides in "Einwilligungs-Protokoll":
+  - "Auswahl protokollieren" (on by default). Off, the browser sends nothing,
+    and the server refuses a post for that banner (HTTP 403) from a page that
+    is still cached, so nothing is stored.
+  - "Einträge aufbewahren für" 6, 12, 24 or 36 months (default 36). A daily
+    cron job deletes older entries per banner, counted in calendar months;
+    entries of a deleted banner follow the default.
+  - "Seite im Protokoll": "Pfad" (default) stores the path without domain,
+    query string and fragment (the server strips them too); "Keine" stores no
+    page. Choose "Keine" if paths can carry personal data (account or token
+    pages).
+
+  Posts are rate limited (120 per 10 minutes and IP, so visitors behind one
+  office or carrier IP are still logged; override
+  `framework.rate_limiter.juhe_consent_log` to change it). The rate limiter
+  processes the client IP as its key; it is not stored in the log. A rejected
+  post loses only the log row, never the visitor's choice. A post is at most
+  4 KiB, which also bounds the stored group and service lists. Check the
+  retention period and the legal basis with your privacy adviser.
 - **CSP:** the banner script gets a nonce accepted by each enforced and
   report-only policy. Existing policy headers and restrictions for other
   resource types stay intact. A policy with `'unsafe-inline'` and no nonce or

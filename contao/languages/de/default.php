@@ -14,6 +14,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['layout_legend'] = 'Darstellung';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['pages_legend'] = 'Seiten ohne automatisches Öffnen';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['link_legend'] = 'Links';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version_legend'] = 'Version';
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['log_legend'] = 'Einwilligungs-Protokoll';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['title'] = ['Titel', 'Nur im Backend, z. B. "Website DE".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['headline'] = ['Überschrift', 'z. B. "Ihre Privatsphäre".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['text'] = ['Text', 'Erklärt kurz, wofür um Einwilligung gebeten wird.'];
@@ -35,6 +36,11 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Impressum', '']
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['infoPages'] = ['Weitere Links', 'Seiten, die nach Datenschutzerklärung und Impressum verlinkt werden, in dieser Reihenfolge. Der Link trägt den Seitentitel. Nicht veröffentlichte Seiten fallen weg.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Erhöhen, wenn sich Gruppen oder Dienste wesentlich ändern: alle Besucher werden dann erneut gefragt.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['lifetime'] = ['Auswahl gültig für (Tage)', 'So lange gilt die Auswahl eines Besuchers, danach wird er erneut gefragt. 1 bis 395 Tage (13 Monate), Standard 365. Eine höhere Version fragt unabhängig davon sofort erneut.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['logConsent'] = ['Auswahl protokollieren', 'Legt jede gespeicherte Auswahl im Einwilligungs-Protokoll ab: Banner, Version, eine zufällige ID aus dem Browser des Besuchers, die erlaubten Gruppen und Dienste, die Zeit und, wenn unten gewählt, den Pfad der Seite. Keine IP-Adresse und kein User-Agent. Die zufällige ID ist pseudonym, das Protokoll ist also nicht anonym. Ohne Haken sendet der Browser nichts und der Server speichert nichts.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['logRetention'] = ['Einträge aufbewahren für', 'Ältere Einträge werden einmal täglich gelöscht. Klären Sie die Dauer mit Ihrer Datenschutzberatung.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['logRetentionOptions'] = [6 => '6 Monate', 12 => '12 Monate', 24 => '24 Monate', 36 => '36 Monate'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['logPage'] = ['Seite im Protokoll', 'Pfad: die Adresse der Seite ohne Domain, Parameter und Anker, z. B. "/kontakt". Keine: Es wird keine Seite gespeichert. Wählen Sie "Keine", wenn Seitenpfade personenbezogene Daten enthalten können.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['logPageOptions'] = ['path' => 'Pfad', 'none' => 'Keine'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedBy'] = 'Verwendet von:';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedByNone'] = 'Keiner Website zugeordnet';
 

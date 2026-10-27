@@ -7,6 +7,7 @@ namespace JuheItSolutions\JuheConsentBundle\Tests\Controller;
 use Doctrine\DBAL\Connection;
 use JuheItSolutions\JuheConsentBundle\Controller\ConsentLogController;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\RateLimiter\LimiterInterface;
@@ -70,16 +71,71 @@ final class ConsentLogControllerTest extends TestCase
         yield 'url too long' => [['url' => '/'.str_repeat('a', 255)]];
     }
 
-    public function testRejectsAChoiceThatExceedsTheLogColumns(): void
+    public function testStoresALargeChoiceThatFitsTheBodyLimit(): void
     {
-        $groups = array_map(static fn (int $i): string => str_repeat('a', 30).$i, range(1, 9));
+        // More than 255 bytes of group keys: the text columns take them
+        $groups = array_map(static fn (int $i): string => str_repeat('a', 30).$i, range(1, 40));
         $connection = $this->createMock(Connection::class);
-        $connection->method('fetchOne')->willReturn(3);
-        $connection->method('fetchAllKeyValue')->willReturn(array_combine($groups, range(1, 9)));
+        $connection->method('fetchAssociative')->willReturn(['version' => 3, 'logConsent' => '1', 'logPage' => 'path']);
+        $connection->method('fetchAllKeyValue')->willReturn(array_combine($groups, range(1, 40)));
         $connection->method('fetchFirstColumn')->willReturn([]);
+        $connection
+            ->expects($this->once())
+            ->method('insert')
+            ->with('tl_juhe_consent_log', $this->callback(static fn (array $row): bool => implode(',', $groups) === $row['groups'] && \strlen($row['groups']) > 255))
+        ;
+
+        $this->assertSame(204, $this->controller($connection)($this->request(['groups' => $groups]))->getStatusCode());
+    }
+
+    public function testRefusesAChoiceForABannerWithoutLogging(): void
+    {
+        $connection = $this->connection(['logConsent' => '0']);
         $connection->expects($this->never())->method('insert');
 
-        $this->assertSame(400, $this->controller($connection)($this->request(['groups' => $groups]))->getStatusCode());
+        $this->assertSame(403, $this->controller($connection)($this->request([]))->getStatusCode());
+    }
+
+    #[TestWith(['/kontakt?token=secret', '/kontakt'])]
+    #[TestWith(['/kontakt#top', '/kontakt'])]
+    #[TestWith(['/a?b#c', '/a'])]
+    #[TestWith(['/', '/'])]
+    public function testStoresThePathWithoutQueryAndFragment(string $url, string $stored): void
+    {
+        $connection = $this->connection();
+        $connection
+            ->expects($this->once())
+            ->method('insert')
+            ->with('tl_juhe_consent_log', $this->callback(static fn (array $row): bool => $stored === $row['url']))
+        ;
+
+        $this->assertSame(204, $this->controller($connection)($this->request(['url' => $url]))->getStatusCode());
+    }
+
+    /**
+     * @param array<string, mixed> $override
+     */
+    #[TestWith([['url' => '/konto/12345']])]
+    #[TestWith([['url' => 'https://evil.example/']])]
+    #[TestWith([['url' => null]])]
+    public function testStoresNoPageIfTheBannerKeepsNone(array $override): void
+    {
+        $connection = $this->connection(['logPage' => 'none']);
+        $connection
+            ->expects($this->once())
+            ->method('insert')
+            ->with('tl_juhe_consent_log', $this->callback(static fn (array $row): bool => '' === $row['url'] && self::ID === $row['consentId']))
+        ;
+
+        $request = $this->request($override);
+
+        if (null === $override['url']) {
+            $data = json_decode($request->getContent(), true);
+            unset($data['url']);
+            $request = Request::create('/_juhe_consent/log', 'POST', [], [], [], [], json_encode($data, JSON_THROW_ON_ERROR));
+        }
+
+        $this->assertSame(204, $this->controller($connection)($request)->getStatusCode());
     }
 
     public function testRejectsBodiesThatAreNotJson(): void
@@ -110,10 +166,14 @@ final class ConsentLogControllerTest extends TestCase
         $this->assertSame(429, $this->controller($connection, false)($this->request([]))->getStatusCode());
     }
 
-    private function connection(): Connection&\PHPUnit\Framework\MockObject\MockObject
+    /**
+     * @param array<string, string> $banner
+     */
+    private function connection(array $banner = []): Connection&\PHPUnit\Framework\MockObject\MockObject
     {
+        $banner += ['version' => '3', 'logConsent' => '1', 'logPage' => 'path'];
         $connection = $this->createMock(Connection::class);
-        $connection->method('fetchOne')->willReturnCallback(static fn (string $sql, array $params): int|false => 1 === $params[0] ? 3 : false);
+        $connection->method('fetchAssociative')->willReturnCallback(static fn (string $sql, array $params): array|false => 1 === $params[0] ? $banner : false);
         $connection->method('fetchAllKeyValue')->willReturn(['essential' => 1, 'media' => 2]);
         $connection->method('fetchFirstColumn')->willReturn([7, 8]);
 

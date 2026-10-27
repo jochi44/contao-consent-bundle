@@ -35,6 +35,19 @@ final class ConsentConfig
     public const MAX_LIFETIME = 395;
 
     /**
+     * How many months a consent log entry is kept; the last one is the default.
+     */
+    public const LOG_RETENTIONS = [6, 12, 24, 36];
+
+    public const DEFAULT_LOG_RETENTION = 36;
+
+    /**
+     * What the log keeps of the page: its path without query string and
+     * fragment (the default), or nothing.
+     */
+    public const LOG_PAGES = ['path', 'none'];
+
+    /**
      * @var array<int, array<string, mixed>|null>
      */
     private array $loaded = [];
@@ -72,6 +85,8 @@ final class ConsentConfig
             'id' => (int) $banner['id'],
             'version' => (int) $banner['version'],
             'lifetime' => self::lifetime($banner['lifetime'] ?? null),
+            'log' => (bool) ($banner['logConsent'] ?? true),
+            'log_page' => self::logPage($banner['logPage'] ?? null),
             'headline' => (string) $banner['headline'],
             'text' => $this->insertTagParser->replaceInline((string) $banner['text']),
             'info' => trim($this->insertTagParser->replaceInline((string) ($banner['infoText'] ?? ''))),
@@ -154,6 +169,24 @@ final class ConsentConfig
         $days = filter_var($value, FILTER_VALIDATE_INT);
 
         return false !== $days && $days >= 1 && $days <= self::MAX_LIFETIME ? $days : self::DEFAULT_LIFETIME;
+    }
+
+    /**
+     * The months a log entry of the banner is kept; anything unknown is the default.
+     */
+    public static function logRetention(mixed $value): int
+    {
+        $months = filter_var($value, FILTER_VALIDATE_INT);
+
+        return \in_array($months, self::LOG_RETENTIONS, true) ? $months : self::DEFAULT_LOG_RETENTION;
+    }
+
+    /**
+     * "path" or "none"; anything unknown is "path".
+     */
+    public static function logPage(mixed $value): string
+    {
+        return 'none' === $value ? 'none' : 'path';
     }
 
     /**

@@ -140,7 +140,9 @@ final class InjectConsentListener
             'layout' => $banner['layout'],
             'blocking' => $banner['blocking'],
             'storage' => 'juhe_consent_'.$banner['id'],
-            'logUrl' => $this->urlGenerator->generate('juhe_consent_log'),
+            // Without logging the script posts nothing
+            'logUrl' => ($banner['log'] ?? true) ? $this->urlGenerator->generate('juhe_consent_log') : null,
+            'logPage' => $banner['log_page'] ?? 'path',
             'groups' => array_map(static fn (array $group): array => [
                 'alias' => $group['alias'],
                 'essential' => $group['essential'],

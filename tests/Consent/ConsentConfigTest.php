@@ -10,6 +10,29 @@ use PHPUnit\Framework\TestCase;
 
 final class ConsentConfigTest extends TestCase
 {
+    #[TestWith([6, 6])]
+    #[TestWith(['12', 12])]
+    #[TestWith([24, 24])]
+    #[TestWith([36, 36])]
+    #[TestWith([0, 36])]
+    #[TestWith([7, 36])]
+    #[TestWith([null, 36])]
+    #[TestWith(['abc', 36])]
+    public function testLogRetentionAcceptsOnlyTheOfferedMonths(mixed $value, int $expected): void
+    {
+        $this->assertSame($expected, ConsentConfig::logRetention($value));
+    }
+
+    #[TestWith(['path', 'path'])]
+    #[TestWith(['none', 'none'])]
+    #[TestWith(['', 'path'])]
+    #[TestWith([null, 'path'])]
+    #[TestWith(['full', 'path'])]
+    public function testLogPageFallsBackToThePath(mixed $value, string $expected): void
+    {
+        $this->assertSame($expected, ConsentConfig::logPage($value));
+    }
+
     #[TestWith(['bar', 'bar'])]
     #[TestWith(['card', 'card'])]
     #[TestWith(['', 'card'])]

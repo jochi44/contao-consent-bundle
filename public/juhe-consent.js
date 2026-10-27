@@ -205,7 +205,8 @@
             method: 'POST',
             keepalive: true,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ banner: config.banner, version: config.version, id: state.id, groups: state.groups, services: state.services, url: location.pathname }),
+            // The path only (no query string or fragment), or no page at all
+            body: JSON.stringify({ banner: config.banner, version: config.version, id: state.id, groups: state.groups, services: state.services, ...(config.logPage === 'none' ? {} : { url: location.pathname }) }),
         }).catch(() => {});
     };
 

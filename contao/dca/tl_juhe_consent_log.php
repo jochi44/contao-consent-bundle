@@ -25,9 +25,10 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_log'] = [
         'pid' => ['filter' => true, 'foreignKey' => 'tl_juhe_consent_banner.title', 'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0], 'relation' => ['type' => 'belongsTo', 'load' => 'lazy']],
         'version' => ['filter' => true, 'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0]],
         'consentId' => ['search' => true, 'sql' => ['type' => 'string', 'length' => 36, 'default' => '', 'platformOptions' => ['collation' => 'ascii_bin']]],
-        'groups' => ['filter' => true, 'sql' => ['type' => 'string', 'length' => 255, 'default' => '']],
+        // Text columns: the 4 KiB limit of a log post bounds both lists
+        'groups' => ['filter' => true, 'sql' => ['type' => 'text', 'notnull' => false]],
         // Services allowed one by one via "always allow" on a placeholder ("s<id>")
-        'services' => ['sql' => ['type' => 'string', 'length' => 255, 'default' => '']],
+        'services' => ['sql' => ['type' => 'text', 'notnull' => false]],
         'url' => ['sql' => ['type' => 'string', 'length' => 255, 'default' => '']],
     ],
 ];

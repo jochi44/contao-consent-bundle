@@ -22,7 +22,7 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
     ],
     'palettes' => [
         '__selector__' => ['layout'],
-        'default' => '{title_legend},title;{text_legend},headline,text,infoText,placeholderText,askOnFirstVisit,privacySignals,noOptionalForUsers;{layout_legend},layout,blocking;{pages_legend:hide},excludePages;{link_legend},privacyPage,imprintPage,infoPages;{version_legend},version,lifetime',
+        'default' => '{title_legend},title;{text_legend},headline,text,infoText,placeholderText,askOnFirstVisit,privacySignals,noOptionalForUsers;{layout_legend},layout,blocking;{pages_legend:hide},excludePages;{link_legend},privacyPage,imprintPage,infoPages;{version_legend},version,lifetime;{log_legend},logConsent,logRetention,logPage',
     ],
     'subpalettes' => [
         'layout_card' => 'position',
@@ -135,6 +135,25 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
             'inputType' => 'text',
             'eval' => ['mandatory' => true, 'rgxp' => 'natural', 'minval' => 1, 'maxval' => ConsentConfig::MAX_LIFETIME, 'maxlength' => 3, 'tl_class' => 'w50'],
             'sql' => ['type' => 'smallint', 'unsigned' => true, 'default' => ConsentConfig::DEFAULT_LIFETIME],
+        ],
+        'logConsent' => [
+            'inputType' => 'checkbox',
+            'eval' => ['tl_class' => 'w50 m12 clr'],
+            'sql' => ['type' => 'boolean', 'default' => true],
+        ],
+        'logRetention' => [
+            'inputType' => 'select',
+            'options' => ConsentConfig::LOG_RETENTIONS,
+            'reference' => &$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['logRetentionOptions'],
+            'eval' => ['tl_class' => 'w50 clr'],
+            'sql' => ['type' => 'smallint', 'unsigned' => true, 'default' => ConsentConfig::DEFAULT_LOG_RETENTION],
+        ],
+        'logPage' => [
+            'inputType' => 'select',
+            'options' => ConsentConfig::LOG_PAGES,
+            'reference' => &$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['logPageOptions'],
+            'eval' => ['tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 8, 'default' => 'path'],
         ],
     ],
 ];
