@@ -22,7 +22,7 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
     ],
     'palettes' => [
         '__selector__' => ['layout'],
-        'default' => '{title_legend},title;{text_legend},headline,text,infoText,placeholderText,askOnFirstVisit;{layout_legend},layout,blocking;{pages_legend:hide},excludePages;{link_legend},privacyPage,imprintPage,infoPages;{version_legend},version',
+        'default' => '{title_legend},title;{text_legend},headline,text,infoText,placeholderText,askOnFirstVisit;{layout_legend},layout,blocking;{pages_legend:hide},excludePages;{link_legend},privacyPage,imprintPage,infoPages;{version_legend},version,lifetime',
     ],
     'subpalettes' => [
         'layout_card' => 'position',
@@ -120,6 +120,11 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
             'inputType' => 'text',
             'eval' => ['mandatory' => true, 'rgxp' => 'natural', 'minval' => 1, 'maxlength' => 6, 'tl_class' => 'w50'],
             'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 1],
+        ],
+        'lifetime' => [
+            'inputType' => 'text',
+            'eval' => ['mandatory' => true, 'rgxp' => 'natural', 'minval' => 1, 'maxval' => ConsentConfig::MAX_LIFETIME, 'maxlength' => 3, 'tl_class' => 'w50'],
+            'sql' => ['type' => 'smallint', 'unsigned' => true, 'default' => ConsentConfig::DEFAULT_LIFETIME],
         ],
     ],
 ];

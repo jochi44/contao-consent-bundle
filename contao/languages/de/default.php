@@ -32,6 +32,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Datenschutzerkl
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Impressum', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['infoPages'] = ['Weitere Links', 'Seiten, die nach Datenschutzerklärung und Impressum verlinkt werden, in dieser Reihenfolge. Der Link trägt den Seitentitel. Nicht veröffentlichte Seiten fallen weg.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Erhöhen, wenn sich Gruppen oder Dienste wesentlich ändern: alle Besucher werden dann erneut gefragt.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['lifetime'] = ['Auswahl gültig für (Tage)', 'So lange gilt die Auswahl eines Besuchers, danach wird er erneut gefragt. 1 bis 395 Tage (13 Monate), Standard 365. Eine höhere Version fragt unabhängig davon sofort erneut.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedBy'] = 'Verwendet von:';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedByNone'] = 'Keiner Website zugeordnet';
 

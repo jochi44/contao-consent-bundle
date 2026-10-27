@@ -67,6 +67,7 @@ banner under "System > Consent" and select it in the root page.
   third-party cookies, or cookies at other paths. Configure those providers'
   server-side withdrawal separately.
 - **New version = ask again:** raise the banner version after big changes.
+  Without a change a choice counts for the banner's lifetime (see Storage).
 - **Consent log** (`tl_juhe_consent_log`): banner, version, random consent ID from
   the stored choice, groups, services, page path, time. No IP, no user agent.
   Rate limited (120 per 10 minutes and IP, so visitors behind one office or
@@ -125,7 +126,10 @@ button or a link.
 
 One `localStorage` entry `juhe_consent_<banner id>`, JSON:
 `{v: version, g: [groups], s: [services], id: uuid, t: timestamp}`. It counts
-for one year from `t`; invalid or future timestamps and a new banner version ask again. No cookie: Contao's
+for the banner's "Auswahl gültig für (Tage)" from `t`: 365 days by default,
+1 to 395 days (13 months) allowed, never unlimited. The lifetime is read on
+every page, so shortening it also ends older choices sooner. Invalid or future
+timestamps and a new banner version ask again at once. No cookie: Contao's
 cache proxy passes every request with an unknown cookie to PHP, and the server
 never needs the choice. List the entry as a necessary service in the banner
 (for example `juhe_consent_*: 1 year`). Without storage (private mode, blocked

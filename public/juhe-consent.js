@@ -4,7 +4,8 @@
  * The choice is stored in localStorage under juhe_consent_<banner id> (JSON:
  * version, groups, services allowed one by one, random ID, time), not in a
  * cookie: a request cookie makes Contao's HTTP cache pass every page to PHP, and
- * the server never needs the choice. It expires after one year; without
+ * the server never needs the choice. It expires after the banner's lifetime
+ * (one year by default); without
  * storage (private mode, blocked site data) the banner simply asks again.
  * Blocked content is marked by
  * the server: script[type="text/plain"][data-juhe-consent-src], placeholders with
@@ -40,13 +41,14 @@
     const aliases = config.groups.map((group) => group.alias);
     const services = config.groups.flatMap((group) => group.services.map((service) => ({ ...service, group: group.alias })));
 
-    const maxAge = 31536000;
+    // A choice counts for the banner's lifetime in days (one year by default)
+    const maxAge = (Number.isInteger(config.lifetime) && config.lifetime > 0 ? config.lifetime : 365) * 86400;
 
     const read = () => {
         try {
             const value = JSON.parse(localStorage.getItem(config.storage) || 'null');
 
-            // A new banner version or a choice older than a year asks again
+            // A new banner version or a choice older than the lifetime asks again
             const now = Date.now() / 1000;
 
             if (!value || value.v !== config.version || !Array.isArray(value.g) || !Number.isFinite(value.t) || value.t < 0 || value.t > now || now - value.t > maxAge) {

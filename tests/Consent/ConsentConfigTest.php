@@ -78,4 +78,19 @@ final class ConsentConfigTest extends TestCase
     {
         $this->assertSame($expected, ConsentConfig::position($banner));
     }
+
+    #[TestWith([365, 365])]
+    #[TestWith(['30', 30])]
+    #[TestWith([1, 1])]
+    #[TestWith([395, 395])]
+    #[TestWith([396, 365])]
+    #[TestWith([0, 365])]
+    #[TestWith([-5, 365])]
+    #[TestWith(['1.5', 365])]
+    #[TestWith(['abc', 365])]
+    #[TestWith([null, 365])]
+    public function testLifetimeStaysWithinThirteenMonths(mixed $value, int $expected): void
+    {
+        $this->assertSame($expected, ConsentConfig::lifetime($value));
+    }
 }

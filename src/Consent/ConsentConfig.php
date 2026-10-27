@@ -28,6 +28,13 @@ final class ConsentConfig
     public const BAR_POSITIONS = ['bottom', 'top'];
 
     /**
+     * How many days a choice counts: one year by default, at most 13 months.
+     */
+    public const DEFAULT_LIFETIME = 365;
+
+    public const MAX_LIFETIME = 395;
+
+    /**
      * @var array<int, array<string, mixed>|null>
      */
     private array $loaded = [];
@@ -64,6 +71,7 @@ final class ConsentConfig
         return $this->loaded[$id] = [
             'id' => (int) $banner['id'],
             'version' => (int) $banner['version'],
+            'lifetime' => self::lifetime($banner['lifetime'] ?? null),
             'headline' => (string) $banner['headline'],
             'text' => $this->insertTagParser->replaceInline((string) $banner['text']),
             'info' => trim($this->insertTagParser->replaceInline((string) ($banner['infoText'] ?? ''))),
@@ -134,6 +142,16 @@ final class ConsentConfig
     public static function layout(mixed $value): string
     {
         return 'bar' === $value ? 'bar' : 'card';
+    }
+
+    /**
+     * The days a choice counts, within 1 and MAX_LIFETIME; anything else is the default.
+     */
+    public static function lifetime(mixed $value): int
+    {
+        $days = filter_var($value, FILTER_VALIDATE_INT);
+
+        return false !== $days && $days >= 1 && $days <= self::MAX_LIFETIME ? $days : self::DEFAULT_LIFETIME;
     }
 
     /**

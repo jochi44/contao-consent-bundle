@@ -32,6 +32,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Privacy policy'
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Imprint', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['infoPages'] = ['Further links', 'Pages linked after the privacy policy and imprint, in this order. The link shows the page title. Unpublished pages are left out.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Increase when groups or services change substantially: all visitors are asked again.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['lifetime'] = ['Keep the choice for (days)', 'How long a visitor\'s choice counts before the banner asks again. 1 to 395 days (13 months), default 365. A higher version asks again at once, whatever the lifetime.'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedBy'] = 'Used by:';
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedByNone'] = 'Not assigned to a website';
 

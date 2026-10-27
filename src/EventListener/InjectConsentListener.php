@@ -128,6 +128,7 @@ final class InjectConsentListener
         return [
             'banner' => $banner['id'],
             'version' => $banner['version'],
+            'lifetime' => $banner['lifetime'] ?? ConsentConfig::DEFAULT_LIFETIME,
             'ask' => $banner['ask'],
             'quiet' => $banner['quiet'] ?? false,
             'layout' => $banner['layout'],
