@@ -94,8 +94,28 @@ groups and services.
   subdomain) is listed at a service of a non-essential group are held back
   in the HTML. Iframes become a placeholder with "Inhalt laden" (this time)
   and "Immer erlauben" (remembered for this service). Scripts get
-  `type="text/plain"`. Works for any layout, theme or content element,
-  because it runs on the finished page.
+  `type="text/plain"`. Resource links to those hosts (`<link>` with
+  `rel` `preconnect`, `dns-prefetch`, `preload`, `prefetch`,
+  `modulepreload` or `stylesheet`) lose `rel` and `href` until consent
+  (kept in `data-juhe-consent-rel` and `data-juhe-consent-href`), so the
+  browser does not contact the host early; after consent they come back with
+  their other attributes. Hyperlinks (`<a href>`) and other link types (icon,
+  canonical, alternate) stay as they are. Works for any layout, theme or
+  content element, because it runs on the finished page.
+
+  What the blocker cannot hold back, because it only reads the HTML of the
+  page:
+  - requests that inline JavaScript makes itself (`fetch()`, an `Image`, a
+    script or iframe it creates, a tracking pixel built in code): put such
+    code into the service's "Code nach Einwilligung" instead;
+  - CSS that loads from a provider inside an allowed stylesheet or a
+    `<style>` block (`@import`, `url()` of fonts or images);
+  - anything that loads before the page or outside it: HTTP `Link` headers
+    (preload, preconnect), a service worker, browser extensions;
+  - hosts that are not listed at a service, and `<img>`, `<video>`, `<audio>`,
+    `<object>` and `<embed>` from listed hosts.
+  Check a page in the browser's network panel before consent: no optional
+  provider should appear.
 - **Notice per service (optional):** a service's "Hinweistext" replaces the
   banner's text for blocked content for that service (`##service##` is the
   service name), and its "Hinweis-Template" picks
@@ -108,7 +128,7 @@ groups and services.
   on your website. Grant its field permission only to trusted administrators.
   Configure every optional provider's hosts, and put its initialization code
   here rather than in an ordinary inline script. The blocker does not inspect
-  JavaScript, stylesheets, resource hints or requests created by other scripts.
+  JavaScript or requests created by other scripts (see Blocking on the server).
 - **Template services:** a service of the type "Template" takes its code
   after consent from a Twig template instead of the code field. The select
   lists every `juhe_consent/service/*` template: the shipped presets and the

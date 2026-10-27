@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace JuheItSolutions\JuheConsentBundle\Consent;
 
 /**
- * Holds back iframes and external scripts from the hosts of a service until
- * the visitor agrees: an iframe becomes a placeholder with the original in a
- * <template>, a script gets type="text/plain" and its URL in data-juhe-consent-src.
- * consent.js brings both back after consent.
+ * Holds back iframes, external scripts and resource links from the hosts of a
+ * service until the visitor agrees: an iframe becomes a placeholder with the
+ * original in a <template>, a script gets type="text/plain" and its URL in
+ * data-juhe-consent-src, a <link> (preconnect, dns-prefetch, preload, prefetch,
+ * modulepreload, stylesheet) keeps its rel and href only in data-juhe-consent-rel
+ * and data-juhe-consent-href. consent.js brings them back after consent.
+ * Hyperlinks (<a href>) and other links (icon, canonical, alternate) stay.
  *
  * The placeholder markup comes from the caller (the juhe_consent/placeholder
  * template), so this class has no template dependency.
@@ -18,6 +21,11 @@ final class HtmlBlocker
     private const ATTRIBUTES = '(?:[^>"\']|"[^"]*"|\'[^\']*\')*';
     private const NON_ELEMENTS = '(?:<!--.*?-->|<(?<raw>style|textarea|title)\b'.self::ATTRIBUTES.'>.*?<\/\k<raw>\s*>)(*SKIP)(*F)|';
     private const ATTRIBUTE = '/\\s+([^\\s=\/>]+)(?:\\s*=\\s*(?:"([^"]*)"|\'([^\']*)\'|([^\\s>]+)))?/';
+
+    /**
+     * Link types that make the browser contact a host before anything else runs.
+     */
+    public const LINK_TYPES = ['preconnect', 'dns-prefetch', 'preload', 'prefetch', 'modulepreload', 'stylesheet'];
 
     /**
      * @param array<string, mixed>                                   $banner      see ConsentConfig::banner()
@@ -49,7 +57,7 @@ final class HtmlBlocker
             return $placeholder(array_diff_key($service, ['hosts' => true]), $match[0]);
         }, $html) ?? $html;
 
-        return preg_replace_callback('/'.self::NON_ELEMENTS.'<script\b(?<attributes>'.self::ATTRIBUTES.')>(?<body>.*?)<\/script\s*>/is', function (array $match) use ($services): string {
+        $html = preg_replace_callback('/'.self::NON_ELEMENTS.'<script\b(?<attributes>'.self::ATTRIBUTES.')>(?<body>.*?)<\/script\s*>/is', function (array $match) use ($services): string {
             $src = $this->attribute($match['attributes'], 'src');
 
             if (null === $src || null === ($service = $this->serviceFor($match[0], $services))) {
@@ -63,6 +71,22 @@ final class HtmlBlocker
 
             return \sprintf('<script type="text/plain" data-juhe-consent-group="%s" data-juhe-consent-service="%s" data-juhe-consent-src="%s"%s%s>%s</script>', $service['group'], $service['key'], htmlspecialchars($src, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), $type, $attributes, $match['body']);
         }, $html) ?? $html;
+
+        return preg_replace_callback('/'.self::NON_ELEMENTS.'<script\b'.self::ATTRIBUTES.'>.*?<\/script\s*>(*SKIP)(*F)|<link\b(?<attributes>'.self::ATTRIBUTES.')>/is', function (array $match) use ($services): string {
+            $rel = strtolower((string) $this->attribute($match['attributes'], 'rel'));
+            $href = $this->attribute($match['attributes'], 'href');
+
+            if (null === $href || !array_intersect(preg_split('/\s+/', trim($rel)) ?: [], self::LINK_TYPES) || null === ($service = $this->serviceForUrl($href, $services))) {
+                return $match[0];
+            }
+
+            // Without rel and href the browser ignores the link; consent.js puts them back
+            $attributes = preg_replace_callback(self::ATTRIBUTE, static fn (array $attribute): string => \in_array(strtolower($attribute[1]), ['rel', 'href'], true) ? '' : $attribute[0], $match['attributes']);
+            // A self-closing "/" after a space or a quote is no part of a value
+            $attributes = preg_replace('#(?:\s+|(?<=["\']))/\s*$#', '', rtrim((string) $attributes));
+
+            return \sprintf('<link data-juhe-consent-group="%s" data-juhe-consent-service="%s" data-juhe-consent-rel="%s" data-juhe-consent-href="%s"%s>', $service['group'], $service['key'], htmlspecialchars($rel, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), htmlspecialchars($href, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), $attributes);
+        }, $html) ?? $html;
     }
 
     /**
@@ -75,10 +99,16 @@ final class HtmlBlocker
         preg_match('/^<\\w+('.self::ATTRIBUTES.')>/s', $tag, $opening);
         $src = $this->attribute($opening[1] ?? '', 'src');
 
-        if (null === $src) {
-            return null;
-        }
+        return null === $src ? null : $this->serviceForUrl($src, $services);
+    }
 
+    /**
+     * @param list<array<string, mixed>> $services
+     *
+     * @return array<string, mixed>|null
+     */
+    private function serviceForUrl(string $src, array $services): array|null
+    {
         // HTTP URLs in HTML follow browser normalization, not PHP's URL grammar.
         $url = str_replace(["\t", "\n", "\r"], '', trim($src, "\x00..\x20"));
         $url = str_replace('\\', '/', $url);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JuheItSolutions\JuheConsentBundle\Tests\Consent;
 
 use JuheItSolutions\JuheConsentBundle\Consent\HtmlBlocker;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 final class HtmlBlockerTest extends TestCase
@@ -84,6 +85,34 @@ final class HtmlBlockerTest extends TestCase
         $html = '<script src="https://cdn.essential.example/x.js"></script>';
 
         $this->assertSame($html, (new HtmlBlocker())->block($html, $this->banner(), static fn (): string => 'P'));
+    }
+
+    #[TestWith(['preconnect'])]
+    #[TestWith(['dns-prefetch'])]
+    #[TestWith(['preload'])]
+    #[TestWith(['prefetch'])]
+    #[TestWith(['modulepreload'])]
+    #[TestWith(['stylesheet'])]
+    #[TestWith(['Stylesheet Preload'])]
+    public function testHoldsBackResourceLinksToABlockedHost(string $rel): void
+    {
+        $html = (new HtmlBlocker())->block('<link rel="'.$rel.'" href="https://www.googletagmanager.com/x?a=1&amp;b=2" crossorigin as="script">', $this->banner(), static fn (): string => 'P');
+
+        $this->assertSame('<link data-juhe-consent-group="stats" data-juhe-consent-service="s8" data-juhe-consent-rel="'.strtolower($rel).'" data-juhe-consent-href="https://www.googletagmanager.com/x?a=1&amp;b=2" crossorigin as="script">', $html);
+    }
+
+    public function testKeepsPlainLinksOtherLinkTypesAndOtherHosts(): void
+    {
+        $html = '<a href="https://www.googletagmanager.com/">GTM</a><link rel="icon" href="https://www.googletagmanager.com/i.png"><link rel="canonical" href="https://googletagmanager.com/"><link rel="alternate" hreflang="en" href="https://googletagmanager.com/en"><link rel="stylesheet" href="https://example.org/a.css"><link rel="preconnect" href="https://cdn.essential.example"><link rel="stylesheet" href="/local.css">';
+
+        $this->assertSame($html, (new HtmlBlocker())->block($html, $this->banner(), static fn (): string => 'P'));
+    }
+
+    public function testHoldsBackSelfClosingAndUnquotedLinksButNotInRawText(): void
+    {
+        $html = (new HtmlBlocker())->block('<link rel=preconnect href=//youtube-nocookie.com/ /><link rel="dns-prefetch" href="https://youtube-nocookie.com" media="print"/><!-- <link rel="preload" href="https://youtube-nocookie.com/x"> --><script>var l = \'<link rel="preload" href="https://youtube-nocookie.com/y">\';</script>', $this->banner(), static fn (): string => 'P');
+
+        $this->assertSame('<link data-juhe-consent-group="media" data-juhe-consent-service="s7" data-juhe-consent-rel="preconnect" data-juhe-consent-href="//youtube-nocookie.com/"><link data-juhe-consent-group="media" data-juhe-consent-service="s7" data-juhe-consent-rel="dns-prefetch" data-juhe-consent-href="https://youtube-nocookie.com" media="print"><!-- <link rel="preload" href="https://youtube-nocookie.com/x"> --><script>var l = \'<link rel="preload" href="https://youtube-nocookie.com/y">\';</script>', $html);
     }
 
     /**

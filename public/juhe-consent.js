@@ -8,7 +8,8 @@
  * (one year by default); without
  * storage (private mode, blocked site data) the banner simply asks again.
  * Blocked content is marked by
- * the server: script[type="text/plain"][data-juhe-consent-src], placeholders with
+ * the server: script[type="text/plain"][data-juhe-consent-src], link[data-juhe-consent-href]
+ * (a held-back preconnect, preload or stylesheet), placeholders with
  * the original iframe in a <template>, and template[data-juhe-consent-code] with
  * the code of a service, template[data-juhe-consent-denied] with its code
  * without consent. All of it carries data-juhe-consent-group/-service.
@@ -160,6 +161,26 @@
         return script;
     };
 
+    // A held-back <link> (preconnect, preload, stylesheet ...) comes back as a new element with its rel and href
+    const restoredLink = (old) => {
+        const link = document.createElement('link');
+
+        for (const { name, value } of old.attributes) {
+            if (!name.startsWith('data-juhe-consent-')) {
+                link.setAttribute(name, value);
+            }
+        }
+
+        if (old.nonce) {
+            link.nonce = old.nonce;
+        }
+
+        link.rel = old.dataset.juheConsentRel;
+        link.href = old.dataset.juheConsentHref;
+
+        return link;
+    };
+
     const content = (template) => {
         const fragment = document.importNode(template.content, true);
         fragment.querySelectorAll('script').forEach((old) => old.replaceWith(runnable(old)));
@@ -293,6 +314,14 @@
 
             return batch.get(key);
         };
+
+        // Resource links first: a stylesheet or preconnect of a service is there before its scripts start
+        document.querySelectorAll('link[data-juhe-consent-href]').forEach((old) => {
+            if (allowed(old)) {
+                running.add(old.dataset.juheConsentService);
+                old.replaceWith(restoredLink(old));
+            }
+        });
 
         document.querySelectorAll('script[type="text/plain"][data-juhe-consent-src]').forEach((old) => {
             if (!taken.has(old) && allowed(old)) {
