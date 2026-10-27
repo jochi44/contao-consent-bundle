@@ -77,6 +77,7 @@ final class ConsentConfig
             'info' => trim($this->insertTagParser->replaceInline((string) ($banner['infoText'] ?? ''))),
             'placeholder' => trim((string) $banner['placeholderText']),
             'ask' => (bool) $banner['askOnFirstVisit'],
+            'privacy_signals' => (bool) ($banner['privacySignals'] ?? false),
             'layout' => self::layout($banner['layout'] ?? null),
             'position' => self::position($banner),
             'blocking' => (bool) ($banner['blocking'] ?? false),

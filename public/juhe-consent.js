@@ -240,8 +240,16 @@
     const bar = 'bar' === config.layout;
     const pending = () => !state && !!config.ask;
 
+    /*
+     * Global Privacy Control or Do Not Track, if the banner respects them: the
+     * banner then does not ask by itself, only essential services run and
+     * nothing is stored. A choice the visitor saves still wins. A missing or
+     * "0" preference is no signal and never counts as permission.
+     */
+    const privacySignal = !!config.privacySignals && (navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || window.doNotTrack === '1');
+
     // Waiting for a choice and allowed to ask by itself: not on a page the banner excludes
-    const prompting = () => pending() && !config.quiet;
+    const prompting = () => pending() && !config.quiet && !privacySignal;
     const openers = '[data-juhe-consent-open], a[href$="#cookie-einstellungen"]';
 
     let shown = false;

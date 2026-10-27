@@ -48,6 +48,13 @@ banner under "System > Consent" and select it in the root page.
   unpublished pages drop out. Texts and links belong to the banner: a site
   with several languages has one banner per language root (see
   Translations), there is no per-root override.
+- **Privacy signals (optional):** with "Datenschutzsignale beachten", a browser
+  that sends Global Privacy Control (`navigator.globalPrivacyControl`) or Do
+  Not Track (`navigator.doNotTrack` "1") and has no stored choice gets no
+  banner by itself, and only essential services run. Nothing is stored, so
+  the page stays the same for everybody and in the cache. The visitor can
+  still open the settings, and a choice saved there wins. Off by default. This
+  is a policy option, not a statement that it meets any law.
 - **Blocking on the server:** iframes and external scripts whose host (or a
   subdomain) is listed at a service of a non-essential group are held back
   in the HTML. Iframes become a placeholder with "Inhalt laden" (this time)

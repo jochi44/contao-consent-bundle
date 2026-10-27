@@ -131,6 +131,7 @@ final class InjectConsentListener
             'lifetime' => $banner['lifetime'] ?? ConsentConfig::DEFAULT_LIFETIME,
             'ask' => $banner['ask'],
             'quiet' => $banner['quiet'] ?? false,
+            'privacySignals' => $banner['privacy_signals'] ?? false,
             'layout' => $banner['layout'],
             'blocking' => $banner['blocking'],
             'storage' => 'juhe_consent_'.$banner['id'],

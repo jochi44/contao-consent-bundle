@@ -22,7 +22,7 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
     ],
     'palettes' => [
         '__selector__' => ['layout'],
-        'default' => '{title_legend},title;{text_legend},headline,text,infoText,placeholderText,askOnFirstVisit;{layout_legend},layout,blocking;{pages_legend:hide},excludePages;{link_legend},privacyPage,imprintPage,infoPages;{version_legend},version,lifetime',
+        'default' => '{title_legend},title;{text_legend},headline,text,infoText,placeholderText,askOnFirstVisit,privacySignals;{layout_legend},layout,blocking;{pages_legend:hide},excludePages;{link_legend},privacyPage,imprintPage,infoPages;{version_legend},version,lifetime',
     ],
     'subpalettes' => [
         'layout_card' => 'position',
@@ -61,6 +61,11 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_banner'] = [
             'inputType' => 'checkbox',
             'eval' => ['tl_class' => 'w50 m12 clr'],
             'sql' => ['type' => 'boolean', 'default' => true],
+        ],
+        'privacySignals' => [
+            'inputType' => 'checkbox',
+            'eval' => ['tl_class' => 'w50 m12'],
+            'sql' => ['type' => 'boolean', 'default' => false],
         ],
         'layout' => [
             'inputType' => 'select',
