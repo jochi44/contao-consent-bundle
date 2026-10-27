@@ -33,6 +33,12 @@ final class ConsentConfig
     public const CODE_POSITIONS = ['body', 'head'];
 
     /**
+     * Where the code after consent comes from: the code field (the default) or
+     * a Twig template (see ServiceTemplates).
+     */
+    public const SERVICE_TYPES = ['code', 'template'];
+
+    /**
      * How many days a choice counts: one year by default, at most 13 months.
      */
     public const DEFAULT_LIFETIME = 365;
@@ -61,6 +67,7 @@ final class ConsentConfig
         private readonly Connection $connection,
         private readonly ContentUrlGenerator $urlGenerator,
         private readonly InsertTagParser $insertTagParser,
+        private readonly ServiceTemplates $templates,
     ) {
     }
 
@@ -259,7 +266,7 @@ final class ConsentConfig
             StringUtil::trimsplit('\n', (string) $row['hosts']),
         )));
 
-        return [
+        $service = [
             'key' => 's'.$row['id'],
             'title' => (string) $row['title'],
             'provider' => (string) $row['provider'],
@@ -267,11 +274,20 @@ final class ConsentConfig
             'privacy_url' => (string) $row['privacyUrl'],
             'cookies' => $cookies,
             'hosts' => $hosts,
+            'template' => null,
             'code' => trim((string) $row['code']),
             'code_denied' => trim((string) ($row['codeDenied'] ?? '')),
             'position' => \in_array($row['codePosition'] ?? null, self::CODE_POSITIONS, true) ? $row['codePosition'] : self::CODE_POSITIONS[0],
             'order' => max(0, (int) ($row['loadOrder'] ?? 0)),
         ];
+
+        // A template service: its template gives the code; the code field does not count
+        if ('template' === ($row['serviceType'] ?? 'code')) {
+            $service['template'] = (string) ($row['serviceTemplate'] ?? '');
+            $service['code'] = '' === $service['template'] ? '' : $this->templates->render($service['template'], ['service' => array_diff_key($service, ['code' => true, 'code_denied' => true])]);
+        }
+
+        return $service;
     }
 
     /**

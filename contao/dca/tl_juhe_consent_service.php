@@ -19,7 +19,9 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
         'label' => ['fields' => ['title', 'provider'], 'format' => '%s <span class="label-info">(%s)</span>'],
     ],
     'palettes' => [
-        'default' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,code,codeDenied,codePosition,loadOrder;{publish_legend},published',
+        '__selector__' => ['serviceType'],
+        'default' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,serviceType,code,codeDenied,codePosition,loadOrder;{publish_legend},published',
+        'template' => '{title_legend},title,provider,privacyUrl;{text_legend},description,cookies;{blocking_legend},hosts,serviceType,serviceTemplate,codeDenied,codePosition,loadOrder;{publish_legend},published',
     ],
     'fields' => [
         'id' => ['sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true]],
@@ -55,6 +57,19 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_service'] = [
             'inputType' => 'textarea',
             'eval' => ['maxlength' => 2000, 'tl_class' => 'clr'],
             'sql' => ['type' => 'text', 'notnull' => false],
+        ],
+        'serviceType' => [
+            'inputType' => 'select',
+            'options' => ConsentConfig::SERVICE_TYPES,
+            'reference' => &$GLOBALS['TL_LANG']['tl_juhe_consent_service']['serviceTypeOptions'],
+            'eval' => ['submitOnChange' => true, 'tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 16, 'default' => 'code'],
+        ],
+        // Options: every juhe_consent/service/* Twig template (ServiceTemplates::options())
+        'serviceTemplate' => [
+            'inputType' => 'select',
+            'eval' => ['mandatory' => true, 'includeBlankOption' => true, 'chosen' => true, 'submitOnChange' => true, 'tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 128, 'default' => ''],
         ],
         'code' => [
             'inputType' => 'textarea',

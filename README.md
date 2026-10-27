@@ -78,6 +78,17 @@ banner under "System > Consent" and select it in the root page.
   Configure every optional provider's hosts, and put its initialization code
   here rather than in an ordinary inline script. The blocker does not inspect
   JavaScript, stylesheets, resource hints or requests created by other scripts.
+- **Template services:** a service of the type "Template" takes its code
+  after consent from a Twig template instead of the code field. The select
+  lists every `juhe_consent/service/*` template: the shipped presets and the
+  website's own (`templates/juhe_consent/service/my_service.html.twig`); a
+  stored name that is not such a template renders nothing. The output goes
+  into the same inert `<template>` as the code, so nothing of it runs or loads
+  before consent, and it starts once, like the code. The template gets
+  `service` (`key`, `title`, `provider`, `privacy_url`, `hosts`, `cookies`,
+  `position`, `order`, `template`). Twig escapes values for HTML; inside a
+  `<script>` use `|e('js')`. Same permission warning as the code field: a
+  template can run any code.
 - **Code without consent (optional):** HTML/JS that runs once per page while
   the service is not allowed after the stored choice is applied: on the first
   visit, after a refusal, and after a withdrawal (which reloads the page, or,

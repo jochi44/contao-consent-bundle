@@ -6,9 +6,12 @@ namespace JuheItSolutions\JuheConsentBundle\Tests\Consent;
 
 use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\CoreBundle\Routing\ContentUrlGenerator;
+use Contao\CoreBundle\Twig\Finder\FinderFactory;
 use Contao\PageModel;
 use Doctrine\DBAL\Connection;
 use JuheItSolutions\JuheConsentBundle\Consent\ConsentConfig;
+use JuheItSolutions\JuheConsentBundle\Consent\ServiceTemplates;
+use JuheItSolutions\JuheConsentBundle\Tests\BundleTwig;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
@@ -165,12 +168,39 @@ final class ConsentConfigTest extends TestCase
         $this->assertSame([['name' => '_ga*', 'duration' => '2 years'], ['name' => '_gid', 'duration' => '']], $services[0]['cookies']);
     }
 
+    public function testATemplateServiceTakesItsCodeFromTheTemplate(): void
+    {
+        $service = ['pid' => 3, 'title' => 'T <i>', 'provider' => '', 'description' => '', 'privacyUrl' => '', 'cookies' => '', 'hosts' => '', 'code' => '<script>window.fromField = 1;</script>'];
+        $connection = $this->createStub(Connection::class);
+        $connection->method('fetchAssociative')->willReturn(['id' => 7, 'version' => 1, 'headline' => 'H', 'text' => '', 'placeholderText' => '', 'askOnFirstVisit' => 1, 'privacyPage' => 0, 'imprintPage' => 0]);
+        $connection->method('fetchAllAssociative')->willReturnOnConsecutiveCalls(
+            [['id' => 3, 'alias' => 'a', 'title' => 'A', 'description' => '', 'essential' => 0]],
+            [
+                ['id' => 1, 'serviceType' => 'template', 'serviceTemplate' => 'juhe_consent/service/echo'] + $service,
+                ['id' => 2, 'serviceType' => 'template', 'serviceTemplate' => 'juhe_consent/service/../placeholder'] + $service,
+                ['id' => 3, 'serviceType' => 'code', 'serviceTemplate' => 'juhe_consent/service/echo'] + $service,
+                ['id' => 4] + $service,
+            ],
+        );
+
+        $services = $this->config($connection)->banner(7)['groups'][0]['services'];
+
+        $this->assertStringContainsString('<p data-title="T &lt;i&gt;">', $services[0]['code']);
+        $this->assertStringNotContainsString('fromField', $services[0]['code']);
+        $this->assertSame('juhe_consent/service/echo', $services[0]['template']);
+        // A name that is not a listed template gives no code at all
+        $this->assertSame('', $services[1]['code']);
+        $this->assertSame($service['code'], $services[2]['code']);
+        $this->assertNull($services[2]['template']);
+        $this->assertSame($service['code'], $services[3]['code']);
+    }
+
     private function config(Connection $connection): ConsentConfig
     {
         $insertTags = $this->createStub(InsertTagParser::class);
         $insertTags->method('replaceInline')->willReturnArgument(0);
 
-        return new ConsentConfig($connection, $this->createStub(ContentUrlGenerator::class), $insertTags);
+        return new ConsentConfig($connection, $this->createStub(ContentUrlGenerator::class), $insertTags, new ServiceTemplates($this->createStub(FinderFactory::class), BundleTwig::create(__DIR__.'/../Fixtures/templates')));
     }
 
     private function page(int $id, int $rootId): PageModel
