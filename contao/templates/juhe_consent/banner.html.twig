@@ -57,6 +57,25 @@
                                 {% block service %}
                                 <div class="juhe-consent-service">
                                     <h3 class="juhe-consent-service__title">{{ service.title }}</h3>
+                                    {#
+                                        One switch per optional service, named by the service. A theme that
+                                        overrides "service" prints it with {{ block('service_switch') }};
+                                        without it, the group switches work as before.
+                                    #}
+                                    {% block service_switch %}
+                                    {% if not group.essential %}
+                                        <label class="juhe-consent-service__switch">
+                                            <input{{ attrs()
+                                                .set('type', 'checkbox')
+                                                .set('class', 'juhe-consent-switch')
+                                                .set('value', service.key)
+                                                .set('data-juhe-consent-service-checkbox')
+                                                .set('data-juhe-consent-group', group.alias)
+                                            }}>
+                                            <span class="juhe-consent-sr">{{ service.title }}</span>
+                                        </label>
+                                    {% endif %}
+                                    {% endblock %}
                                     <dl>
                                         {% if service.provider %}<dt>{{ 'provider'|trans }}</dt><dd>{{ service.provider }}</dd>{% endif %}
                                         {% if service.description %}<dt>{{ 'purpose'|trans }}</dt><dd>{{ service.description }}</dd>{% endif %}

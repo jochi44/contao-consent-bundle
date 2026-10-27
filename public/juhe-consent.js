@@ -11,6 +11,8 @@
  * the server: script[type="text/plain"][data-juhe-consent-src], placeholders with
  * the original iframe in a <template>, and template[data-juhe-consent-code] with
  * the code of a service. All of it carries data-juhe-consent-group/-service.
+ * The settings have a switch per group ([data-juhe-consent-checkbox]) and, if
+ * the template prints them, per optional service ([data-juhe-consent-service-checkbox]).
  *
  * API: window.juheConsent.has('statistik'), .open(), .pending() (the banner
  * waits for a first choice), .onChange(callback), and these events on document:
@@ -248,6 +250,7 @@
     const settings = dialog.querySelector('[data-juhe-consent-settings]');
     const button = (action) => dialog.querySelector(`[data-juhe-consent-action="${action}"]`);
     const checkboxes = [...dialog.querySelectorAll('[data-juhe-consent-checkbox]')];
+    const serviceCheckboxes = [...dialog.querySelectorAll('[data-juhe-consent-service-checkbox]')];
     const bar = 'bar' === config.layout;
     const pending = () => !state && !!config.ask && !restricted;
 
@@ -313,6 +316,46 @@
         }
     };
 
+    /*
+     * Service switches (if the template has them): a group switch is on when all
+     * its services are on, and mixed (indeterminate, "mixed" for screen readers)
+     * when only some are. Turning a group on or off sets all its services.
+     */
+    const servicesOf = (alias) => serviceCheckboxes.filter((checkbox) => checkbox.dataset.juheConsentGroup === alias);
+
+    const mixed = (groupCheckbox) => {
+        const own = servicesOf(groupCheckbox.value);
+
+        if (groupCheckbox.disabled || !own.length) {
+            return;
+        }
+
+        const on = own.filter((checkbox) => checkbox.checked).length;
+        groupCheckbox.checked = on === own.length;
+        groupCheckbox.indeterminate = on > 0 && on < own.length;
+    };
+
+    dialog.addEventListener('change', (event) => {
+        const target = event.target;
+
+        if (checkboxes.includes(target)) {
+            target.indeterminate = false;
+            servicesOf(target.value).forEach((checkbox) => {
+                checkbox.checked = target.checked;
+            });
+        } else if (serviceCheckboxes.includes(target)) {
+            checkboxes.filter((checkbox) => checkbox.value === target.dataset.juheConsentGroup).forEach(mixed);
+        }
+    });
+
+    // Stored: the groups that are fully on, and the single services of the others
+    const selection = () => {
+        const groups = checkboxes.filter((checkbox) => checkbox.checked && !checkbox.indeterminate).map((checkbox) => checkbox.value);
+        const single = serviceCheckboxes.filter((checkbox) => checkbox.checked && !groups.includes(checkbox.dataset.juheConsentGroup)).map((checkbox) => checkbox.value);
+
+        return [groups, single];
+    };
+
     const toggleSettings = (open) => {
         settings.hidden = !open;
         setHidden('settings', open);
@@ -330,6 +373,12 @@
                 checkbox.checked = !!state?.groups.includes(checkbox.value);
             }
         });
+
+        serviceCheckboxes.forEach((checkbox) => {
+            checkbox.checked = allows(state, checkbox.dataset.juheConsentGroup, checkbox.value);
+        });
+
+        checkboxes.forEach(mixed);
 
         // The bar always shows the groups
         toggleSettings(withSettings || bar);
@@ -456,8 +505,8 @@
         } else if ('settings' === action) {
             show(true);
         } else if ('save' === action) {
-            // The group switches replace all optional choices, including single-service approvals.
-            choose(checkboxes.filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value), []);
+            // The switches replace all optional choices. Without service switches, single-service approvals go.
+            choose(...selection());
         }
     });
 

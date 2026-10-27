@@ -22,7 +22,7 @@ banner under "System > Consent" and select it in the root page.
 - **Card and settings:** first visit shows a small card at the bottom left
   that leaves the page usable: "Nur notwendige", "Alle akzeptieren" (same
   look), "Einstellungen". The settings are a modal dialog with one switch
-  per group and the service details. Links to `#cookie-einstellungen`, any
+  per group and, in the service details, one switch per optional service. Links to `#cookie-einstellungen`, any
   `[data-juhe-consent-open]` element and the content element "Cookie-Einstellungen"
   open it again. A banner can skip the card ("Beim ersten Besuch fragen"
   off): then only the placeholders and the settings link remain, for sites
@@ -78,8 +78,15 @@ banner under "System > Consent" and select it in the root page.
   Configure every optional provider's hosts, and put its initialization code
   here rather than in an ordinary inline script. The blocker does not inspect
   JavaScript, stylesheets, resource hints or requests created by other scripts.
-- **Withdrawal:** saving the group switches replaces earlier choices, including
-  individual "Always allow" approvals. Rejection also stops one-time embeds by
+- **Single services:** a group switch turns all its services on or off. With
+  only some services on, the group switch shows a mixed state (a native
+  indeterminate checkbox, "mixed" for screen readers). The choice stores the
+  groups that are fully on and the single services of the others, so a
+  visitor can allow YouTube and keep Vimeo off in the same group. Essential
+  services have no switch. A template without the service switches (see
+  Styling and templates) keeps the group switches only.
+- **Withdrawal:** saving the settings replaces earlier choices, including
+  individual "Always allow" approvals (they show as switched-on services). Rejection also stops one-time embeds by
   reloading the page. Withdrawal deletes listed cookies at path `/` (also on
   parent domains, `name*` for prefixes). JavaScript cannot remove HttpOnly or
   third-party cookies, or cookies at other paths. Configure those providers'
@@ -141,8 +148,8 @@ The banner targets WCAG 2.2 AA; `axe-core` reports no violations in any state.
   content. In the settings, the sticky buttons never cover the focused
   element, and they stop being sticky on short screens (e.g. 400 percent zoom).
 - **Names:** the dialog is named by its headline and described by its text;
-  each switch is a real checkbox named by its group and described by the group
-  description; each placeholder is a group named by its title, and its buttons
+  each group switch is a real checkbox named by its group and described by the
+  group description, each service switch one named by its service; each placeholder is a group named by its title, and its buttons
   and privacy link name the service ("Inhalt laden (YouTube)"), so a list of links and buttons
   tells several placeholders apart; the "Dienste" toggles
   name their group; links that open a new window say so; openers carry
@@ -200,8 +207,15 @@ The templates are Twig with blocks, so a theme extends them and overrides only
 what it needs (a template of the same name in the theme's `templates/` folder):
 
 - `@Contao/juhe_consent/banner.html.twig`: `dialog_attributes`, `headline`,
-  `text`, `settings`, `group`, `service`, `info` (inside `settings`), `buttons`,
-  `links`, `code`, `config`, `script`. `banner.info` is the additional
+  `text`, `settings`, `group`, `service`, `service_switch` (inside `service`),
+  `info` (inside `settings`), `buttons`, `links`, `code`, `config`, `script`.
+  `service_switch` is the switch of an optional service: a
+  `label.juhe-consent-service__switch` around an
+  `input.juhe-consent-switch[data-juhe-consent-service-checkbox]` with the
+  service key as `value`, the group alias in `data-juhe-consent-group` and the
+  service title as its hidden name. A theme that overrides `service` prints it
+  with `{{ block('service_switch') }}`; without it the settings show the group
+  switches only. `banner.info` is the additional
   information (HTML from the editor), `banner.links` the further links
   (`url`, `title`); a theme that overrides `links` prints them too. The class
   names and `data-juhe-consent-*` attributes are what the script relies on;
