@@ -17,6 +17,16 @@ $GLOBALS['TL_DCA']['tl_juhe_consent_log'] = [
     'list' => [
         'sorting' => ['mode' => DataContainer::MODE_SORTED, 'fields' => ['tstamp'], 'flag' => DataContainer::SORT_DAY_DESC, 'panelLayout' => 'filter;search,limit'],
         'label' => ['fields' => ['tstamp', 'consentId', 'groups', 'version'], 'showColumns' => true],
+        'global_operations' => [
+            // The entries of the current filter and search; the route checks the module permission
+            'export' => [
+                'route' => 'juhe_consent_log_export',
+                'label' => &$GLOBALS['TL_LANG']['tl_juhe_consent_log']['export'],
+                'icon' => 'theme_export.svg',
+                'attributes' => 'data-turbo="false"',
+                'primary' => true,
+            ],
+        ],
         'operations' => ['show', 'delete'],
     ],
     'fields' => [

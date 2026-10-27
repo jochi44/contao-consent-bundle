@@ -74,6 +74,7 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_log']['consentId'] = ['ID del consenso', 'I
 $GLOBALS['TL_LANG']['tl_juhe_consent_log']['groups'] = ['Gruppi', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_log']['services'] = ['Servizi consentiti singolarmente', 'ID dei servizi consentiti con "Consenti sempre".'];
 $GLOBALS['TL_LANG']['tl_juhe_consent_log']['url'] = ['Pagina', ''];
+$GLOBALS['TL_LANG']['tl_juhe_consent_log']['export'] = ['Esporta (CSV)', 'Scarica le voci del filtro e della ricerca attuali come file CSV. Senza indirizzi IP o user agent.'];
 
 $GLOBALS['TL_LANG']['tl_page']['juhe_consent_legend'] = 'Consenso';
 $GLOBALS['TL_LANG']['tl_page']['juheConsentBanner'] = ['Banner del consenso', 'Il banner per questo sito. Vuoto = nessun banner.'];
