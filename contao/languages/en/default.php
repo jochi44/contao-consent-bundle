@@ -24,6 +24,8 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Block the page unt
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Privacy policy', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Imprint', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Increase when groups or services change substantially: all visitors are asked again.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedBy'] = 'Used by:';
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedByNone'] = 'Not assigned to a website';
 
 $GLOBALS['TL_LANG']['tl_juhe_consent_group']['title_legend'] = 'Group';
 $GLOBALS['TL_LANG']['tl_juhe_consent_group']['text_legend'] = 'Description';

@@ -24,6 +24,8 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Seite bis zur Ents
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Datenschutzerklärung', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Impressum', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Version', 'Erhöhen, wenn sich Gruppen oder Dienste wesentlich ändern: alle Besucher werden dann erneut gefragt.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedBy'] = 'Verwendet von:';
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedByNone'] = 'Keiner Website zugeordnet';
 
 $GLOBALS['TL_LANG']['tl_juhe_consent_group']['title_legend'] = 'Gruppe';
 $GLOBALS['TL_LANG']['tl_juhe_consent_group']['text_legend'] = 'Beschreibung';

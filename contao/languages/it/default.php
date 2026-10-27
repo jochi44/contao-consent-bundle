@@ -24,6 +24,8 @@ $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['blocking'] = ['Blocca la pagina f
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['privacyPage'] = ['Informativa sulla privacy', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['imprintPage'] = ['Note legali', ''];
 $GLOBALS['TL_LANG']['tl_juhe_consent_banner']['version'] = ['Versione', 'Da aumentare quando gruppi o servizi cambiano in modo sostanziale: a tutti i visitatori viene chiesto di nuovo il consenso.'];
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedBy'] = 'Usato da:';
+$GLOBALS['TL_LANG']['tl_juhe_consent_banner']['usedByNone'] = 'Non assegnato a nessun sito';
 
 $GLOBALS['TL_LANG']['tl_juhe_consent_group']['title_legend'] = 'Gruppo';
 $GLOBALS['TL_LANG']['tl_juhe_consent_group']['text_legend'] = 'Descrizione';
