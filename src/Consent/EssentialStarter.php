@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 namespace JuheItSolutions\JuheConsentBundle\Consent;
 
+use Contao\CoreBundle\Cache\CacheTagManager;
 use Doctrine\DBAL\Connection;
 
 /**
  * "Create essential group" in a banner's group list: adds the essential group
  * and a service that describes the stored choice (the localStorage entry
  * juhe_consent_<banner id>), each only if the banner has none yet. Running
- * it again adds nothing. It assumes no optional provider.
+ * it again adds nothing. It assumes no optional provider. The records are
+ * written directly, so it clears the cached pages that show the banner itself,
+ * as the back end does on saving.
  */
 final class EssentialStarter
 {
-    public function __construct(private readonly Connection $connection)
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly CacheTagManager $cacheTagManager,
+    ) {
     }
 
     /**
@@ -31,7 +36,7 @@ final class EssentialStarter
             return null;
         }
 
-        return $this->connection->transactional(function () use ($bannerId, $banner, $texts): array {
+        $created = $this->connection->transactional(function () use ($bannerId, $banner, $texts): array {
             $created = ['group' => null, 'service' => null];
             $groups = $this->connection->fetchAllAssociative('SELECT id, alias, essential, sorting FROM tl_juhe_consent_group WHERE pid = ? ORDER BY sorting FOR UPDATE', [$bannerId]);
             $essential = array_values(array_filter($groups, static fn (array $group): bool => (bool) $group['essential']));
@@ -73,6 +78,15 @@ final class EssentialStarter
 
             return $created;
         });
+
+        // The pages carry these tags (InjectConsentListener)
+        $tags = array_keys(array_filter(['contao.db.tl_juhe_consent_group' => $created['group'], 'contao.db.tl_juhe_consent_service' => $created['service']], static fn (int|null $id): bool => null !== $id));
+
+        if ($tags) {
+            $this->cacheTagManager->invalidateTags($tags);
+        }
+
+        return $created;
     }
 
     public static function storageName(int $bannerId): string
