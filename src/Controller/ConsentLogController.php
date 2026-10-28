@@ -110,7 +110,8 @@ final class ConsentLogController
             $this->connection->fetchFirstColumn('SELECT id FROM tl_juhe_consent_service WHERE published = 1 AND pid IN (?)', [array_values($known)], [ArrayParameterType::INTEGER]),
         ) : [];
 
-        foreach ([[$groups, array_keys($known)], [$services, $knownServices]] as [$values, $allowed]) {
+        // A numeric alias ("2024") comes back as an integer array key; the posted alias is a string
+        foreach ([[$groups, array_map('strval', array_keys($known))], [$services, $knownServices]] as [$values, $allowed]) {
             foreach ($values as $value) {
                 if (!\in_array($value, $allowed, true)) {
                     return null;

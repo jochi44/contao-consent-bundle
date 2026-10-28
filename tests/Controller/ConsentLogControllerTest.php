@@ -71,6 +71,22 @@ final class ConsentLogControllerTest extends TestCase
         yield 'url too long' => [['url' => '/'.str_repeat('a', 255)]];
     }
 
+    public function testAcceptsGroupsWithANumericAlias(): void
+    {
+        // Contao's alias check allows digits only ("2024"); PHP turns such array keys into integers
+        $connection = $this->createMock(Connection::class);
+        $connection->method('fetchAssociative')->willReturn(['version' => 3, 'logConsent' => '1', 'logPage' => 'path']);
+        $connection->method('fetchAllKeyValue')->willReturn(['essential' => 1, '2024' => 2]);
+        $connection->method('fetchFirstColumn')->willReturn([7]);
+        $connection
+            ->expects($this->once())
+            ->method('insert')
+            ->with('tl_juhe_consent_log', $this->callback(static fn (array $row): bool => 'essential,2024' === $row['groups']))
+        ;
+
+        $this->assertSame(204, $this->controller($connection)($this->request(['groups' => ['essential', '2024']]))->getStatusCode());
+    }
+
     public function testStoresALargeChoiceThatFitsTheBodyLimit(): void
     {
         // More than 255 bytes of group keys: the text columns take them
