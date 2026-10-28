@@ -108,7 +108,7 @@ final class InjectConsentListener
             'script_config' => json_encode($this->scriptConfig($banner), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
         ];
 
-        $html = $this->insertBefore($html, '</head>', $this->twig->render('@Contao/juhe_consent/head.html.twig', $context));
+        $html = $this->insertInHead($html, $this->twig->render('@Contao/juhe_consent/head.html.twig', $context));
 
         // At the end of the page, behind the theme's skip link; juhe-consent.js moves the
         // first-visit card to the top while it is shown, so keyboard users meet it first
@@ -249,6 +249,22 @@ final class InjectConsentListener
         }
 
         return $nonce;
+    }
+
+    /**
+     * Before the end of the head: the first "</head>" or, without one, the "<body"
+     * tag, outside comments, scripts, styles and other raw text, so a script that
+     * writes "</head>" (e.g. into a print window) keeps its text.
+     */
+    private function insertInHead(string $html, string $content): string
+    {
+        $raw = '(?:<!--.*?-->|<(script|style|template|textarea|title)\\b(?:[^>"\']|"[^"]*"|\'[^\']*\')*>.*?<\\/\\1\\s*>)(*SKIP)(*F)';
+
+        if (!preg_match('/'.$raw.'|<\\/head\\s*>|<body\\b/is', $html, $match, PREG_OFFSET_CAPTURE)) {
+            return $html;
+        }
+
+        return substr($html, 0, $match[0][1]).$content.substr($html, $match[0][1]);
     }
 
     private function insertBefore(string $html, string $tag, string $content): string
