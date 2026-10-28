@@ -81,11 +81,12 @@ final class CookieCleanupController
         $domains = CookieCleanup::domains($request->getHost());
 
         foreach ($names as $name) {
-            // A __Host- cookie only exists with path / and no domain, both prefixes only with Secure
-            $secure = $request->isSecure() || str_starts_with($name, '__Secure-') || str_starts_with($name, '__Host-');
+            // A __Host- cookie only exists with path / and no domain, both prefixes only with Secure (browsers ignore their case)
+            $hostOnly = 0 === stripos($name, '__Host-');
+            $secure = $request->isSecure() || $hostOnly || 0 === stripos($name, '__Secure-');
 
-            foreach (str_starts_with($name, '__Host-') ? ['/'] : $paths as $cookiePath) {
-                foreach (str_starts_with($name, '__Host-') ? [null] : $domains as $domain) {
+            foreach ($hostOnly ? ['/'] : $paths as $cookiePath) {
+                foreach ($hostOnly ? [null] : $domains as $domain) {
                     $response->headers->clearCookie($name, $cookiePath, $domain, $secure, true, 'lax');
                 }
             }

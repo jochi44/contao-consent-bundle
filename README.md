@@ -203,7 +203,9 @@ groups and services.
     every parent of the current page's path (a cookie set on `/shop/cart`
     without a path lives at `/shop`), as a host-only cookie and on the host
     and its parent domains (browsers ignore a public suffix such as `co.uk`,
-    so the registrable domain is the last that takes effect).
+    so the registrable domain is the last that takes effect). A `__Secure-`
+    cookie is expired with `Secure`, a `__Host-` cookie only at `/` without a
+    domain, as browsers require for these prefixes (in any letter case).
   - On the server, the HttpOnly first-party cookies: if a withdrawn service
     lists cookies, the browser posts the banner ID, the withdrawn service keys
     and the page path to `/_juhe_consent/cookies` (JSON only, at most 4 KiB,

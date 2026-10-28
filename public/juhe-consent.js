@@ -430,9 +430,15 @@
         const exact = patterns.filter((pattern) => !pattern.endsWith('*'));
         const matches = [...new Set([...exact, ...names.filter((name) => matching(patterns, name))])].filter((name) => !matching(keep, name));
 
-        matches.forEach((name) => paths.forEach((path) => domains.forEach((domain) => {
-            document.cookie = `${name}=; path=${path}; max-age=0${domain}`;
-        })));
+        matches.forEach((name) => {
+            // A __Host- cookie only exists at path / without a domain; the browser drops either prefix without Secure
+            const hostOnly = /^__host-/i.test(name);
+            const secure = hostOnly || /^__secure-/i.test(name) ? '; secure' : '';
+
+            (hostOnly ? ['/'] : paths).forEach((path) => (hostOnly ? [''] : domains).forEach((domain) => {
+                document.cookie = `${name}=; path=${path}; max-age=0${domain}${secure}`;
+            }));
+        });
     };
 
     /*

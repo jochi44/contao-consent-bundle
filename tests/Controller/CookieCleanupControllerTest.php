@@ -108,6 +108,20 @@ final class CookieCleanupControllerTest extends TestCase
     /**
      * @param array<string, mixed> $data
      */
+    public function testPrefixedCookiesGetSecureAndHostCookiesTheirOnlyPlace(): void
+    {
+        $request = Request::create('http://www.example.org/_juhe_consent/cookies', 'POST', [], [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_COOKIE' => '__Host-sid=1; __secure-id_x=2'], json_encode(['banner' => 1, 'services' => ['s10'], 'path' => '/shop/cart'], JSON_THROW_ON_ERROR));
+        $response = $this->controller()($request);
+
+        $this->assertSame(['__Host-sid', '__secure-id_x'], $this->names($response));
+        $this->assertSame([['/', null]], $this->places($response, '__Host-sid'));
+        $this->assertCount(15, $this->places($response, '__secure-id_x'));
+
+        foreach ($response->headers->getCookies() as $cookie) {
+            $this->assertTrue($cookie->isSecure(), $cookie->getName());
+        }
+    }
+
     private function call(array $data, string $url = 'http://www.example.org/_juhe_consent/cookies'): Response
     {
         return $this->controller()($this->request(json_encode($data + ['banner' => 1], JSON_THROW_ON_ERROR), $url));
@@ -126,6 +140,7 @@ final class CookieCleanupControllerTest extends TestCase
             ['id' => 7, 'cookies' => "_ga*: 2 years\n_gid: 1 day", 'essential' => 0],
             ['id' => 8, 'cookies' => "_pk*: 13 months\nPHPSESSID", 'essential' => 0],
             ['id' => 9, 'cookies' => '_fbp: 3 months', 'essential' => 0],
+            ['id' => 10, 'cookies' => "__Host-sid\n__secure-id*", 'essential' => 0],
         ] : []);
 
         $limiter = $this->createStub(LimiterInterface::class);
