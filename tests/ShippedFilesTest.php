@@ -18,7 +18,7 @@ final class ShippedFilesTest extends TestCase
     /**
      * Top-level entries that ship.
      */
-    private const SHIPS = ['LICENSE', 'README.md', 'composer.json', 'config', 'contao', 'public', 'src', 'translations'];
+    private const SHIPS = ['CHANGELOG.md', 'LICENSE', 'README.md', 'composer.json', 'config', 'contao', 'public', 'src', 'translations'];
 
     private const JUNK_NAME = '#(^|/)(\.DS_Store|Thumbs\.db|desktop\.ini|\.phpunit\.result\.cache|node_modules(/|$)|\.idea/|\.vscode/|[^/]*(\.orig|\.rej|\.bak|\.swp|\.swo|\.log|\.map|~))$#i';
 
