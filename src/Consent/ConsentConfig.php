@@ -260,9 +260,10 @@ final class ConsentConfig
     {
         $cookies = self::cookies((string) $row['cookies']);
 
-        // "https://www.youtube.com/embed" or "youtube.com" both end up as "youtube.com"
+        // "https://www.youtube.com/embed" or "youtube.com" both end up as "youtube.com", "münchen.de" as "xn--mnchen-3ya.de";
+        // an address is read like the blocker reads the page (HtmlBlocker::urlHost())
         $hosts = array_values(array_filter(array_map(
-            static fn (string $host): string => preg_replace('/^www\./', '', rtrim(strtolower((string) (parse_url(str_contains($host, '//') ? $host : 'https://'.$host, PHP_URL_HOST) ?? '')), '.')),
+            static fn (string $host): string => preg_replace('/^www\./', '', HtmlBlocker::urlHost(str_contains($host, '//') || preg_match('/^https?:/i', $host) ? $host : 'https://'.$host) ?? ''),
             StringUtil::trimsplit('\n', (string) $row['hosts']),
         )));
 

@@ -170,7 +170,7 @@ final class ConsentConfigTest extends TestCase
 
     public function testServiceHostsDropWwwAndATrailingDot(): void
     {
-        $service = ['pid' => 3, 'title' => 'S', 'provider' => '', 'description' => '', 'privacyUrl' => '', 'cookies' => '', 'hosts' => "https://www.YouTube.com./embed\nvimeo.com.\nplayer.example.org", 'code' => ''];
+        $service = ['pid' => 3, 'title' => 'S', 'provider' => '', 'description' => '', 'privacyUrl' => '', 'cookies' => '', 'hosts' => "https://www.YouTube.com./embed\nvimeo.com.\nplayer.example.org\nm\u{00FC}nchen.de\nhttps:///maps.example.net/embed\nexample.org:8443", 'code' => ''];
         $connection = $this->createStub(Connection::class);
         $connection->method('fetchAssociative')->willReturn(['id' => 7, 'version' => 1, 'headline' => 'H', 'text' => '', 'placeholderText' => '', 'askOnFirstVisit' => 1, 'privacyPage' => 0, 'imprintPage' => 0]);
         $connection->method('fetchAllAssociative')->willReturnOnConsecutiveCalls(
@@ -178,7 +178,7 @@ final class ConsentConfigTest extends TestCase
             [['id' => 1] + $service],
         );
 
-        $this->assertSame(['youtube.com', 'vimeo.com', 'player.example.org'], $this->config($connection)->banner(7)['groups'][0]['services'][0]['hosts']);
+        $this->assertSame(['youtube.com', 'vimeo.com', 'player.example.org', 'xn--mnchen-3ya.de', 'maps.example.net', 'example.org'], $this->config($connection)->banner(7)['groups'][0]['services'][0]['hosts']);
     }
 
     public function testATemplateServiceTakesItsCodeFromTheTemplate(): void

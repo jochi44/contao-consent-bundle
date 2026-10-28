@@ -101,7 +101,11 @@ groups and services.
   browser does not contact the host early; after consent they come back with
   their other attributes. Hyperlinks (`<a href>`) and other link types (icon,
   canonical, alternate) stay as they are. Works for any layout, theme or
-  content element, because it runs on the finished page.
+  content element, because it runs on the finished page. The host is read as
+  a browser reads the address (extra slashes such as `https:///host`,
+  backslashes, percent-encoding, a trailing dot), and international domain
+  names count in their ASCII form, so `münchen.de` at a service also covers
+  `xn--mnchen-3ya.de` in the page.
 
   What the blocker cannot hold back, because it only reads the HTML of the
   page:

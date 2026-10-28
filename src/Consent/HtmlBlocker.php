@@ -109,13 +109,9 @@ final class HtmlBlocker
      */
     private function serviceForUrl(string $src, array $services): array|null
     {
-        // HTTP URLs in HTML follow browser normalization, not PHP's URL grammar.
-        $url = str_replace(["\t", "\n", "\r"], '', trim($src, "\x00..\x20"));
-        $url = str_replace('\\', '/', $url);
-        // "youtube.com." (a fully qualified name) loads like "youtube.com"
-        $host = rtrim(strtolower(rawurldecode((string) parse_url(str_starts_with($url, '//') ? 'https:'.$url : $url, PHP_URL_HOST))), '.');
+        $host = self::urlHost($src);
 
-        if ('' === $host) {
+        if (null === $host) {
             return null;
         }
 
@@ -128,6 +124,56 @@ final class HtmlBlocker
         }
 
         return null;
+    }
+
+    /**
+     * The host a browser contacts for a URL in an attribute, or null for a
+     * relative URL and a scheme that loads nothing from a host (data:, about:).
+     * Browsers, not PHP's URL grammar, decide: they trim the URL, drop tabs and
+     * line breaks, read "\" as "/" and, for http and https, skip any number of
+     * slashes after the scheme, so "https:///www.youtube.com/embed" loads from
+     * www.youtube.com. "https:youtube.com" counts as that host too (a browser
+     * reads it so on a page of the other scheme). The host is percent-decoded
+     * and compared in its ASCII form (see asciiHost()).
+     */
+    public static function urlHost(string $src): string|null
+    {
+        $url = str_replace(["\t", "\n", "\r"], '', trim($src, "\x00..\x20"));
+        $url = str_replace('\\', '/', $url);
+
+        if (preg_match('#^([a-z][a-z0-9+.-]*):(.*)$#is', $url, $match)) {
+            if (!\in_array(strtolower($match[1]), ['http', 'https', 'ws', 'wss', 'ftp'], true)) {
+                return null;
+            }
+
+            $rest = ltrim($match[2], '/');
+        } elseif (str_starts_with($url, '//')) {
+            $rest = ltrim($url, '/');
+        } else {
+            return null;
+        }
+
+        // The authority ends at the path, query or fragment; user info and port are no part of the host
+        $authority = (string) preg_replace('#[/?\#].*$#s', '', $rest);
+        $authority = substr($authority, (int) strrpos('@'.$authority, '@'));
+        $authority = str_starts_with($authority, '[') ? strstr($authority.']', ']', true).']' : (string) preg_replace('/:[^:]*$/', '', $authority);
+        $host = self::asciiHost(rawurldecode($authority));
+
+        return '' === $host ? null : $host;
+    }
+
+    /**
+     * A host as browsers compare it: lowercase, an international name in its
+     * ASCII form (IDNA, so "münchen.de" is "xn--mnchen-3ya.de" and full-width
+     * letters are plain ones) and without a trailing dot ("youtube.com." loads
+     * like "youtube.com"). Configured hosts and page URLs both go through it.
+     */
+    public static function asciiHost(string $host): string
+    {
+        $host = trim($host);
+        $ascii = '' !== $host && \function_exists('idn_to_ascii') ? idn_to_ascii($host, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46) : false;
+
+        return rtrim(strtolower(false === $ascii ? $host : $ascii), '.');
     }
 
     private function attribute(string $attributes, string $name): string|null

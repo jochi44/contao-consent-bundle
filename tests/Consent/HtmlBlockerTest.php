@@ -68,9 +68,32 @@ final class HtmlBlockerTest extends TestCase
             'https:\\\\www.youtube-nocookie.com\\embed\\abc',
             'https://www.youtube-nocookie.com./embed/abc',
             '//youtube-nocookie.com.:443/embed/abc',
+            'https:///www.youtube-nocookie.com/embed/abc',
+            'https:////youtube-nocookie.com/embed/abc',
+            '///youtube-nocookie.com/embed/abc',
+            'https:youtube-nocookie.com/embed/abc',
+            'HTTPS://user:secret@WWW.YOUTUBE-NOCOOKIE.COM:8443/embed/abc',
+            "https://\u{FF59}outube-nocookie.com/embed/abc",
         ] as $url) {
             $this->assertSame('P', (new HtmlBlocker())->block('<iframe src="'.$url.'"></iframe>', $this->banner(), static fn (): string => 'P'), $url);
         }
+    }
+
+    #[TestWith(['https:///www.youtube.com/embed/x', 'www.youtube.com'])]
+    #[TestWith(['//player.vimeo.com/video/1', 'player.vimeo.com'])]
+    #[TestWith(['https://[::1]:8080/x', '[::1]'])]
+    #[TestWith(['https://a@b@maps.google.com/x', 'maps.google.com'])]
+    #[TestWith(["https://m\u{00FC}nchen.de/x", 'xn--mnchen-3ya.de'])]
+    #[TestWith(['https://example.org?x=//youtube.com', 'example.org'])]
+    #[TestWith(['/files/video.mp4', null])]
+    #[TestWith(['video.mp4', null])]
+    #[TestWith(['data:text/html,<p>x</p>', null])]
+    #[TestWith(['about:blank', null])]
+    #[TestWith(['javascript://youtube.com/%0Aalert(1)', null])]
+    #[TestWith(['https:///', null])]
+    public function testReadsTheHostLikeABrowser(string $url, string|null $host): void
+    {
+        $this->assertSame($host, HtmlBlocker::urlHost($url));
     }
 
     public function testDoesNotRewriteCommentsOrRawTextAsLiveElements(): void
