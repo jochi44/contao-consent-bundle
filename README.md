@@ -24,6 +24,16 @@ It assumes no optional provider; add those groups and services yourself. The
 action is a POST form with the request token and needs the rights to create
 groups and services.
 
+### Updating
+
+Update the package with Composer (or the Contao Manager), then update the
+database the same way as on installation and clear the cache. The bundle has
+no migrations: new settings come as new columns with defaults, so existing
+banners keep their behaviour. `CHANGELOG.md` lists what changed; read it
+before an update when the website overrides the bundle's templates, because a
+template override must keep the blocks, class names and `data-juhe-consent-*`
+attributes it relies on.
+
 ## What it does
 
 - **Banner per site:** a root page picks a banner (`tl_page.juheConsentBanner`).
