@@ -5,10 +5,10 @@ Consent banner for Contao 5.7 and 6 by JUHE IT-solutions.
 ## Requirements and installation
 
 - PHP 8.3 or newer, Contao 5.7 or 6.0.
-- No release is tagged yet. Until then, require the development branch:
+- Install it with Composer:
 
 ```sh
-composer require juhe-it-solutions/contao-consent-bundle:dev-main
+composer require juhe-it-solutions/contao-consent-bundle
 ```
 
 Then update the database (Contao Manager or `contao:migrate`), create a

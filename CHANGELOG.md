@@ -2,7 +2,7 @@
 
 All notable changes to this bundle. Versions follow semantic versioning.
 
-## Unreleased
+## 1.0.0 (2026-10-28)
 
 First release. Consent banner for Contao 5.7 and 6.0 on PHP 8.3 or newer.
 
