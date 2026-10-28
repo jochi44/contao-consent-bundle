@@ -359,7 +359,10 @@ document.addEventListener('juhe-consent:close', (event) => {});
 - When a withdrawal stops a service that already runs, the page reloads. The
   subscribers, `onChange` and the `juhe-consent` event still run before the
   reload, so an integration can pass the withdrawal on; on the reloaded page
-  they start with the new state.
+  they start with the new state. The reload carries the new choice in its
+  history entry (`history.state.juheConsentReload`, used once), because a
+  page loaded right after a write can still read the previous value from
+  `localStorage`.
 
 Code that runs before `juhe-consent.js` (an inline script in the head, for
 example) cannot call the API yet. It pushes functions into a queue instead;

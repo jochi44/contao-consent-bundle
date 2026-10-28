@@ -55,9 +55,34 @@
     // A choice counts for the banner's lifetime in days (one year by default)
     const maxAge = (Number.isInteger(config.lifetime) && config.lifetime > 0 ? config.lifetime : 365) * 86400;
 
+    /*
+     * The reload after a withdrawal carries the new choice in its history entry.
+     * A page loaded right after a write can still read the previous value from
+     * localStorage (the write reaches other page processes a moment later), and
+     * it must not start a withdrawn service once more. The entry is used once.
+     */
+    const reloadMark = 'juheConsentReload';
+    const carried = (() => {
+        try {
+            const mark = history.state?.[reloadMark];
+
+            if (!mark || mark.storage !== config.storage || 'string' !== typeof mark.value) {
+                return null;
+            }
+
+            const rest = { ...history.state };
+            delete rest[reloadMark];
+            history.replaceState(Object.keys(rest).length ? rest : null, '');
+
+            return mark.value;
+        } catch {
+            return null;
+        }
+    })();
+
     const read = () => {
         try {
-            const value = JSON.parse(localStorage.getItem(config.storage) || 'null');
+            const value = JSON.parse(carried ?? (localStorage.getItem(config.storage) || 'null'));
 
             // A new banner version or a choice older than the lifetime asks again
             const now = Date.now() / 1000;
@@ -454,9 +479,11 @@
             services: [...new Set(allowedServices)],
         };
 
+        const stored = JSON.stringify({ v: config.version, g: state.groups, s: state.services, id: state.id, t: Math.floor(Date.now() / 1000) });
+
         if (!restricted) {
             try {
-                localStorage.setItem(config.storage, JSON.stringify({ v: config.version, g: state.groups, s: state.services, id: state.id, t: Math.floor(Date.now() / 1000) }));
+                localStorage.setItem(config.storage, stored);
             } catch {
                 // No storage: the choice holds for this page only
             }
@@ -482,7 +509,18 @@
         if (reload) {
             Promise.race([cleaned, new Promise((resolve) => {
                 setTimeout(resolve, 2000);
-            })]).then(() => location.reload());
+            })]).then(() => {
+                if (!restricted) {
+                    try {
+                        const current = history.state && 'object' === typeof history.state ? history.state : {};
+                        history.replaceState({ ...current, [reloadMark]: { storage: config.storage, value: stored } }, '');
+                    } catch {
+                        // Without it the reloaded page reads the storage, as before
+                    }
+                }
+
+                location.reload();
+            });
         }
     };
 
