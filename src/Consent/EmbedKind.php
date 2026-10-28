@@ -34,14 +34,16 @@ final class EmbedKind
             return self::EMBED;
         }
 
+        // The host as the blocker and the browser read it ("https:///www.youtube.com/..." included)
         $url = html_entity_decode($src[2], ENT_QUOTES | ENT_HTML5);
-        $parts = parse_url(str_starts_with($url, '//') ? 'https:'.$url : $url);
-        $host = strtolower((string) ($parts['host'] ?? ''));
-        $path = strtolower((string) ($parts['path'] ?? ''));
+        $host = HtmlBlocker::urlHost($url);
 
-        if ('' === $host) {
+        if (null === $host) {
             return self::EMBED;
         }
+
+        $rest = ltrim((string) preg_replace('#^[a-z][a-z0-9+.-]*:#i', '', str_replace('\\', '/', trim($url))), '/');
+        $path = strtolower((string) preg_replace('#[?\#].*$#s', '', (string) strpbrk($rest, '/?#')));
 
         // google.com serves maps under /maps; the rest of google.com is something else
         if (preg_match('/(^|\.)google\.[a-z.]+$/', $host) && str_starts_with($path, '/maps')) {
