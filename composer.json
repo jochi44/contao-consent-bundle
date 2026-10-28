@@ -43,7 +43,7 @@
         "exclude": [
             "/.gitattributes",
             "/.gitignore",
-            "/AGENTS.md",
+            "/docs",
             "/phpunit.xml.dist",
             "/tests"
         ]
