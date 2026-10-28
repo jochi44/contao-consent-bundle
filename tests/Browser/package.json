@@ -1,0 +1,13 @@
+{
+  "name": "juhe-consent-browser-tests",
+  "private": true,
+  "description": "Browser tests for the JUHE Consent bundle against a throwaway Contao install. Run them with run.sh.",
+  "license": "LGPL-3.0-or-later",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.64.0"
+  }
+}

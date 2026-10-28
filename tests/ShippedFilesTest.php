@@ -30,7 +30,7 @@ final class ShippedFilesTest extends TestCase
         'API token' => '/\b(?:sk|rk)_(?:live|test)_[0-9A-Za-z]{16,}|\bwhsec_[0-9A-Za-z]{16,}|\bgh[pousr]_[0-9A-Za-z]{30,}|\bgithub_pat_[0-9A-Za-z_]{30,}|\bAKIA[0-9A-Z]{16}\b|\bxox[abpr]-[0-9A-Za-z-]{10,}/',
         'local path' => '#/home/[a-z_][a-z0-9_-]*/|/Users/[A-Za-z][\w.-]*/|/mnt/[a-z]/Users/|[A-Za-z]:\\\\Users\\\\|\blocal/contao-#',
         'session link' => '#claude\.ai/(?:code/)?(?:session|chat)|chatgpt\.com/(?:c|share)/#i',
-        'planning reference' => '/\b[A-Z]{3}-\d{2,5}\b|\bG\d{2}\b|docs\/implementation|AGENTS\.md/',
+        'planning reference' => '/\b[A-Z]{3}-\d{2,5}\b|\bG\d{2}\b|docs\/implementation|(?<!"\/)AGENTS\.md/',
     ];
 
     public function testOnlyTheBundleShipsAndNothingInItLeaks(): void
@@ -51,6 +51,25 @@ final class ShippedFilesTest extends TestCase
     }
 
     /**
+     * `composer archive` reads archive.exclude, git archive and the GitHub ZIP read
+     * .gitattributes: both leave out the same paths (the tests and their browser
+     * harness among them).
+     */
+    public function testComposerArchiveExcludesWhatGitExportIgnores(): void
+    {
+        $root = \dirname(__DIR__);
+        preg_match_all('/^(\S+)\s+export-ignore\s*$/m', (string) file_get_contents($root.'/.gitattributes'), $matches);
+        $composer = json_decode((string) file_get_contents($root.'/composer.json'), true, 512, JSON_THROW_ON_ERROR);
+        $exclude = $composer['archive']['exclude'] ?? [];
+        sort($exclude);
+        $ignored = $matches[1];
+        sort($ignored);
+
+        $this->assertContains('/tests', $ignored);
+        $this->assertSame($ignored, $exclude);
+    }
+
+    /**
      * @return iterable<string, array{string, string, string}>
      */
     public static function refused(): iterable
@@ -63,6 +82,7 @@ final class ShippedFilesTest extends TestCase
         yield 'session link' => ['src/Foo.php', "// https://claude.ai/code/session_0123\n", 'session link'];
         yield 'planning id' => ['src/Foo.php', "// see ABC-1234\n", 'planning reference'];
         yield 'gate id' => ['README.md', "Decided in G12.\n", 'planning reference'];
+        yield 'agent notes' => ['README.md', "See AGENTS.md.\n", 'planning reference'];
     }
 
     #[DataProvider('refused')]
@@ -75,6 +95,8 @@ final class ShippedFilesTest extends TestCase
     {
         $this->assertSame([], $this->problems('contao/templates/juhe_consent/placeholder.html.twig', "<div class=\"juhe-consent-placeholder\"></div>\n"));
         $this->assertSame([], $this->problems('README.md', "Requires Contao 5.7 or 6.0 and PHP 8.3.\n"));
+        // The archive.exclude entry names the file it leaves out
+        $this->assertSame([], $this->problems('composer.json', "\"exclude\": [\"/AGENTS.md\"]\n"));
     }
 
     /**

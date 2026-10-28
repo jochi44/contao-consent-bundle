@@ -2,3 +2,5 @@
 /composer.lock
 /var/
 .phpunit.result.cache
+/tests/Browser/node_modules/
+/tests/Browser/var/

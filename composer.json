@@ -39,6 +39,15 @@
             "JuheItSolutions\\JuheConsentBundle\\Tests\\": "tests/"
         }
     },
+    "archive": {
+        "exclude": [
+            "/.gitattributes",
+            "/.gitignore",
+            "/AGENTS.md",
+            "/phpunit.xml.dist",
+            "/tests"
+        ]
+    },
     "extra": {
         "branch-alias": {
             "dev-main": "1.0.x-dev"
