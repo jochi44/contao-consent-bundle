@@ -262,7 +262,7 @@ final class ConsentConfig
 
         // "https://www.youtube.com/embed" or "youtube.com" both end up as "youtube.com"
         $hosts = array_values(array_filter(array_map(
-            static fn (string $host): string => preg_replace('/^www\./', '', strtolower((string) (parse_url(str_contains($host, '//') ? $host : 'https://'.$host, PHP_URL_HOST) ?? ''))),
+            static fn (string $host): string => preg_replace('/^www\./', '', rtrim(strtolower((string) (parse_url(str_contains($host, '//') ? $host : 'https://'.$host, PHP_URL_HOST) ?? '')), '.')),
             StringUtil::trimsplit('\n', (string) $row['hosts']),
         )));
 

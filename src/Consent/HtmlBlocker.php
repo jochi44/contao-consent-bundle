@@ -112,7 +112,8 @@ final class HtmlBlocker
         // HTTP URLs in HTML follow browser normalization, not PHP's URL grammar.
         $url = str_replace(["\t", "\n", "\r"], '', trim($src, "\x00..\x20"));
         $url = str_replace('\\', '/', $url);
-        $host = strtolower(rawurldecode((string) parse_url(str_starts_with($url, '//') ? 'https:'.$url : $url, PHP_URL_HOST)));
+        // "youtube.com." (a fully qualified name) loads like "youtube.com"
+        $host = rtrim(strtolower(rawurldecode((string) parse_url(str_starts_with($url, '//') ? 'https:'.$url : $url, PHP_URL_HOST))), '.');
 
         if ('' === $host) {
             return null;

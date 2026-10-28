@@ -66,6 +66,8 @@ final class HtmlBlockerTest extends TestCase
             "https://www.you\ntube-nocookie.com/embed/abc",
             'https://www.%79outube-nocookie.com/embed/abc',
             'https:\\\\www.youtube-nocookie.com\\embed\\abc',
+            'https://www.youtube-nocookie.com./embed/abc',
+            '//youtube-nocookie.com.:443/embed/abc',
         ] as $url) {
             $this->assertSame('P', (new HtmlBlocker())->block('<iframe src="'.$url.'"></iframe>', $this->banner(), static fn (): string => 'P'), $url);
         }

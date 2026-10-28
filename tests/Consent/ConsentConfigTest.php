@@ -168,6 +168,19 @@ final class ConsentConfigTest extends TestCase
         $this->assertSame([['name' => '_ga*', 'duration' => '2 years'], ['name' => '_gid', 'duration' => '']], $services[0]['cookies']);
     }
 
+    public function testServiceHostsDropWwwAndATrailingDot(): void
+    {
+        $service = ['pid' => 3, 'title' => 'S', 'provider' => '', 'description' => '', 'privacyUrl' => '', 'cookies' => '', 'hosts' => "https://www.YouTube.com./embed\nvimeo.com.\nplayer.example.org", 'code' => ''];
+        $connection = $this->createStub(Connection::class);
+        $connection->method('fetchAssociative')->willReturn(['id' => 7, 'version' => 1, 'headline' => 'H', 'text' => '', 'placeholderText' => '', 'askOnFirstVisit' => 1, 'privacyPage' => 0, 'imprintPage' => 0]);
+        $connection->method('fetchAllAssociative')->willReturnOnConsecutiveCalls(
+            [['id' => 3, 'alias' => 'a', 'title' => 'A', 'description' => '', 'essential' => 0]],
+            [['id' => 1] + $service],
+        );
+
+        $this->assertSame(['youtube.com', 'vimeo.com', 'player.example.org'], $this->config($connection)->banner(7)['groups'][0]['services'][0]['hosts']);
+    }
+
     public function testATemplateServiceTakesItsCodeFromTheTemplate(): void
     {
         $service = ['pid' => 3, 'title' => 'T <i>', 'provider' => '', 'description' => '', 'privacyUrl' => '', 'cookies' => '', 'hosts' => '', 'code' => '<script>window.fromField = 1;</script>'];
