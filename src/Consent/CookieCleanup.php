@@ -18,6 +18,12 @@ final class CookieCleanup
     public const MAX_DEPTH = 8;
 
     /**
+     * At most this many carried names per request: the names and the host come
+     * from the visitor, and each name costs one header per path and domain.
+     */
+    public const MAX_NAMES = 64;
+
+    /**
      * The configured names that the request carries. A pattern "name*" matches
      * every carried name that starts with "name"; a bare "*" matches nothing.
      * Names that an essential service lists are kept.
@@ -32,7 +38,7 @@ final class CookieCleanup
     {
         $names = array_filter($carried, static fn (string $name): bool => self::matches($patterns, $name) && !self::matches($keep, $name));
 
-        return array_values(array_unique($names));
+        return \array_slice(array_values(array_unique($names)), 0, self::MAX_NAMES);
     }
 
     /**
@@ -61,7 +67,8 @@ final class CookieCleanup
      * Null (the host-only cookie), the host and each parent domain with at
      * least two labels. Browsers ignore a public suffix such as "co.uk", so
      * the registrable domain is the last one that takes effect. An IP address
-     * or a single-label host has no parent domains.
+     * or a single-label host has no parent domains. A long host keeps itself
+     * and its MAX_DEPTH nearest parents of the registrable end.
      *
      * @return list<string|null>
      */
@@ -74,9 +81,9 @@ final class CookieCleanup
         }
 
         $labels = explode('.', $host);
-        $domains = [null];
+        $domains = [null, $host];
 
-        for ($i = 0; $i < \count($labels) - 1; ++$i) {
+        for ($i = max(1, \count($labels) - 1 - self::MAX_DEPTH); $i < \count($labels) - 1; ++$i) {
             $domains[] = implode('.', \array_slice($labels, $i));
         }
 

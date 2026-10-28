@@ -207,8 +207,9 @@ groups and services.
     `framework.rate_limiter.juhe_consent_cookies`). The request never names a
     cookie: the server expires only the names configured at those services
     that the request carries, for the same paths and domains, and refuses
-    essential and unknown services. Before a reload, the page waits for the
-    answer (at most 2 seconds).
+    essential and unknown services. It expires at most 64 names per request,
+    and for a long host only the host and its eight nearest parent domains.
+    Before a reload, the page waits for the answer (at most 2 seconds).
 
   Not reachable: third-party cookies (set by the provider's own domain, for
   example `doubleclick.net`), and HttpOnly cookies at a path the cleanup

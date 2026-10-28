@@ -57,6 +57,27 @@ final class CookieCleanupTest extends TestCase
         $this->assertSame($expected, CookieCleanup::domains($host));
     }
 
+    public function testManyCarriedNamesStopAtTheLimit(): void
+    {
+        $carried = array_map(static fn (int $i): string => '_ga'.$i, range(1, 1500));
+
+        $names = CookieCleanup::names(['_ga*'], $carried);
+
+        $this->assertCount(CookieCleanup::MAX_NAMES, $names);
+        $this->assertSame('_ga1', $names[0]);
+    }
+
+    public function testALongHostKeepsItselfAndItsNearestParents(): void
+    {
+        $host = implode('.', array_map(static fn (int $i): string => 'a'.$i, range(1, 120))).'.example.org';
+
+        $domains = CookieCleanup::domains($host);
+
+        $this->assertCount(2 + CookieCleanup::MAX_DEPTH, $domains);
+        $this->assertSame([null, $host], \array_slice($domains, 0, 2));
+        $this->assertSame('example.org', end($domains));
+    }
+
     public function testCarriedNamesKeepDotsAndSpaces(): void
     {
         $this->assertSame(['_ga', 'a.b', 'x'], CookieCleanup::carried('_ga=GA1.1; a.b=1;x=2; _ga=again; =broken'));
