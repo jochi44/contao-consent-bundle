@@ -28,6 +28,11 @@
  * "juhe-consent:close" (cancelable: preventDefault() keeps focus where it is
  * instead of returning it to the element that opened the settings).
  *
+ * A close button (data-juhe-consent-action="close") closes the banner without
+ * consent: only essential services run, nothing is stored as a choice, and the
+ * banner does not ask by itself again in this browser session. After a choice
+ * it only closes the settings.
+ *
  * Keyboard: Esc always gets out. It closes the settings, and on a banner that
  * blocks the page it releases the page; the banner then stays as a non-modal
  * dialog. Focus goes back to the opener, and to the content a placeholder loads.
@@ -546,8 +551,22 @@
      */
     const privacySignal = !!config.privacySignals && (navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || window.doNotTrack === '1');
 
-    // Waiting for a choice and allowed to ask by itself: not on a page the banner excludes
-    const prompting = () => pending() && !config.quiet && !privacySignal;
+    /*
+     * Closed with a close button ([data-juhe-consent-action="close"]) before a
+     * choice: no consent, only essential services run, and the banner does not
+     * ask by itself again until the browser session ends (sessionStorage).
+     */
+    const dismissKey = `${config.storage}_dismissed`;
+    const dismissed = () => {
+        try {
+            return '1' === sessionStorage.getItem(dismissKey);
+        } catch {
+            return false;
+        }
+    };
+
+    // Waiting for a choice and allowed to ask by itself: not on a page the banner excludes, not dismissed
+    const prompting = () => pending() && !config.quiet && !privacySignal && !dismissed();
     // A navigation entry (a redirect page) links to "#juhe-consent"; "#cookie-einstellungen" stays for older links
     const openers = '[data-juhe-consent-open], a[href$="#juhe-consent"], a[href$="#cookie-einstellungen"]';
 
@@ -564,7 +583,7 @@
         }
     };
 
-    const firstAction = () => [...dialog.querySelectorAll('[data-juhe-consent-action]')].find((element) => !element.hidden);
+    const firstAction = () => [...dialog.querySelectorAll('[data-juhe-consent-action]:not([data-juhe-consent-action="close"])')].find((element) => !element.hidden);
     const headline = document.getElementById(dialog.getAttribute('aria-labelledby') || '');
 
     if (headline && !headline.hasAttribute('tabindex')) {
@@ -809,6 +828,21 @@
         } else if ('save' === action) {
             // The switches replace all optional choices. Without service switches, single-service approvals go.
             choose(...selection());
+        } else if ('close' === action) {
+            // A close button inside a method="dialog" form must not close it a second time
+            event.preventDefault();
+
+            if (prompting()) {
+                try {
+                    sessionStorage.setItem(dismissKey, '1');
+                } catch {
+                    // Without storage the banner asks again on the next page
+                }
+            }
+
+            shown = false;
+            dialog.close();
+            closed();
         }
     });
 

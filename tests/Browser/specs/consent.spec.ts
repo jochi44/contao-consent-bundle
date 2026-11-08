@@ -320,6 +320,40 @@ test.describe.serial("bar layout, blocking", () => {
 		expect(await active(page)).toBe("a.juhe-consent-settings-button");
 	});
 
+	test("a close button dismisses the banner for the session without consent", async ({ page, context }) => {
+		// A skin's close button, as Nexus prints it: inside a method="dialog" form
+		const addClose = () =>
+			page.evaluate(() => {
+				const form = document.createElement("form");
+				form.method = "dialog";
+				form.innerHTML = '<button type="submit" data-juhe-consent-action="close" aria-label="Close">x</button>';
+				document.querySelector("#juhe-consent")!.append(form);
+			});
+		await page.goto("/");
+		expect(await isModal(page)).toBe(true);
+		await addClose();
+		await page.locator("[data-juhe-consent-action='close']").click();
+		await expect(dialog(page)).toBeHidden();
+		const after = await page.evaluate(() => ({ pending: (window as any).juheConsent.pending(), stored: Object.keys(localStorage).filter((k) => k.startsWith("juhe_consent")) }));
+		expect(after).toEqual({ pending: true, stored: [] });
+		// Same session: the next page neither asks nor blocks, the opener still works
+		await page.goto("/");
+		await expect(dialog(page)).toBeHidden();
+		await page.locator(".juhe-consent-settings-button").click();
+		expect(await isModal(page)).toBe(true);
+		// After the opener, close only closes and stores nothing
+		await addClose();
+		await page.locator("[data-juhe-consent-action='close']").click();
+		await expect(dialog(page)).toBeHidden();
+		expect(await page.evaluate(() => (window as any).juheConsent.pending())).toBe(true);
+		// A new browser session asks again
+		const fresh = await context.browser()!.newPage();
+		await fresh.goto(page.url());
+		await expect(fresh.locator("#juhe-consent")).toBeVisible();
+		expect(await fresh.locator("#juhe-consent").evaluate((d) => d.matches(":modal"))).toBe(true);
+		await fresh.close();
+	});
+
 	test("bar at 320 px: no horizontal overflow, axe clean", async ({ page }) => {
 		await page.setViewportSize({ width: 320, height: 640 });
 		await page.goto("/");

@@ -2,6 +2,13 @@
 
 All notable changes to this bundle. Versions follow semantic versioning.
 
+## Unreleased (1.1)
+
+- Close action for a theme's close button (`data-juhe-consent-action="close"`):
+  before a choice it closes the banner without consent and does not ask again
+  in this browser session; only essential services run. After a choice it
+  only closes the settings. Esc is unchanged.
+
 ## 1.0.0 (2026-10-28)
 
 First release. Consent banner for Contao 5.7 and 6.0 on PHP 8.3 or newer.

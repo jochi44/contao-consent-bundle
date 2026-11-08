@@ -27,6 +27,15 @@ what it needs (a template of the same name in the theme's `templates/` folder):
   (`bottom-left`, `bottom-center`, `bottom-right`, `center`, `top-left`,
   `top-center`, `top-right`; for the bar `bottom` or `top`) for a theme's own
   stylesheet.
+- A close button: the bundle's template has none, a theme adds one with
+  `data-juhe-consent-action="close"` and an `aria-label` (the `close` label of
+  the `juhe_consent` domain). Before a choice it closes the banner without
+  consent: only essential services run, no choice is stored, and the banner
+  does not ask by itself again until the browser session ends (a
+  `sessionStorage` flag, like the close button of oveleon's cookie bar).
+  Under the GDPR that is no consent, so nothing optional loads; the visitor
+  can still choose through any opener. After a choice it only closes the
+  settings.
 - The `code` block prints one inert `<template data-juhe-consent-code>` per
   service with code and one `<template data-juhe-consent-denied>` per optional
   service with code without consent, each with `data-juhe-consent-group`, `data-juhe-consent-service`
