@@ -11,11 +11,11 @@ check "page 200" "grep -q '^HTTP/1.1 200' <<<\"\$HDR\""
 check "dialog injected" "grep -q 'id=\"juhe-consent\"' <<<\"\$H\""
 check "iframe placeholder" "grep -q 'juhe-consent-placeholder' <<<\"\$H\""
 check "script held back" "grep -q 'type=\"text/plain\" data-juhe-consent-group=\"marketing\"' <<<\"\$H\""
-NONCE=$(grep -o 'juhe-consent.js[^>]*nonce="[^"]*"' <<<"$H" | sed 's/.*nonce="\([^"]*\)"/\1/')
+NONCE=$(grep -o 'juhe-consent[.a-z]*js[^>]*nonce="[^"]*"' <<<"$H" | sed 's/.*nonce="\([^"]*\)"/\1/')
 check "nonce on script" "[ -n \"$NONCE\" ]"
 check "nonce in CSP header" "grep -qi \"content-security-policy:.*nonce-$NONCE\" <<<\"\$HDR\""
-JS=$(grep -o 'src="[^"]*juhe-consent.js[^"]*"' <<<"$H" | head -1 | sed 's/src="//;s/"$//')
-CSS=$(grep -o 'href="[^"]*juhe-consent.css[^"]*"' <<<"$H" | head -1 | sed 's/href="//;s/"$//')
+JS=$(grep -o 'src="[^"]*juhe-consent.min.js?v=[^"]*"' <<<"$H" | head -1 | sed 's/src="//;s/"$//')
+CSS=$(grep -o 'href="[^"]*juhe-consent.min.css?v=[^"]*"' <<<"$H" | head -1 | sed 's/href="//;s/"$//')
 check "js asset 200 ($JS)" "[ \"\$(curl -s -o /dev/null -w '%{http_code}' $B/${JS#/})\" = 200 ]"
 check "css asset 200 ($CSS)" "[ \"\$(curl -s -o /dev/null -w '%{http_code}' $B/${CSS#/})\" = 200 ]"
 check "settings button" "grep -q 'juhe-consent-settings-button' <<<\"\$H\""

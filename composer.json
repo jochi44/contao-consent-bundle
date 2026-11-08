@@ -45,7 +45,8 @@
             "/.gitignore",
             "/docs",
             "/phpunit.xml.dist",
-            "/tests"
+            "/tests",
+            "/tools"
         ]
     },
     "extra": {

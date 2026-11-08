@@ -8,6 +8,10 @@ All notable changes to this bundle. Versions follow semantic versioning.
   before a choice it closes the banner without consent and does not ask again
   in this browser session; only essential services run. After a choice it
   only closes the settings. Esc is unchanged.
+- Minified script and stylesheet (about 4.6 KB and 2.5 KB gzip instead of
+  10 KB and 3.8 KB), served through `public/manifest.json` with a content hash
+  in the URL, so browsers never keep an old copy after an update. The
+  readable files stay next to them.
 
 ## 1.0.0 (2026-10-28)
 

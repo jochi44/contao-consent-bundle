@@ -423,7 +423,7 @@ test.describe("script placement and order", () => {
 		// Head placement, kept attributes, the page's nonce
 		const script = await page.evaluate(() => {
 			const el = document.querySelector<HTMLScriptElement>("script[src$='/lib.js']")!;
-			const own = document.querySelector<HTMLScriptElement>("script[src*='juhe-consent.js']")!;
+			const own = document.querySelector<HTMLScriptElement>("script[src*='/juhe-consent.min.js?v=']")!;
 			return { head: el.parentElement === document.head, data: el.dataset.x, nonce: el.nonce !== "" && el.nonce === own.nonce };
 		});
 		expect(script).toEqual({ head: true, data: "kept", nonce: true });

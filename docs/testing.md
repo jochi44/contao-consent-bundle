@@ -4,7 +4,14 @@ The repository holds tests that do not ship with the package (`tests/`,
 export-ignored in `.gitattributes` and in `archive.exclude` of
 `composer.json`).
 
-- PHPUnit: `composer install` and `vendor/bin/phpunit`.
+- PHPUnit: `composer install` and `vendor/bin/phpunit`. `AssetsFreshTest`
+  fails when `public/juhe-consent.js` or `.css` changed without a rebuild.
+- Minified assets: the readable `public/juhe-consent.js` and `.css` are the
+  sources. After changing one, run `cd tools && npm ci && node build-assets.mjs`
+  and commit `public/juhe-consent.min.js`, `.min.css` and `public/manifest.json`
+  (`node build-assets.mjs --check` only checks). Contao serves the minified
+  files through the manifest with a content hash in the URL, so a new release
+  never hits a stale cached copy. `tools/` does not ship.
 - Browser tests: `tests/Browser/run.sh 5.7` (Contao 5.7 on PHP 8.3),
   `tests/Browser/run.sh 6.0` (Contao 6.0 on PHP 8.4) or `tests/Browser/run.sh all`.
   The script builds a throwaway Contao install with this checkout in Docker
