@@ -33,9 +33,11 @@
  * banner does not ask by itself again in this browser session. After a choice
  * it only closes the settings.
  *
- * Keyboard: Esc always gets out. It closes the settings, and on a banner that
- * blocks the page it releases the page; the banner then stays as a non-modal
- * dialog. Focus goes back to the opener, and to the content a placeholder loads.
+ * Keyboard: Esc always gets out. It closes the settings of a card. On the
+ * banner it does what the close button does when the banner has one (before a
+ * choice: no consent, no new prompt this session); without one, a banner that
+ * blocks the page releases it and stays as a non-modal dialog. Focus goes back
+ * to the opener, and to the content a placeholder loads.
  */
 (() => {
     'use strict';
@@ -755,6 +757,24 @@
         }
     };
 
+    // The close button and Esc on a banner that has one: before a choice, no new prompt this session
+    const dismiss = () => {
+        if (prompting()) {
+            try {
+                sessionStorage.setItem(dismissKey, '1');
+            } catch {
+                // Without storage the banner asks again on the next page
+            }
+        }
+
+        shown = false;
+        dialog.close();
+        closed();
+    };
+
+    // Esc on the banner itself, not on a card's settings
+    const escDismisses = (withSettings) => !!button('close') && (!withSettings || bar);
+
     const choose = (groups, allowedServices) => {
         save(groups, allowedServices);
         shown = false;
@@ -778,9 +798,16 @@
 
         /*
          * Closed without a choice, which only Esc does (the "cancel" event does not
-         * always fire): the settings go back to the banner, and the blocking banner
-         * releases the page and stays as a non-modal dialog.
+         * always fire). With a close button Esc does what it does. Otherwise the
+         * settings go back to the banner, and the blocking banner releases the page
+         * and stays as a non-modal dialog.
          */
+        if (prompting() && escDismisses(withSettings)) {
+            dismiss();
+
+            return;
+        }
+
         if (prompting()) {
             if (!withSettings) {
                 released = true;
@@ -831,18 +858,15 @@
         } else if ('close' === action) {
             // A close button inside a method="dialog" form must not close it a second time
             event.preventDefault();
+            dismiss();
+        }
+    });
 
-            if (prompting()) {
-                try {
-                    sessionStorage.setItem(dismissKey, '1');
-                } catch {
-                    // Without storage the banner asks again on the next page
-                }
-            }
-
-            shown = false;
-            dialog.close();
-            closed();
+    // A non-modal banner gets no close event from Esc: with a close button, Esc inside it dismisses it too
+    dialog.addEventListener('keydown', (event) => {
+        if ('Escape' === event.key && !event.defaultPrevented && dialog.open && !dialog.matches(':modal') && escDismisses(shownWithSettings)) {
+            event.preventDefault();
+            dismiss();
         }
     });
 

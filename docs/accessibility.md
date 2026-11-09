@@ -4,7 +4,9 @@ The banner targets WCAG 2.2 AA; `axe-core` reports no violations in any state.
 
 - **No keyboard trap.** The card is a non-modal dialog placed first in the
   page, so Tab reaches it first and then moves on into the page. Esc closes the
-  settings. On a blocking banner, Esc releases the page: the banner stays
+  settings. On the banner, Esc does what the theme's close button does when it
+  has one: the banner closes without consent for the browser session. Without
+  a close button, Esc on a blocking banner releases the page: the banner stays
   visible as a non-modal dialog and the page is usable again.
 - **Focus:** the settings focus the first switch, a blocking banner or the
   bar its first button. The dialog opens at its start: when that control is

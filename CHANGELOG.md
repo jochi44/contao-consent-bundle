@@ -2,6 +2,14 @@
 
 All notable changes to this bundle. Versions follow semantic versioning.
 
+## 1.1.1 (2026-11-09)
+
+- Esc on a banner with a close button does what the close button does: before
+  a choice the banner closes without consent and does not ask again in this
+  browser session, like Esc in oveleon's cookie bar. On a blocking banner Esc
+  no longer leaves a non-modal bar behind. In a card's settings Esc still goes
+  back to the banner; without a close button Esc is unchanged.
+
 ## 1.1.0 (2026-11-09)
 
 - Close action for a theme's close button (`data-juhe-consent-action="close"`):

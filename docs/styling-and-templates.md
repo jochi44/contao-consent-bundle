@@ -35,7 +35,8 @@ what it needs (a template of the same name in the theme's `templates/` folder):
   `sessionStorage` flag, like the close button of oveleon's cookie bar).
   Under the GDPR that is no consent, so nothing optional loads; the visitor
   can still choose through any opener. After a choice it only closes the
-  settings.
+  settings. With a close button, Esc on the banner does the same (in a card's
+  settings, Esc still goes back to the banner).
 - The `code` block prints one inert `<template data-juhe-consent-code>` per
   service with code and one `<template data-juhe-consent-denied>` per optional
   service with code without consent, each with `data-juhe-consent-group`, `data-juhe-consent-service`

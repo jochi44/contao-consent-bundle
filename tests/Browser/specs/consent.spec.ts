@@ -109,6 +109,29 @@ test("card: not modal, no keyboard trap, axe clean", async ({ page }) => {
 	await axe(page, "#juhe-consent");
 });
 
+test("with a close button, Esc in the card dismisses it; in its settings Esc goes back", async ({ page }) => {
+	await page.goto("/");
+	await expect(dialog(page)).toBeVisible();
+	expect(await isModal(page)).toBe(false);
+	await page.evaluate(() => {
+		const form = document.createElement("form");
+		form.method = "dialog";
+		form.innerHTML = '<button type="submit" data-juhe-consent-action="close" aria-label="Close">x</button>';
+		document.querySelector("#juhe-consent")!.append(form);
+	});
+	await page.locator("[data-juhe-consent-action='settings']").click();
+	expect(await isModal(page)).toBe(true);
+	await page.keyboard.press("Escape");
+	await expect(dialog(page)).toBeVisible();
+	expect(await isModal(page)).toBe(false);
+	await page.locator("[data-juhe-consent-action='all']").focus();
+	await page.keyboard.press("Escape");
+	await expect(dialog(page)).toBeHidden();
+	expect(await page.evaluate(() => (window as any).juheConsent.pending())).toBe(true);
+	await page.goto("/");
+	await expect(dialog(page)).toBeHidden();
+});
+
 test("settings from the opener: modal, Esc goes back, focus returns to the opener", async ({ page }) => {
 	await page.goto("/");
 	const opener = page.locator(".juhe-consent-settings-button");
@@ -352,6 +375,31 @@ test.describe.serial("bar layout, blocking", () => {
 		await expect(fresh.locator("#juhe-consent")).toBeVisible();
 		expect(await fresh.locator("#juhe-consent").evaluate((d) => d.matches(":modal"))).toBe(true);
 		await fresh.close();
+	});
+
+	test("with a close button, Esc on the blocking bar does what the close button does", async ({ page }) => {
+		await page.goto("/");
+		expect(await isModal(page)).toBe(true);
+		await page.evaluate(() => {
+			const form = document.createElement("form");
+			form.method = "dialog";
+			form.innerHTML = '<button type="submit" data-juhe-consent-action="close" aria-label="Close">x</button>';
+			document.querySelector("#juhe-consent")!.append(form);
+		});
+		await page.keyboard.press("Escape");
+		await expect(dialog(page)).toBeHidden();
+		// The close event Esc fires arrives after the dialog is hidden
+		await expect
+			.poll(() =>
+				page.evaluate(() => ({
+					pending: (window as any).juheConsent.pending(),
+					stored: Object.keys(localStorage).filter((k) => k.startsWith("juhe_consent")),
+					dismissed: Object.keys(sessionStorage).some((k) => k.endsWith("_dismissed")),
+				})),
+			)
+			.toEqual({ pending: true, stored: [], dismissed: true });
+		await page.goto("/");
+		await expect(dialog(page)).toBeHidden();
 	});
 
 	test("bar at 320 px: no horizontal overflow, axe clean", async ({ page }) => {
