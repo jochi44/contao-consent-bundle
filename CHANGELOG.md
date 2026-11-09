@@ -2,7 +2,7 @@
 
 All notable changes to this bundle. Versions follow semantic versioning.
 
-## Unreleased (1.1)
+## 1.1.0 (2026-11-09)
 
 - Close action for a theme's close button (`data-juhe-consent-action="close"`):
   before a choice it closes the banner without consent and does not ask again
