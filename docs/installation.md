@@ -2,7 +2,8 @@
 
 ## First setup
 
-Then update the database (Contao Manager or `contao:migrate`), create a
+Install the package with `composer require juhe-it-solutions/contao-consent-bundle`
+(or the Contao Manager), then update the database (Contao Manager or `contao:migrate`), create a
 banner under "System > Consent" and select it in the root page. In the
 banner's group list, "Notwendige Gruppe anlegen" adds the essential group
 ("Technisch notwendig", published, always on) and a service "Einwilligung"
