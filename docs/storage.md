@@ -12,7 +12,8 @@ never needs the choice. List the entry as a necessary service in the banner
 site data) the banner asks on every page.
 
 A theme's close button (`data-juhe-consent-action="close"`, from 1.1) closes the
-banner before a choice without storing one. It sets the `sessionStorage` entry
+banner before a choice without storing one; from 1.1.1, Esc on such a banner
+does the same. It sets the `sessionStorage` entry
 `juhe_consent_<banner id>_dismissed` to `1`, so the banner does not ask again
 until the browser session ends; no consent is assumed and only essential
 services run. The entry is strictly necessary for that; list it with the
