@@ -2,6 +2,11 @@
 
 All notable changes to this bundle. Versions follow semantic versioning.
 
+## Unreleased
+
+- Package metadata: the author is written "JUHE IT-solutions." with its dot,
+  the company's name everywhere. No code change.
+
 ## 1.1.1 (2026-11-09)
 
 - Esc on a banner with a close button does what the close button does: before
