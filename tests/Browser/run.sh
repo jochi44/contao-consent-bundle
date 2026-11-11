@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Browser tests against a throwaway Contao install with this bundle.
 #
-#   tests/Browser/run.sh 5.7     Contao 5.7 on PHP 8.3
-#   tests/Browser/run.sh 6.0     Contao 6.0 on PHP 8.4
+#   tests/Browser/run.sh 5.7     Contao 5.7 on PHP 8.3 (the floor: oldest supported versions)
+#   tests/Browser/run.sh 6.0     Contao 6.0 on PHP 8.5 (the newest stack: newest PHP and packages)
 #   tests/Browser/run.sh all     both, one after the other
 #
 # Extra arguments go to Playwright (for example a spec file or --project=chromium).
@@ -33,7 +33,7 @@ case "$CORE" in
 		exit $status
 		;;
 	5.7) PHPV=8.3 ;;
-	6.0) PHPV=8.4 ;;
+	6.0) PHPV=8.5 ;;
 	*) echo "usage: $0 5.7|6.0|all [playwright arguments]" >&2; exit 2 ;;
 esac
 shift
@@ -131,6 +131,9 @@ docker exec "$PHP" sh -ec '
 	user --username=auditor --name=Auditor --email=auditor@example.org --password=auditor-pass-123
 	php vendor/bin/contao-console cache:clear --no-warmup >/dev/null
 	chown -R www-data:www-data var public assets system files 2>/dev/null || true
+	# Symfony 8.1 keeps lock files in /tmp/symfony-lock; created by the root-run
+	# console above, the rate limiters of the consent routes failed with 500
+	mkdir -p /tmp/symfony-lock && chown -R www-data:www-data /tmp/symfony-lock
 '
 
 step 4 "HTTP checks"

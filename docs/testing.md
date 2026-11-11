@@ -13,7 +13,12 @@ export-ignored in `.gitattributes` and in `archive.exclude` of
   files through the manifest with a content hash in the URL, so a new release
   never hits a stale cached copy. `tools/` does not ship.
 - Browser tests: `tests/Browser/run.sh 5.7` (Contao 5.7 on PHP 8.3),
-  `tests/Browser/run.sh 6.0` (Contao 6.0 on PHP 8.4) or `tests/Browser/run.sh all`.
+  `tests/Browser/run.sh 6.0` (Contao 6.0 on PHP 8.5) or `tests/Browser/run.sh all`.
+  The two runs cover both ends of what the bundle supports (Julle,
+  2026-11-11, same policy as the Nexus lanes): 5.7 is the floor (PHP 8.3,
+  Symfony 7.4), 6.0 the newest stack (newest PHP and the newest compatible
+  packages, Symfony 8.x). A 6.0 run on PHP 8.4.0 resolved Symfony 7.4, because
+  Symfony 8.0 ended with open advisories and 8.1 needs PHP 8.4.1.
   The script builds a throwaway Contao install with this checkout in Docker
   (its own network, MariaDB, Apache with PHP on `127.0.0.1:8199`), seeds a
   test site, runs HTTP checks and the Playwright specs in `tests/Browser/specs`
