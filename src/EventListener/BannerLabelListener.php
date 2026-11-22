@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JuheItSolutions\JuheConsentBundle\EventListener;
 
+use Contao\CoreBundle\DataContainer\RecordLabel;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
@@ -24,9 +25,13 @@ final class BannerLabelListener
     }
 
     /**
+     * Contao 6 escapes a plain string from a label callback, so the HTML goes
+     * back as a RecordLabel there; Contao 5.7 has no such class and takes the
+     * string as HTML.
+     *
      * @param array<string, mixed> $row
      */
-    public function __invoke(array $row, string $label, DataContainer|null $dc = null): string
+    public function __invoke(array $row, string $label, DataContainer|null $dc = null): RecordLabel|string
     {
         $roots = $this->connection->fetchAllAssociative(
             "SELECT title, language FROM tl_page WHERE type = 'root' AND juheConsentBanner = ? ORDER BY sorting",
@@ -35,11 +40,13 @@ final class BannerLabelListener
 
         $lang = $GLOBALS['TL_LANG']['tl_juhe_consent_banner'] ?? [];
 
-        return trim($this->twig->render('@Contao/juhe_consent/backend/banner_label.html.twig', [
+        $html = trim($this->twig->render('@Contao/juhe_consent/backend/banner_label.html.twig', [
             'label' => $label,
             'sites' => array_map(static fn (array $root): array => ['title' => (string) $root['title'], 'language' => (string) $root['language']], $roots),
             'used_by' => (string) ($lang['usedBy'] ?? ''),
             'used_by_none' => (string) ($lang['usedByNone'] ?? ''),
         ]));
+
+        return class_exists(RecordLabel::class) ? RecordLabel::fromHtml($html) : $html;
     }
 }

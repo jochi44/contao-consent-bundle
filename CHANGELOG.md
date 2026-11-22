@@ -4,6 +4,10 @@ All notable changes to this bundle. Versions follow semantic versioning.
 
 ## Unreleased
 
+- Contao 6: the banner list showed its label as raw HTML
+  (`<span class="label-info">...`), because Contao 6 escapes a plain string
+  from a label callback. The label is now a `RecordLabel`; Contao 5.7 is
+  unchanged.
 - Package metadata: the author is written "JUHE IT-solutions." with its dot,
   the company's name everywhere. No code change.
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JuheItSolutions\JuheConsentBundle\Tests\EventListener;
 
+use Contao\CoreBundle\DataContainer\RecordLabel;
 use Doctrine\DBAL\Connection;
 use JuheItSolutions\JuheConsentBundle\EventListener\BannerLabelListener;
 use JuheItSolutions\JuheConsentBundle\Tests\BundleTwig;
@@ -33,7 +34,9 @@ final class BannerLabelListenerTest extends TestCase
 
         $label = (new BannerLabelListener($connection, BundleTwig::create()))(['id' => '7'], 'Main');
 
-        $this->assertSame('Main <span class="label-info">Used by: Website DE (de), Sito &lt;IT&gt; (it)</span>', $label);
+        // Contao 6: the HTML label, not a string Contao would escape again
+        $this->assertSame('Main <span class="label-info">Used by: Website DE (de), Sito &lt;IT&gt; (it)</span>', $label instanceof RecordLabel ? $label->htmlLabel : $label);
+        $this->assertSame(class_exists(RecordLabel::class), $label instanceof RecordLabel);
     }
 
     public function testSaysWhenNoWebsiteUsesTheBanner(): void
@@ -41,6 +44,8 @@ final class BannerLabelListenerTest extends TestCase
         $connection = $this->createStub(Connection::class);
         $connection->method('fetchAllAssociative')->willReturn([]);
 
-        $this->assertSame('Spare <span class="label-info">Not assigned to a website</span>', (new BannerLabelListener($connection, BundleTwig::create()))(['id' => 3], 'Spare'));
+        $label = (new BannerLabelListener($connection, BundleTwig::create()))(['id' => 3], 'Spare');
+
+        $this->assertSame('Spare <span class="label-info">Not assigned to a website</span>', $label instanceof RecordLabel ? $label->htmlLabel : $label);
     }
 }
