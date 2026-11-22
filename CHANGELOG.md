@@ -2,7 +2,7 @@
 
 All notable changes to this bundle. Versions follow semantic versioning.
 
-## Unreleased
+## 1.1.2 (2026-11-22)
 
 - Contao 6: the banner list showed its label as raw HTML
   (`<span class="label-info">...`), because Contao 6 escapes a plain string
