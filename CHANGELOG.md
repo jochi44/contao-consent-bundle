@@ -2,6 +2,13 @@
 
 All notable changes to this bundle. Versions follow semantic versioning.
 
+## 1.1.3 (2026-11-24)
+
+- Back and forward: a page the browser restores from its back/forward cache
+  now takes a choice made on another page meanwhile. The banner that still
+  asked closes and newly allowed services start; if a running service was
+  withdrawn, the page reloads.
+
 ## 1.1.2 (2026-11-22)
 
 - Contao 6: the banner list showed its label as raw HTML

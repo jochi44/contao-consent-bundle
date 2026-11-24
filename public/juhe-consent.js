@@ -87,9 +87,10 @@
         }
     })();
 
-    const read = () => {
+    // The carried value counts only for the first read after a reload
+    const read = (fromStorage = false) => {
         try {
-            const value = JSON.parse(carried ?? (localStorage.getItem(config.storage) || 'null'));
+            const value = JSON.parse((fromStorage ? null : carried) ?? (localStorage.getItem(config.storage) || 'null'));
 
             // A new banner version or a choice older than the lifetime asks again
             const now = Date.now() / 1000;
@@ -924,6 +925,42 @@
 
     apply();
     deny();
+
+    /*
+     * The back/forward cache restores a page as it was left. A choice made on
+     * another page meanwhile counts here too: the banner that asked closes, newly
+     * allowed services start, and a withdrawal of a running service reloads.
+     */
+    window.addEventListener('pageshow', (event) => {
+        if (!event.persisted || restricted) {
+            return;
+        }
+
+        const previous = state;
+        const stored = read(true);
+
+        if (JSON.stringify(stored) === JSON.stringify(previous)) {
+            return;
+        }
+
+        state = stored;
+
+        if (services.some((service) => running.has(service.key) && !allows(state, service.group, service.key))) {
+            location.reload();
+
+            return;
+        }
+
+        apply();
+        deny();
+        changed();
+
+        if (dialog.open && !shownWithSettings && !prompting()) {
+            shown = false;
+            dialog.close();
+            document.dispatchEvent(new CustomEvent('juhe-consent:close', { cancelable: true }));
+        }
+    });
 
     // A page opened with "#juhe-consent" (e.g. in a new tab from an opener) shows the settings
     if (['#juhe-consent', '#cookie-einstellungen'].includes(location.hash)) {
