@@ -2,6 +2,16 @@
 
 All notable changes to this bundle. Versions follow semantic versioning.
 
+## 1.1.4 (2026-11-24)
+
+- Site search: the banner is no longer indexed. Its texts were the same on
+  every page, so a search for a word from the banner (for example a service
+  name) listed every page. The banner now sits between `indexer::stop` and
+  `indexer::continue`.
+- Privacy links of services are checked when the banner renders, not only when
+  the service is saved. A link with a scheme other than http, https, mailto or
+  tel (for example from an import) is no longer shown.
+
 ## 1.1.3 (2026-11-24)
 
 - Back and forward: a page the browser restores from its back/forward cache

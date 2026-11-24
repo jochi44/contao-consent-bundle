@@ -112,7 +112,7 @@ final class InjectConsentListener
 
         // At the end of the page, behind the theme's skip link; juhe-consent.js moves the
         // first-visit card to the top while it is shown, so keyboard users meet it first
-        $html = $this->insertBefore($html, '</body>', $this->twig->render('@Contao/juhe_consent/banner.html.twig', $context));
+        $html = $this->insertBanner($html, $this->twig->render('@Contao/juhe_consent/banner.html.twig', $context));
 
         $response->setContent($html);
         $response->headers->remove('Content-Length');
@@ -265,6 +265,19 @@ final class InjectConsentListener
         }
 
         return substr($html, 0, $match[0][1]).$content.substr($html, $match[0][1]);
+    }
+
+    /**
+     * The banner texts are the same on every page, so Contao's search indexer skips
+     * them. A page that ends inside its own indexer::stop stays stopped.
+     */
+    private function insertBanner(string $html, string $banner): string
+    {
+        $stop = strrpos($html, '<!-- indexer::stop -->');
+        $continue = strrpos($html, '<!-- indexer::continue -->');
+        $stopped = false !== $stop && (false === $continue || $stop > $continue);
+
+        return $this->insertBefore($html, '</body>', '<!-- indexer::stop -->'.$banner.($stopped ? '' : '<!-- indexer::continue -->'));
     }
 
     private function insertBefore(string $html, string $tag, string $content): string
