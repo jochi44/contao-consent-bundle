@@ -272,7 +272,8 @@ final class ConsentConfig
             'title' => (string) $row['title'],
             'provider' => (string) $row['provider'],
             'description' => (string) $row['description'],
-            'privacy_url' => (string) $row['privacyUrl'],
+            // The backend form checks httpurl, but a row from an import or SQL is not checked: refuse every scheme but http, https, mailto and tel at render time.
+            'privacy_url' => ConsentUrl::safe((string) $row['privacyUrl']),
             'cookies' => $cookies,
             'hosts' => $hosts,
             // The notice of a blocked iframe: the service's own text and template, or empty for the banner's
