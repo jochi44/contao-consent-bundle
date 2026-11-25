@@ -95,6 +95,9 @@ rm -rf "$STAGE"; mkdir -p "$STAGE"
 (cd "$ROOT" && git ls-files -z -c -o --exclude-standard -- . ':!tests' \
 	| while IFS= read -r -d '' f; do [ -f "$f" ] && printf '%s\0' "$f"; done \
 	| tar --null -T - -cf -) | tar -xf - -C "$STAGE"
+# Git packages a file as 644 or 755, whatever its mode in this checkout. A file an
+# editor wrote as 600 would be unreadable for the web server and fail every check.
+chmod -R u+rwX,go+rX,go-w "$STAGE"
 
 step 1 "start database and web server"
 docker network inspect "$NET" >/dev/null 2>&1 || docker network create "$NET" >/dev/null
